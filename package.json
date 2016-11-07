@@ -1,0 +1,41 @@
+{
+  "name": "jira-miner",
+  "version": "0.0.1",
+  "description": "An utility for advanced queryies on top of JIRA",
+  "main": "index.js",
+  "bin": {
+    "jira-miner": "./index.js"
+  },
+  "scripts": {
+    "test": "tape tests/**"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kpiwko/jira-miner.git"
+  },
+  "keywords": [
+    "jira",
+    "data",
+    "mining"
+  ],
+  "author": "Karel Piwko <kpiwko@redhat.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/kpiwko/jira-miner/issues"
+  },
+  "homepage": "https://github.com/kpiwko/jira-miner#readme",
+  "dependencies": {
+    "bunyan": "^1.8.4",
+    "jira": "^0.9.2",
+    "jison": "^0.4.17",
+    "request": "^2.78.0",
+    "yargs": "^6.3.0"
+  },
+  "devDependencies": {
+    "blue-tape": "^1.0.0",
+    "tape": "^4.6.2"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  }
+}

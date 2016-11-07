@@ -1,6 +1,8 @@
-= JIRA Miner
+# JIRA Miner [![Build Status](https://travis-ci.org/kpiwko/jira-miner.svg?branch=master)](https://travis-ci.org/kpiwko/jira-miner)
 
-== Testing
+A tool to gather data from JIRA
+
+## Testing
 
 Prerequisites: 
 

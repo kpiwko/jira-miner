@@ -26,7 +26,7 @@
   "homepage": "https://github.com/kpiwko/jira-miner#readme",
   "dependencies": {
     "bunyan": "^1.8.4",
-    "jira": "^0.9.2",
+    "jira-client": "^4.1.0",
     "jison": "^0.4.17",
     "request": "^2.78.0",
     "yargs": "^6.3.0"

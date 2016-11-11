@@ -1,5 +1,7 @@
 language: node_js
 node_js:
   - "6"
-before_install:
-  - npm install -g tape tap-xunit
+before_script:
+  - npm install -g tape tap-xunit istanbul coveralls
+script:
+  - npm run coveralls

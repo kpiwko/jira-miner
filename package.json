@@ -7,7 +7,10 @@
     "jira-miner": "./index.js"
   },
   "scripts": {
-    "test": "tape tests/**"
+    "test": "tape tests/**/*.js tests/**.js",
+    "xunit": "npm test | tee tap-report && cat tap-report | tap-xunit > report.xml",
+    "coverage": "istanbul cover node_modules/tape/bin/tape -- tests/**/*.js tests/**.js",
+    "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
@@ -27,8 +30,11 @@
   "dependencies": {
     "bunyan": "^1.8.4",
     "jira-client": "^4.1.0",
-    "jison": "^0.4.17",
+    "jsonfile": "^2.4.0",
+    "lokijs": "^1.4.1",
+    "moment": "^2.16.0",
     "request": "^2.78.0",
+    "tmp": "0.0.30",
     "yargs": "^6.3.0"
   },
   "devDependencies": {

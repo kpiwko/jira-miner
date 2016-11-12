@@ -33,7 +33,7 @@ const handler = function(argv) {
       return jiraTarget.writeConfiguration(config)
     })
     .catch(err => {
-      console.error({err}, 'Unable to connect to JIRA')
+      console.error({err})
       process.exit(1)
     })
 }

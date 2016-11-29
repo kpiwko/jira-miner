@@ -5,12 +5,16 @@ const path = require('path')
 const request = require('request')
 const logger = require('../lib/logger')
 const jiraTarget = require('../lib/jira/target')
+const config = require('../config')
 
 const command = 'target <url>'
 const describe = 'Connect to a JIRA module that will be used as data source'
 const builder = function (yargs) {
   return yargs
-    .usage('usage: $0 target <url> [options]')
+    .usage(`usage: $0 target <url> [options]
+
+  Connects to JIRA <url> that will used as data source
+  <url> example - https://issues.jboss.org`)
     .option('user', {
       alias: 'u',
       describe: 'User name',
@@ -25,12 +29,12 @@ const builder = function (yargs) {
 }
 
 const handler = function(argv) {
-  const jiraUrl = argv.url;
+  const jiraUrl = argv.url
 
   jiraTarget.checkCredentials(jiraUrl, argv.user, argv.password)
     .then(config => {
-      console.log({url: config.url, user: config.user}, 'Successfully targeted JIRA')
-      return jiraTarget.writeConfiguration(config)
+      console.log({url: config.jira.url, user: config.jira.user}, 'Successfully targeted JIRA')
+      return config.updateConfiguration(config)
     })
     .catch(err => {
       console.error({err})

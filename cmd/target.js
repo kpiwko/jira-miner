@@ -5,7 +5,7 @@ const path = require('path')
 const request = require('request')
 const logger = require('../lib/logger')
 const jiraTarget = require('../lib/jira/target')
-const config = require('../config')
+const config = require('../lib/config')
 
 const command = 'target <url>'
 const describe = 'Connect to a JIRA module that will be used as data source'

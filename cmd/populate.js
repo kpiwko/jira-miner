@@ -1,11 +1,11 @@
 'use strict'
 
-const fs = require('fs')
 const path = require('path')
-const request = require('request')
 const logger = require('../lib/logger')
 const config = require('../lib/config')
 const jiraClient = require('../lib/jira/client')
+const DB = require('../lib/db/client')
+const jiraPopulate = require('../lib/jira/populate')
 
 
 const command = 'populate <query>'
@@ -22,20 +22,31 @@ const builder = function (yargs) {
     .option('db', {
       alias: 'd',
       describe: 'Database location',
-      defaultValue: path.resolve(HOME, '.jira-minerdb'),
+      default: path.resolve(HOME, '.jira-minerdb2'),
       defaultDescription: '.jira-minerdb in HOME directory'
+    })
+    .option('collection', {
+      alias: 'c',
+      describe: 'Collection name',
+      default: 'default',
+      defaultDescription: 'default'
     })
     .option('fields', {
       alias: 'f',
-      describe: 'Fields to be fetched during query',
-      type: 'array',
-      defaultValue: ['*navigable'],
+      describe: 'Fields to be fetched during query, comma separated syntax',
+      type: 'string',
+      default: '*navigable',
       defaultDescription: 'All navigable fields (*navigable)'
+    })
+    .option('since', {
+      alias: 's',
+      describe: 'Fetch only issues updated since the value',
+      type: ''
     })
     .option('ignore-history', {
       describe: 'Ignore changelog of the issue',
       type: 'boolean',
-      defaultValue: false,
+      default: false,
       defaultDescription: 'false'
     })
     .demand(1)
@@ -44,11 +55,28 @@ const builder = function (yargs) {
 }
 
 const handler = function(argv) {
-  const query = argv.query
 
-  const jira = jiraClient.
+  const optional = {
+    fields: argv.fields.split(','),
+    expand: !argv.ignoreHistory ? ['changelog'] : []
+  }
+  const query = `${argv.query}${argv.since ? ` AND updated>=${argv.since}`: ''}`
 
-  console.log(query)
+  Promise.all([DB(argv.db), config.readConfiguration()])
+    .then(([db, c]) => {
+      const jira = jiraClient(c.jira.url, c.jira.user, c.jira.password)
+      logger.trace({query, optional}, `Fetching query from JIRA and storing in ${argv.db} in collection ${argv.collection}`)
+      return Promise.all([Promise.resolve(c), Promise.resolve(db), jiraPopulate(jira, db, query, optional, argv.collection)])
+    })
+    .then(([config, db, collection]) => {
+      db.saveDatabase(() => {
+        console.log(`Updated and stored collection ${argv.collection} in ${argv.db}`)
+      })
+    })
+    .catch(err => {
+      console.error(err)
+      process.exit(1)
+    })
 }
 
 module.exports = {command, describe, builder, handler}

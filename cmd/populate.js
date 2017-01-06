@@ -22,7 +22,7 @@ const builder = function (yargs) {
     .option('db', {
       alias: 'd',
       describe: 'Database location',
-      default: path.resolve(HOME, '.jira-minerdb2'),
+      default: path.resolve(HOME, '.jira-minerdb'),
       defaultDescription: '.jira-minerdb in HOME directory'
     })
     .option('collection', {

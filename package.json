@@ -33,6 +33,7 @@
     "jsonfile": "^2.4.0",
     "lokijs": "^1.4.1",
     "moment": "^2.16.0",
+    "prettyjson": "^1.2.1",
     "request": "^2.78.0",
     "tmp": "0.0.30",
     "yargs": "^6.3.0"

@@ -38,7 +38,7 @@ Once, you have targeted a jira, you can populate local database
 jira populate <jqlQuery>
 ```
 
-EXAMPLE: `jira-miner populate "project in (AGPUSH, ARQ)"` downloads all issues (including their history for projects AGPUSH and ARQ)
+EXAMPLE: `jira-miner populate "project in (AGPUSH, ARQ)"` downloads all issues (including their history) for projects AGPUSH and ARQ)
 
 If you rerun the query, it will rewrite all updated items. It might be a good idea to update the database since the last query to limit
 the amount of fetched data. You can do that via `--since` argument that accepts a timestamp.

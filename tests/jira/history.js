@@ -10,7 +10,7 @@ test('Check history of issues', t => {
     return query(collection, [
       {
         func: 'find',
-        args: { 'fields.summary' : {'$contains': 'Android'}}
+        args: { 'Summary' : {'$contains': 'Android'}}
       },
       {
         func: 'simplesort',
@@ -19,7 +19,7 @@ test('Check history of issues', t => {
     ])
   })
   .then(issues => {
-    // fixme
+    t.ok(issues.length > 0, 'More than 1 issue has been fetched')
     issues.map(history.status).forEach(statusHistory => {
       t.ok(statusHistory[1].length > 0, `Issue contains history of its states`)
     })
@@ -34,14 +34,15 @@ test('Add history series', t => {
     return query(collection, [
       {
         func: 'find',
-        args: { 'fields.summary' : {'$contains': 'Android'}}
+        args: { 'Summary' : {'$contains': 'Android'}}
       }
     ])
   })
   .then(issues => {
+    t.ok(issues.length > 0, 'More than 1 issue has been fetched')
     issues.map(history.addAllSeries).forEach(issue => {
-      t.ok(issue.history['status'].length > 0, `Issue ${issue.key} contains history of status`)
-      t.ok(issue.history['Fix Version'].length > 0, `Issue ${issue.key} contains history of FixVersion`)
+      t.ok(issue.History['Status'].length > 0, `Issue ${issue.key} contains history of Status`)
+      t.ok(issue.History['Fix Version/s'].length > 0, `Issue ${issue.key} contains history of Fix Version/s`)
     })
   })
 })

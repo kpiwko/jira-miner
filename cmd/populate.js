@@ -58,7 +58,7 @@ const handler = function(argv) {
 
   const optional = {
     fields: argv.fields.split(','),
-    expand: !argv.ignoreHistory ? ['changelog'] : []
+    expand: !argv.ignoreHistory ? ['changelog', 'names'] : ['names']
   }
   const query = `${argv.query}${argv.since ? ` AND updated>=${argv.since}`: ''}`
 

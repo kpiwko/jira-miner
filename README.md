@@ -43,9 +43,9 @@ EXAMPLE: `jira-miner populate "project in (AGPUSH, ARQ)"` downloads all issues (
 If you rerun the query, it will rewrite all updated items. It might be a good idea to update the database since the last query to limit
 the amount of fetched data. You can do that via `--since` argument that accepts a timestamp.
 
-TIP: For very large queries, you might run out of memory. You can increase memory of node process such as following:
+TIP: For very large queries, you might run out of memory. You can increase memory of node process and reduce GC calls via following:
 ```
-node --max_old_space_size=4096 index.js populate
+node --max_old_space_size=4096 --nouse-idle-notification index.js populate
 ```
 
 ### Query the database

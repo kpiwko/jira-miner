@@ -10,7 +10,7 @@ const jira = jiraClient('https://issues.jboss.org', '', '')
 test('Fetch public AGPUSH project', t => {
   return jiraFetch(jira, 'project = AGPUSH', {fields: ['summary']})
     .then(issues => {
-      t.ok(issues, 'AGPUSH issues have been fetched')
+      t.ok(issues.length > 0, 'AGPUSH issues have been fetched')
     })
     .catch(err => {
       t.fail(err, 'Failed fetching issues')

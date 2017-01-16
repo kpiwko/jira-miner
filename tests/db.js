@@ -16,7 +16,7 @@ test('Initialize empty db', t => {
 
 test('Query all agpush issues that contain Android in summary', t => {
   return fixture().then(collection => {
-    const results = collection.chain().find({ 'fields.summary': {'$contains':'Android'}}).simplesort('key').data()
+    const results = collection.chain().find({ 'Summary': {'$contains':'Android'}}).simplesort('key').data()
     t.ok(results, 'Some results have been returned')
     t.ok(results.length > 0, 'There are more results than 0')
   })

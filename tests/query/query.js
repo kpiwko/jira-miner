@@ -10,7 +10,7 @@ test('Invalid subquery function', t => {
     return query(collection, [
       {
         func: 'doesNotExist',
-        args: { 'fields.summary' : {'$contains': 'Android'}}
+        args: { 'Summary' : {'$contains': 'Android'}}
       },
       {
         func: 'simplesort',
@@ -31,7 +31,7 @@ test('Query of Android in summary sorted by key via array of functions', t => {
     const q = [
       (res) => {
         return res.collection.chain()
-          .find({ 'fields.summary' : {'$contains': 'Android'}})
+          .find({ 'Summary' : {'$contains': 'Android'}})
       },
       (res) => {
         return res.acc.simplesort('key')
@@ -55,7 +55,7 @@ test('Query of Android in summary sorted by key', t => {
     return query(collection, [
       {
         func: 'find',
-        args: { 'fields.summary' : {'$contains': 'Android'}}
+        args: { 'Summary' : {'$contains': 'Android'}}
       },
       {
         func: 'simplesort',
@@ -77,7 +77,7 @@ test('Query with map-reduce', t => {
     return query(collection, [
       {
         func: 'find',
-        args: { 'fields.summary' : {'$contains': 'Android'}}
+        args: { 'Summary' : {'$contains': 'Android'}}
       },
       {
         func: 'simplesort',

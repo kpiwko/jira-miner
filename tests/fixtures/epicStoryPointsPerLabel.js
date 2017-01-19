@@ -6,7 +6,7 @@ const storyPointsInEpicsPerLabel = [
     return ctx.collection.chain()
       // find all epics with fix version
       .where(issue => {
-        return issue['Issue Type'] === 'Epic' && issue["Fix Version/s"].includes(args.fixVersion)
+        return issue['Issue Type'] === 'Epic' && issue['Fix Version/s'].includes(args.fixVersion)
       })
       // where these epic contain a label
       .where(issue => {
@@ -21,12 +21,12 @@ const storyPointsInEpicsPerLabel = [
     return ctx.collection.chain()
       .where(issue => {
         // return issue if a part of the epic
-        return testPlans.includes(issue["Epic Link"])
+        return testPlans.includes(issue['Epic Link'])
       })
       .mapReduce(issue => {
         return {
           key: issue.key,
-          sp: issue["Story Points"],
+          sp: issue['Story Points'],
           labels: issue.Labels
         }
       }, issues => {

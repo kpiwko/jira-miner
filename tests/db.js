@@ -5,6 +5,8 @@ const tmp = require('tmp')
 const jsonfile = require('jsonfile')
 const path = require('path')
 const DB = require('../lib/db/client')
+const normalizer = require('../lib/jira/normalizer')
+const history = require('../lib/jira/history')
 
 test('Initialize empty db', t => {
   const dbpath = tmp.fileSync();
@@ -26,7 +28,14 @@ const fixture = function() {
   const dbPath = tmp.fileSync()
   return DB(dbPath.name)
     .then(testdb => {
-      return Promise.resolve(testdb.populate('agpush200', jsonfile.readFileSync(path.join(__dirname, './fixtures/agpush200.json'))))
+
+      let jiraData = jsonfile.readFileSync(path.join(__dirname, './fixtures/agpush200.json'))
+      const jiraFields = jsonfile.readFileSync(path.join(__dirname, './fixtures/jiraFields.json'))
+
+      jiraData = normalizer.fieldNamesAndValues(jiraData, jiraFields)
+      jiraData = history.attachHistories(jiraData, jiraFields)
+
+      return Promise.resolve(testdb.populate('agpush200', jiraData))
     })
 }
 

@@ -32,9 +32,9 @@ const handler = function(argv) {
   const jiraUrl = argv.url
 
   jiraTarget.checkCredentials(jiraUrl, argv.user, argv.password)
-    .then(config => {
-      console.log({url: config.jira.url, user: config.jira.user}, 'Successfully targeted JIRA')
-      return config.updateConfiguration(config)
+    .then(credentials => {
+      console.log({url: credentials.jira.url, user: credentials.jira.user}, 'Successfully targeted JIRA')
+      return config.updateConfiguration(credentials)
     })
     .catch(err => {
       console.error({err})

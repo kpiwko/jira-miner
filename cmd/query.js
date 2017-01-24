@@ -3,6 +3,7 @@
 const path = require('path')
 const util = require('util')
 const prettyjson = require('prettyjson')
+const json2csv = require('json2csv');
 const logger = require('../lib/logger')
 const query = require('../lib/query/query')
 const DB = require('../lib/db/client')
@@ -36,6 +37,10 @@ const builder = function (yargs) {
       describe: 'Provide output in JSON format so it can be further processed',
       default: false
     })
+    .option('csv', {
+      describe: 'Provide output in CSV format so it can be further processed',
+      default: false
+    })
     .demand(1)
     .help('help')
     .wrap(null)
@@ -49,6 +54,10 @@ const handler = function(argv) {
     .then(db => {
 
       const collection = db.getCollection(argv.collection)
+
+      if(collection === null) {
+        throw Error(`No collection ${argv.collection} is available in ${argv.db}, bailing out`)
+      }
       // get query from file
       let theQuery = require(queryFilePath).query
 
@@ -58,6 +67,9 @@ const handler = function(argv) {
     .then(data => {
       if(argv.json) {
         console.log(JSON.stringify(data, null, 2))
+      }
+      else if(argv.csv) {
+        console.log(json2csv({data}))
       }
       else {
         console.log(prettyjson.render(data))

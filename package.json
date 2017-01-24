@@ -1,6 +1,6 @@
 {
   "name": "jira-miner",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An utility for advanced queryies on top of JIRA",
   "main": "index.js",
   "bin": {
@@ -30,6 +30,7 @@
   "dependencies": {
     "bunyan": "^1.8.4",
     "jira-client": "^4.1.0",
+    "json2csv": "^3.7.3",
     "jsonfile": "^2.4.0",
     "lokijs": "^1.4.1",
     "moment": "^2.16.0",

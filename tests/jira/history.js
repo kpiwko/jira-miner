@@ -31,6 +31,34 @@ test('Check history of issues', t => {
   })
 })
 
+test('Process history of issue with no author', t => {
+
+  return fixture(issues => {
+    // remove author
+    issues.forEach(issue => {
+        if(issue.changelog && issue.changelog.histories) {
+          issue.changelog.histories.forEach(history => {
+            delete history.author
+          })
+        }
+    })
+    return issues
+  }).then(collection => {
+    return query(collection, [
+      {
+        func: 'find',
+        args: { 'Summary' : {'$contains': 'Android'}}
+      }
+    ])
+  })
+  .then(issues => {
+    t.ok(issues.length > 0, 'More than 1 issue has been fetched')
+    issues.forEach(issue => {
+      t.ok(issue.History['Status'].length > 0, `Issue ${issue.key} contains history of Status`)
+    })
+  })
+})
+
 test('Add history series', t => {
   return fixture().then(collection => {
     return query(collection, [

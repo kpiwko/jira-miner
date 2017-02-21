@@ -2,8 +2,9 @@
 
 const path = require('path')
 const util = require('util')
+const stripIndent = require('common-tags').stripIndent
 const prettyjson = require('prettyjson')
-const json2csv = require('json2csv');
+const json2csv = require('json2csv')
 const logger = require('../lib/logger')
 const query = require('../lib/query/query')
 const DB = require('../lib/db/client')
@@ -14,11 +15,31 @@ const builder = function (yargs) {
 
   const HOME = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
   return yargs
-    .usage(`usage: $0 query <file> [options]
+    .usage(stripIndent`
+      usage: $0 query <file> [options]
 
-      Queries locally populated database using query(ies) located in <file>. The file with query also defines output of
-      the query.
+      Queries locally populated database using query(ies) located in <file>.
 
+      Query file is a Node.js module exporting "query(ctx)" object/array/function and optionally a "transform(ctx)" function.
+
+        module.exports = {
+          query: (ctx) => {
+            // ctx.args contains command line arguments that can be used to parametrize query externally
+            // ctx.acc contains result of the last subquery
+            // ctx.collection contains collection to be queried
+          },
+          transform: (ctx) => {
+            // ctx.args contains command line arguments that can be used to parametrized transformation externally
+            // ctx.data contains result of query function
+          }
+        }
+
+      Note that query can be a array of functions or Loki.js query objects. In such subqueries are executed in sequence
+      and users are encouraged to use "ctx.acc" object to chain execution.
+
+      Since "transform(ctx)" function is optional by default $0 expect "query(ctx)" to return a JSON data and uses pretty print
+      to output it to console. If this is not desired behavior, user can provide --json or --csv argument.
+      In case that "transform(ctx)" is provide, it is responsible for handling output itself.
     `)
     .option('db', {
       alias: 'd',
@@ -34,11 +55,11 @@ const builder = function (yargs) {
     })
     .option('json', {
       alias: 'j',
-      describe: 'Provide output in JSON format so it can be further processed',
+      describe: 'Print out query outcome in JSON format',
       default: false
     })
     .option('csv', {
-      describe: 'Provide output in CSV format so it can be further processed',
+      describe: 'Print out query outcome in CSV format',
       default: false
     })
     .demand(1)
@@ -50,6 +71,19 @@ const handler = function(argv) {
 
   const queryFilePath = path.resolve(process.cwd(), argv.file)
 
+  // get query from file
+  const queryFile = require(queryFilePath)
+
+  if(!queryFile.query) {
+    logger.error(`Query file ${queryFilePath} does not contain query`)
+    process.exit(1)
+  }
+
+  if(argv.json && argv.csv) {
+    logger.error(`Please provide just one of --csv or --json flags`)
+    process.exit(1)
+  }
+
   DB(argv.db)
     .then(db => {
 
@@ -58,27 +92,31 @@ const handler = function(argv) {
       if(collection === null) {
         throw Error(`No collection ${argv.collection} is available in ${argv.db}, bailing out`)
       }
-      // get query from file
-      let theQuery = require(queryFilePath).query
 
       // run the query
-      return query(collection, theQuery, argv)
+      return query(collection, queryFile.query, argv)
     })
     .then(data => {
-      if(argv.json) {
-        console.log(JSON.stringify(data, null, 2))
-      }
-      else if(argv.csv) {
-        console.log(json2csv({data}))
+
+      if(queryFile.transform && queryFile.transform instanceof Function) {
+        queryFile.transform({args: argv, data})
       }
       else {
-        console.log(prettyjson.render(data))
+        if(argv.json) {
+          console.log(JSON.stringify(data, null, 2))
+        }
+        else if(argv.csv) {
+          console.log(json2csv({data}))
+        }
+        else {
+          console.log(prettyjson.render(data))
+        }
       }
     })
     .catch(err => {
-      console.error(err)
+      logger.error(err)
       process.exit(1)
     })
 }
 
-module.exports = {command, describe, builder, handler}
+module.exports = {command, describe, builder, handler }

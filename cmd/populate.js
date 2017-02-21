@@ -1,11 +1,12 @@
 'use strict'
 
 const path = require('path')
-const logger = require('../lib/logger')
+const stripIndent = require('common-tags').stripIndent
 const config = require('../lib/config')
 const jiraClient = require('../lib/jira/client')
 const DB = require('../lib/db/client')
 const jiraPopulate = require('../lib/jira/populate')
+const logger = require('../lib/logger')
 
 
 const command = 'populate <query>'
@@ -15,10 +16,12 @@ const builder = function (yargs) {
   const HOME = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
 
   return yargs
-    .usage(`usage: $0 populate <query> [options]
+    .usage(stripIndent`
+      usage: $0 populate <query> [options]
 
-  Downloads data from targeted JIRA instead based on <query> and stores them in local database.
-  <query> is JQL query string`)
+      Downloads data from targeted JIRA instead based on <query> and stores them in local database.
+      <query> is JQL query string`
+    )
     .option('db', {
       alias: 'd',
       describe: 'Database location',
@@ -65,18 +68,18 @@ const handler = function(argv) {
   Promise.all([DB(argv.db), config.readConfiguration()])
     .then(([db, c]) => {
       const jira = jiraClient(c.jira.url, c.jira.user, c.jira.password)
-      logger.trace({query, optional}, `Fetching query from JIRA and storing in ${argv.db} in collection ${argv.collection}`)
+      logger.info(`Fetched query ${query} from JIRA and storing in ${argv.db} in collection ${argv.collection}`)
       return Promise.all([Promise.resolve(c), Promise.resolve(db), jiraPopulate(jira, db, query, optional, argv.collection)])
     })
     .then(([config, db, collection]) => {
       db.saveDatabase(() => {
-        console.log(`Updated and stored collection ${argv.collection} in ${argv.db}`)
+        logger.info(`Updated and stored collection ${argv.collection} in ${argv.db}`)
       })
     })
     .catch(err => {
-      console.error(err)
+      logger.error(err)
       process.exit(1)
     })
 }
 
-module.exports = {command, describe, builder, handler}
+module.exports = {command, describe, builder, handler }

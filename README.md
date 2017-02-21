@@ -87,6 +87,10 @@ jira-miner query my-example-query [--args]
 
 All arguments passed on command line will be available in ctx.args object. Example query files is available in [tests/fixtures](tests/fixtures)
 
+### Debug output
+
+Simply run any command with `--debug` parameter
+
 ## Testing
 
 Prerequisites:
@@ -99,12 +103,6 @@ Afterwards, you can run tests via following command:
 
 ```
 npm test
-```
-
-You can also get more debugging output by setting up DEBUG variable, e.g.
-
-```
-DEBUG=1 npm test
 ```
 
 XUnit compatible report generated in _report.xml_ file:

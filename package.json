@@ -1,6 +1,6 @@
 {
   "name": "jira-miner",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "An utility for advanced queryies on top of JIRA",
   "main": "index.js",
   "bin": {
@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/kpiwko/jira-miner#readme",
   "dependencies": {
-    "bunyan": "^1.8.4",
+    "common-tags": "^1.4.0",
     "jira-client": "^4.1.0",
     "json2csv": "^3.7.3",
     "jsonfile": "^2.4.0",
@@ -37,6 +37,7 @@
     "prettyjson": "^1.2.1",
     "request": "^2.78.0",
     "tmp": "0.0.30",
+    "winston": "^2.3.1",
     "yargs": "^6.3.0"
   },
   "devDependencies": {

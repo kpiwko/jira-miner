@@ -28,12 +28,6 @@ const builder = function (yargs) {
       default: path.resolve(HOME, '.jira-minerdb'),
       defaultDescription: '.jira-minerdb in HOME directory'
     })
-    .option('collection', {
-      alias: 'c',
-      describe: 'Collection name',
-      default: 'default',
-      defaultDescription: 'default'
-    })
     .option('fields', {
       alias: 'f',
       describe: 'Fields to be fetched during query, comma separated syntax',
@@ -68,12 +62,12 @@ const handler = function(argv) {
   Promise.all([DB(argv.db), config.readConfiguration()])
     .then(([db, c]) => {
       const jira = jiraClient(c.jira.url, c.jira.user, c.jira.password)
-      logger.info(`Fetched query ${query} from JIRA and storing in ${argv.db} in collection ${argv.collection}`)
-      return Promise.all([Promise.resolve(c), Promise.resolve(db), jiraPopulate(jira, db, query, optional, argv.collection)])
+      logger.info(`Fetched query from JIRA and will store in ${argv.db}`, {query})
+      return Promise.all([Promise.resolve(c), Promise.resolve(db), jiraPopulate(jira, db, query, optional), jira.listFields()])
     })
     .then(([config, db, collection]) => {
       db.saveDatabase(() => {
-        logger.info(`Updated and stored collection ${argv.collection} in ${argv.db}`)
+        logger.info(`Updated local database in ${argv.db}`)
       })
     })
     .catch(err => {

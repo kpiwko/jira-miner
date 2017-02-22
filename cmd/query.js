@@ -47,12 +47,6 @@ const builder = function (yargs) {
       default: path.resolve(HOME, '.jira-minerdb'),
       defaultDescription: '.jira-minerdb in HOME directory'
     })
-    .option('collection', {
-      alias: 'c',
-      describe: 'Collection name',
-      default: 'default',
-      defaultDescription: 'default'
-    })
     .option('json', {
       alias: 'j',
       describe: 'Print out query outcome in JSON format',
@@ -87,10 +81,10 @@ const handler = function(argv) {
   DB(argv.db)
     .then(db => {
 
-      const collection = db.getCollection(argv.collection)
+      const collection = db.getCollection('default')
 
       if(collection === null) {
-        throw Error(`No collection ${argv.collection} is available in ${argv.db}, bailing out`)
+        throw Error(`No collection 'default' is available in ${argv.db}`)
       }
 
       // run the query

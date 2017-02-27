@@ -66,7 +66,15 @@ const handler = function(argv) {
   const queryFilePath = path.resolve(process.cwd(), argv.file)
 
   // get query from file
-  const queryFile = require(queryFilePath)
+  let queryFile
+  try {
+    queryFile = require(queryFilePath)
+  }
+  catch(e) {
+    console.error(`Unable to load ${queryFilePath}\n`)
+    console.error(e)
+    process.exit(1)  
+  }
 
   if(!queryFile.query) {
     logger.error(`Query file ${queryFilePath} does not contain query`)

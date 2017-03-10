@@ -48,12 +48,15 @@ const builder = function (yargs) {
       defaultDescription: '.jira-minerdb in HOME directory'
     })
     .option('json', {
-      alias: 'j',
       describe: 'Print out query outcome in JSON format',
       default: false
     })
     .option('csv', {
       describe: 'Print out query outcome in CSV format',
+      default: false
+    })
+    .option('tsv', {
+      describe: 'Print out query outcome in Tab Separated Value format',
       default: false
     })
     .demand(1)
@@ -81,8 +84,8 @@ const handler = function(argv) {
     process.exit(1)
   }
 
-  if(argv.json && argv.csv) {
-    logger.error(`Please provide just one of --csv or --json flags`)
+  if([argv.csv, argv.tsv, argv.json].filter(val => val).length > 1) {
+    logger.error(`Please provide just one of --csv, --tsv or --json flags`)
     process.exit(1)
   }
 
@@ -108,7 +111,17 @@ const handler = function(argv) {
           console.log(JSON.stringify(data, null, 2))
         }
         else if(argv.csv) {
-          console.log(json2csv({data}))
+          console.log(json2csv({
+            data,
+            hasCSVColumnTitle: false
+          }))
+        }
+        else if(argv.tsv) {
+          console.log(json2csv({
+            data,
+            hasCSVColumnTitle: false,
+            del: '\t'
+          }))
         }
         else {
           console.log(prettyjson.render(data))

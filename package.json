@@ -1,6 +1,6 @@
 {
   "name": "jira-miner",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "An utility for advanced queryies on top of JIRA",
   "main": "index.js",
   "bin": {

@@ -87,6 +87,22 @@ jira-miner query my-example-query [--args]
 
 All arguments passed on command line will be available in ctx.args object. Example query files is available in [tests/fixtures](tests/fixtures)
 
+### Update JIRA issues
+
+There is a small utility command to use for bulk change of single parameter value in issues defined by a JQL query, in form
+
+```
+jira-miner update <JQL> --field <field-name> --value <new-value> [--dryrun]
+```
+
+for example, this would do a dry run for setting of the fix-build for all issues in AGPUSH project:
+
+```
+jira-miner update "project in (AGPUSH)" --field customfield_12312442 --value RC1 --dryrun
+```
+
+If you omit the --dryrun and user has sufficient privileges, it will update the issues.
+
 ### Debug output
 
 Simply run any command with `--debug` parameter

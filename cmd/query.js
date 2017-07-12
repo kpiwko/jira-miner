@@ -8,6 +8,8 @@ const json2csv = require('json2csv')
 const logger = require('../lib/logger')
 const query = require('../lib/query/query')
 const DB = require('../lib/db/client')
+const config = require('../lib/config')
+const jiraClient = require('../lib/jira/client')
 
 const command = 'query <file>'
 const describe = 'Query local database using query(ies) stored in file'
@@ -31,6 +33,8 @@ const builder = function (yargs) {
           transform: (ctx) => {
             // ctx.args contains command line arguments that can be used to parametrized transformation externally
             // ctx.data contains result of query function
+            // ctx.jira that contains the connection to currently targetted jira. If jira is for some reason unavailable,
+            the transform will be run without this field.
           }
         }
 
@@ -104,7 +108,15 @@ const handler = function(argv) {
     .then(data => {
 
       if(queryFile.transform && queryFile.transform instanceof Function) {
-        queryFile.transform({args: argv, data})
+        let jira = null;
+        config.readConfiguration().then(c => {
+          jira = jiraClient(c.jira.url, c.jira.user, c.jira.password)
+        }).catch(err => {
+          logger.error(`Can't read the  to JIRA because ${err}, will run query without jira access`)
+        }).then(()=> queryFile.transform({args: argv, data, jira}))
+        .catch(err => {
+          logger.error(err);
+        });
       }
       else {
         if(argv.json) {

@@ -76,7 +76,7 @@ const query = [
 
 // or mix of function and Loki.js queries
 
-module.exports = query
+module.exports = {query}
 ```
 
 Supposing that this file, called _my-example-query.js_ is in current directory, you call it via following

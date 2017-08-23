@@ -39,7 +39,7 @@ const handler = function(argv) {
 
       const table = new Table({
         head: ['Name', 'Type', 'Description'],
-        colWidths: [30, 15, 75]
+        colWidths: [30, 30, 65]
       })
 
       description = description.sort((a, b) => {

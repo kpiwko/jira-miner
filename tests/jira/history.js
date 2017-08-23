@@ -59,6 +59,21 @@ test('Process history of issue with no author', t => {
   })
 })
 
+test('Process history of issue with comments', t => {
+  return fixture(null, './fixtures/issue-with-comments.json').then(collection => {
+    return query(collection, ctx => {
+      return ctx.collection.history('2016-11-29')
+    })
+  })
+  .then(issues => {
+    t.ok(issues.length === 1, 'Just 1 issue has been fetched')
+    issues.forEach(issue => {
+      t.ok(issue.Comment.length === 6, `Issue ${issue.key} has exactly 6 comments`)
+      t.ok(issue.History['Fix Version/s'].length > 0, `Issue ${issue.key} contains history of Fix Version/s`)
+    })
+  })
+})
+
 test('Add history series', t => {
   return fixture().then(collection => {
     return query(collection, [

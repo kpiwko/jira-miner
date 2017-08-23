@@ -1,0 +1,1356 @@
+[
+  {
+    "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+    "id": "12663931",
+    "self": "https://issues.jboss.org/rest/api/2/issue/12663931",
+    "key": "AGPUSH-1978",
+    "fields": {
+      "issuetype": {
+        "self": "https://issues.jboss.org/rest/api/2/issuetype/2",
+        "id": "2",
+        "description": "A new feature of the product, which has yet to be developed.",
+        "iconUrl": "https://issues.jboss.org/secure/viewavatar?size=xsmall&avatarId=13271&avatarType=issuetype",
+        "name": "Feature Request",
+        "subtask": false,
+        "avatarId": 13271
+      },
+      "timespent": null,
+      "project": {
+        "self": "https://issues.jboss.org/rest/api/2/project/12313724",
+        "id": "12313724",
+        "key": "AGPUSH",
+        "name": "AeroGear Push",
+        "avatarUrls": {
+          "48x48": "https://issues.jboss.org/secure/projectavatar?pid=12313724&avatarId=12268",
+          "24x24": "https://issues.jboss.org/secure/projectavatar?size=small&pid=12313724&avatarId=12268",
+          "16x16": "https://issues.jboss.org/secure/projectavatar?size=xsmall&pid=12313724&avatarId=12268",
+          "32x32": "https://issues.jboss.org/secure/projectavatar?size=medium&pid=12313724&avatarId=12268"
+        },
+        "projectCategory": {
+          "self": "https://issues.jboss.org/rest/api/2/projectCategory/10230",
+          "id": "10230",
+          "description": "Projects directly associated with mobile development and efforts",
+          "name": "s) Mobile"
+        }
+      },
+      "fixVersions": [
+        {
+          "self": "https://issues.jboss.org/rest/api/2/version/12323762",
+          "id": "12323762",
+          "name": "ups-1.1.x",
+          "archived": false,
+          "released": false
+        },
+        {
+          "self": "https://issues.jboss.org/rest/api/2/version/12334702",
+          "id": "12334702",
+          "description": "",
+          "name": "ups-1.2.0-beta.1",
+          "archived": false,
+          "released": true,
+          "releaseDate": "2017-05-17"
+        }
+      ],
+      "aggregatetimespent": null,
+      "resolution": {
+        "self": "https://issues.jboss.org/rest/api/2/resolution/1",
+        "id": "1",
+        "description": "The issue is resolved as requested - bug fixed, feature completed, etc.",
+        "name": "Done"
+      },
+      "customfield_12310220": null,
+      "customfield_12312640": null,
+      "customfield_12312440": null,
+      "resolutiondate": "2017-05-16T04:40:00.000-0400",
+      "workratio": -1,
+      "customfield_12310940": [
+        "com.atlassian.greenhopper.service.sprint.Sprint@5b53b299[id=5490,rapidViewId=3766,state=CLOSED,name=IR294 - BF Openshift Jenkins,startDate=2016-11-28T08:06:46.963-05:00,endDate=2016-12-09T08:06:00.000-05:00,completeDate=2016-12-12T08:13:15.873-05:00,sequence=5490]",
+        "com.atlassian.greenhopper.service.sprint.Sprint@3cd2a52[id=5534,rapidViewId=3766,state=CLOSED,name=IR295 - eteam LastOf16,startDate=2016-12-12T08:36:22.922-05:00,endDate=2016-12-23T08:36:00.000-05:00,completeDate=2016-12-23T13:31:09.132-05:00,sequence=5534]"
+      ],
+      "lastViewed": null,
+      "watches": {
+        "self": "https://issues.jboss.org/rest/api/2/issue/AGPUSH-1978/watchers",
+        "watchCount": 6,
+        "isWatching": false
+      },
+      "created": "2016-11-28T03:38:55.000-0500",
+      "customfield_12313140": null,
+      "priority": {
+        "self": "https://issues.jboss.org/rest/api/2/priority/2",
+        "iconUrl": "https://issues.jboss.org/images/icons/priorities/critical.svg",
+        "name": "Critical",
+        "id": "2"
+      },
+      "labels": [
+        "rh_ups",
+        "team-engines"
+      ],
+      "customfield_12311640": null,
+      "customfield_12311641": null,
+      "customfield_12311240": null,
+      "timeestimate": null,
+      "aggregatetimeoriginalestimate": null,
+      "versions": [],
+      "issuelinks": [
+        {
+          "id": "12473064",
+          "self": "https://issues.jboss.org/rest/api/2/issueLink/12473064",
+          "type": {
+            "id": "12310221",
+            "name": "Sequence",
+            "inward": "is followed up by",
+            "outward": "follows up on",
+            "self": "https://issues.jboss.org/rest/api/2/issueLinkType/12310221"
+          },
+          "inwardIssue": {
+            "id": "12666055",
+            "key": "AGPUSH-1990",
+            "self": "https://issues.jboss.org/rest/api/2/issue/12666055",
+            "fields": {
+              "summary": "Test automation for UPS ",
+              "status": {
+                "self": "https://issues.jboss.org/rest/api/2/status/6",
+                "description": "The issue is considered finished, the resolution is correct. Issues which are not closed can be reopened.",
+                "iconUrl": "https://issues.jboss.org/images/icons/statuses/closed.png",
+                "name": "Closed",
+                "id": "6",
+                "statusCategory": {
+                  "self": "https://issues.jboss.org/rest/api/2/statuscategory/3",
+                  "id": 3,
+                  "key": "done",
+                  "colorName": "green",
+                  "name": "Done"
+                }
+              },
+              "priority": {
+                "self": "https://issues.jboss.org/rest/api/2/priority/3",
+                "iconUrl": "https://issues.jboss.org/images/icons/priorities/major.svg",
+                "name": "Major",
+                "id": "3"
+              },
+              "issuetype": {
+                "self": "https://issues.jboss.org/rest/api/2/issuetype/16",
+                "id": "16",
+                "description": "gh.issue.epic.desc",
+                "iconUrl": "https://issues.jboss.org/secure/viewavatar?size=xsmall&avatarId=13267&avatarType=issuetype",
+                "name": "Epic",
+                "subtask": false,
+                "avatarId": 13267
+              }
+            }
+          }
+        }
+      ],
+      "assignee": {
+        "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+        "name": "mwessendorf",
+        "key": "mwessendorf",
+        "avatarUrls": {
+          "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+          "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+          "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+          "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+        },
+        "displayName": "Matthias Wessendorf",
+        "active": true,
+        "timeZone": "Europe/Berlin"
+      },
+      "updated": "2017-05-16T04:40:00.000-0400",
+      "status": {
+        "self": "https://issues.jboss.org/rest/api/2/status/5",
+        "description": "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+        "iconUrl": "https://issues.jboss.org/images/icons/statuses/resolved.png",
+        "name": "Resolved",
+        "id": "5",
+        "statusCategory": {
+          "self": "https://issues.jboss.org/rest/api/2/statuscategory/3",
+          "id": 3,
+          "key": "done",
+          "colorName": "green",
+          "name": "Done"
+        }
+      },
+      "components": [
+        {
+          "self": "https://issues.jboss.org/rest/api/2/component/12317551",
+          "id": "12317551",
+          "name": "UnifiedPush-server",
+          "description": "Server side code of UnifiedPush"
+        }
+      ],
+      "timeoriginalestimate": null,
+      "customfield_12310080": null,
+      "description": "Using the [Eclipse Memory Analyzer|http://www.eclipse.org/mat/downloads.php] there are two potential leaks when running the UPS  potentials\r\n\r\n* Problem Suspect 1\r\n{code}\r\nOne instance of \"org.hornetq.core.paging.impl.PagingManagerImpl\" loaded by \"org.jboss.modules.ModuleClassLoader @ 0xb26cfd50\" occupies 144,656,512 (38.17%) bytes. The memory is accumulated in one instance of \"java.util.concurrent.ConcurrentHashMap$Segment[]\" loaded by \"<system class loader>\".\r\n \r\nKeywords\r\norg.hornetq.core.paging.impl.PagingManagerImpl\r\norg.jboss.modules.ModuleClassLoader @ 0xb26cfd50\r\njava.util.concurrent.ConcurrentHashMap$Segment[]\r\n{code}\r\n\r\n* Problem Suspect 2\r\n{code}\r\nOne instance of \"org.hornetq.core.journal.impl.JournalImpl\" loaded by \"org.jboss.modules.ModuleClassLoader @ 0xb26cfd50\" occupies 91,759,128 (24.21%) bytes. The memory is accumulated in one instance of \"java.util.concurrent.ConcurrentHashMap$Segment[]\" loaded by \"<system class loader>\".\r\n \r\nKeywords\r\norg.hornetq.core.journal.impl.JournalImpl\r\norg.jboss.modules.ModuleClassLoader @ 0xb26cfd50\r\njava.util.concurrent.ConcurrentHashMap$Segment[]\r\n{code}\r\n",
+      "customfield_12310120": null,
+      "customfield_12310241": null,
+      "customfield_12310640": "12.0",
+      "customfield_12310243": 5,
+      "aggregatetimeestimate": null,
+      "customfield_12310840": "9223372036854775807",
+      "customfield_12310641": "2.0",
+      "summary": "Investigate potential HortnetQ memory leak issues in UPS usage",
+      "creator": {
+        "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+        "name": "mwessendorf",
+        "key": "mwessendorf",
+        "avatarUrls": {
+          "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+          "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+          "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+          "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+        },
+        "displayName": "Matthias Wessendorf",
+        "active": true,
+        "timeZone": "Europe/Berlin"
+      },
+      "subtasks": [],
+      "reporter": {
+        "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+        "name": "mwessendorf",
+        "key": "mwessendorf",
+        "avatarUrls": {
+          "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+          "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+          "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+          "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+        },
+        "displayName": "Matthias Wessendorf",
+        "active": true,
+        "timeZone": "Europe/Berlin"
+      },
+      "aggregateprogress": {
+        "progress": 0,
+        "total": 0
+      },
+      "environment": "EAP-6.4.4",
+      "customfield_12310211": null,
+      "customfield_12313641": "1_*:*_1_*:*_98881000_*|*_3_*:*_1_*:*_1718860000_*|*_4_*:*_1_*:*_18000_*|*_5_*:*_1_*:*_0_*|*_6_*:*_1_*:*_12783906000",
+      "customfield_12313640": "2016-11-28T03:58:52.000-0500",
+      "customfield_12313441": "",
+      "customfield_12313440": "",
+      "duedate": null,
+      "customfield_12313240": null,
+      "customfield_12311140": null,
+      "progress": {
+        "progress": 0,
+        "total": 0
+      },
+      "comment": {
+        "comments": [
+          {
+            "self": "https://issues.jboss.org/rest/api/2/issue/12663931/comment/13328581",
+            "id": "13328581",
+            "author": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+              "name": "mwessendorf",
+              "key": "mwessendorf",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+              },
+              "displayName": "Matthias Wessendorf",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "body": "[~jmesnil] Hi Jeff, does the above ring a bell, or is there something we can improve in our HornetQ usage, generally? ",
+            "updateAuthor": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+              "name": "mwessendorf",
+              "key": "mwessendorf",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+              },
+              "displayName": "Matthias Wessendorf",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "created": "2016-11-28T03:41:11.000-0500",
+            "updated": "2016-11-28T03:41:11.000-0500"
+          },
+          {
+            "self": "https://issues.jboss.org/rest/api/2/issue/12663931/comment/13328587",
+            "id": "13328587",
+            "author": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+              "name": "mwessendorf",
+              "key": "mwessendorf",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+              },
+              "displayName": "Matthias Wessendorf",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "body": "[~kpiwko] I don't recall the name, but [~lfryc] said that he worked w/ a EAP/HornetQ person in the past on this. Karel, do you have a contact on this as well ? ",
+            "updateAuthor": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+              "name": "mwessendorf",
+              "key": "mwessendorf",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+              },
+              "displayName": "Matthias Wessendorf",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "created": "2016-11-28T03:56:35.000-0500",
+            "updated": "2016-11-28T03:56:35.000-0500"
+          },
+          {
+            "self": "https://issues.jboss.org/rest/api/2/issue/12663931/comment/13328591",
+            "id": "13328591",
+            "author": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=kpiwko",
+              "name": "kpiwko",
+              "key": "kpiwko",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/88ab3950e925b4ad37c5d7302d854e87?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/88ab3950e925b4ad37c5d7302d854e87?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/88ab3950e925b4ad37c5d7302d854e87?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/88ab3950e925b4ad37c5d7302d854e87?d=mm&s=32"
+              },
+              "displayName": "Karel Piwko",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "body": "[~pslavicek] would you be able to put somebody familiar with HornetQ into the loop? Thanks!",
+            "updateAuthor": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=kpiwko",
+              "name": "kpiwko",
+              "key": "kpiwko",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/88ab3950e925b4ad37c5d7302d854e87?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/88ab3950e925b4ad37c5d7302d854e87?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/88ab3950e925b4ad37c5d7302d854e87?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/88ab3950e925b4ad37c5d7302d854e87?d=mm&s=32"
+              },
+              "displayName": "Karel Piwko",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "created": "2016-11-28T03:58:52.000-0500",
+            "updated": "2016-11-28T03:58:52.000-0500"
+          },
+          {
+            "self": "https://issues.jboss.org/rest/api/2/issue/12663931/comment/13328615",
+            "id": "13328615",
+            "author": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+              "name": "mwessendorf",
+              "key": "mwessendorf",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+              },
+              "displayName": "Matthias Wessendorf",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "body": "Configuration for JMS/Hornet is located here:\r\nhttps://github.com/aerogear/aerogear-unifiedpush-server/blob/1.1.x-dev/servers/ups-as7/src/main/webapp/WEB-INF/hornetq-jms.xml\r\n",
+            "updateAuthor": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+              "name": "mwessendorf",
+              "key": "mwessendorf",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+              },
+              "displayName": "Matthias Wessendorf",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "created": "2016-11-28T04:27:59.000-0500",
+            "updated": "2016-11-28T04:27:59.000-0500"
+          },
+          {
+            "self": "https://issues.jboss.org/rest/api/2/issue/12663931/comment/13328730",
+            "id": "13328730",
+            "author": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mnovak",
+              "name": "mnovak",
+              "key": "mnovak",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=32"
+              },
+              "displayName": "Miroslav Novak",
+              "active": true,
+              "timeZone": "America/New_York"
+            },
+            "body": "[~kpiwko][~mwessendorf] Looking at PagingManagerImpl and JournalImpl, the objects which got really huge are maps which contain in-flight transactions. Looks like that something started to fail transactions so HornetQ could not finish them. New and new transactions were started but they failed as well (most likely) and this map got really huge causing OOME (OutOfMemoryError). \r\n\r\nAs HornetQ is storing those transactions in file journal as well then when it tries to load journal after restart then new OOME can be thrown as it's putting all \"unfinished\" transactions to this map again during initialization.\r\n\r\nBy default there is 5 minute timeout for those transactions and then they're removed. But in this case it seems that memory got full before those transactions could be timeouted.\r\n\r\nAt this moment this seems to be a symptom but not the cause. Any idea why the transactions are failing? What are the first error messages in server.log?\r\n\r\n[~mwessendorf] hornetq-jms.xml just defines which queue/topics should be deployed together with the deployment. I cannot find configuration of the server where this deployment is deployed. Could you help? Is there described what the deployment is doing? \r\n",
+            "updateAuthor": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mnovak",
+              "name": "mnovak",
+              "key": "mnovak",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=32"
+              },
+              "displayName": "Miroslav Novak",
+              "active": true,
+              "timeZone": "America/New_York"
+            },
+            "created": "2016-11-28T06:57:36.000-0500",
+            "updated": "2016-11-28T06:57:36.000-0500"
+          },
+          {
+            "self": "https://issues.jboss.org/rest/api/2/issue/12663931/comment/13330350",
+            "id": "13330350",
+            "author": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mnovak",
+              "name": "mnovak",
+              "key": "mnovak",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=32"
+              },
+              "displayName": "Miroslav Novak",
+              "active": true,
+              "timeZone": "America/New_York"
+            },
+            "body": "[~mwessendorf] Thanks! It's pretty default configuration. Nothing interesting there. Could you share with me the heap dump so I can take the look?\r\n\r\nI would like to take a look at hornetq journal? By default it's located in $JBOSS_HOME/standalone/data/ directory. You can send me the the whole data directory. I'm interested in following directories messagingbindings,  messagingjournal,  messaginglargemessages, messagingpaging. \r\n\r\n\r\n",
+            "updateAuthor": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mnovak",
+              "name": "mnovak",
+              "key": "mnovak",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=32"
+              },
+              "displayName": "Miroslav Novak",
+              "active": true,
+              "timeZone": "America/New_York"
+            },
+            "created": "2016-11-28T10:51:51.000-0500",
+            "updated": "2016-11-28T10:51:51.000-0500"
+          },
+          {
+            "self": "https://issues.jboss.org/rest/api/2/issue/12663931/comment/13330590",
+            "id": "13330590",
+            "author": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+              "name": "mwessendorf",
+              "key": "mwessendorf",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+              },
+              "displayName": "Matthias Wessendorf",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "body": "[~mnovak] Hi Miroslav, I can help you with the code review and stuff.\r\n\r\nWe have a diagram and a bit of text around our JMS architecture:\r\nhttps://aerogear.org/docs/unifiedpush/ups_userguide/index/#_jms_internals\r\n\r\nThe message code lives in these (sub) packages:\r\nhttps://github.com/aerogear/aerogear-unifiedpush-server/tree/1.1.x-dev/push/sender/src/main/java/org/jboss/aerogear/unifiedpush/message\r\n\r\nBut we can sort that out in a video session :-) ",
+            "updateAuthor": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+              "name": "mwessendorf",
+              "key": "mwessendorf",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+              },
+              "displayName": "Matthias Wessendorf",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "created": "2016-11-29T03:06:55.000-0500",
+            "updated": "2016-11-29T03:06:55.000-0500"
+          },
+          {
+            "self": "https://issues.jboss.org/rest/api/2/issue/12663931/comment/13330940",
+            "id": "13330940",
+            "author": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mfreer",
+              "name": "mfreer",
+              "key": "mfreer",
+              "avatarUrls": {
+                "48x48": "https://issues.jboss.org/secure/useravatar?avatarId=10262",
+                "24x24": "https://issues.jboss.org/secure/useravatar?size=small&avatarId=10262",
+                "16x16": "https://issues.jboss.org/secure/useravatar?size=xsmall&avatarId=10262",
+                "32x32": "https://issues.jboss.org/secure/useravatar?size=medium&avatarId=10262"
+              },
+              "displayName": "Mark Freer",
+              "active": true,
+              "timeZone": "America/New_York"
+            },
+            "body": "I have attached the data.zip file to this JIRA [~mnovak]. as requested\r\n",
+            "updateAuthor": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mfreer",
+              "name": "mfreer",
+              "key": "mfreer",
+              "avatarUrls": {
+                "48x48": "https://issues.jboss.org/secure/useravatar?avatarId=10262",
+                "24x24": "https://issues.jboss.org/secure/useravatar?size=small&avatarId=10262",
+                "16x16": "https://issues.jboss.org/secure/useravatar?size=xsmall&avatarId=10262",
+                "32x32": "https://issues.jboss.org/secure/useravatar?size=medium&avatarId=10262"
+              },
+              "displayName": "Mark Freer",
+              "active": true,
+              "timeZone": "America/New_York"
+            },
+            "created": "2016-11-29T09:21:35.000-0500",
+            "updated": "2016-11-29T09:21:35.000-0500"
+          },
+          {
+            "self": "https://issues.jboss.org/rest/api/2/issue/12663931/comment/13331959",
+            "id": "13331959",
+            "author": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mnovak",
+              "name": "mnovak",
+              "key": "mnovak",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=32"
+              },
+              "displayName": "Miroslav Novak",
+              "active": true,
+              "timeZone": "America/New_York"
+            },
+            "body": "[~mfreer] Weird, I cannot find any transaction which is see in heap dump in journal. Belong \"data\" directory to the heap dump? We need to have \"data\" directory in state when OutOfMemory occurred.",
+            "updateAuthor": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mnovak",
+              "name": "mnovak",
+              "key": "mnovak",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/70bdbd15acad5244eb9f9128bfb8c20b?d=mm&s=32"
+              },
+              "displayName": "Miroslav Novak",
+              "active": true,
+              "timeZone": "America/New_York"
+            },
+            "created": "2016-12-01T02:28:40.000-0500",
+            "updated": "2016-12-01T02:28:40.000-0500"
+          },
+          {
+            "self": "https://issues.jboss.org/rest/api/2/issue/12663931/comment/13333599",
+            "id": "13333599",
+            "author": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+              "name": "mwessendorf",
+              "key": "mwessendorf",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+              },
+              "displayName": "Matthias Wessendorf",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "body": "[~pcremin] [~mfreer] can one of you provide the data that [~mnovak] requested ?",
+            "updateAuthor": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+              "name": "mwessendorf",
+              "key": "mwessendorf",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+              },
+              "displayName": "Matthias Wessendorf",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "created": "2016-12-05T03:24:45.000-0500",
+            "updated": "2016-12-05T03:24:45.000-0500"
+          },
+          {
+            "self": "https://issues.jboss.org/rest/api/2/issue/12663931/comment/13333665",
+            "id": "13333665",
+            "author": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mfreer",
+              "name": "mfreer",
+              "key": "mfreer",
+              "avatarUrls": {
+                "48x48": "https://issues.jboss.org/secure/useravatar?avatarId=10262",
+                "24x24": "https://issues.jboss.org/secure/useravatar?size=small&avatarId=10262",
+                "16x16": "https://issues.jboss.org/secure/useravatar?size=xsmall&avatarId=10262",
+                "32x32": "https://issues.jboss.org/secure/useravatar?size=medium&avatarId=10262"
+              },
+              "displayName": "Mark Freer",
+              "active": true,
+              "timeZone": "America/New_York"
+            },
+            "body": "Hmm Jira's maximum file size is 20MB's the \"DATA\" folder is 26 MB each. [~mnovak] I will send both jboss instance data folders by email.",
+            "updateAuthor": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mfreer",
+              "name": "mfreer",
+              "key": "mfreer",
+              "avatarUrls": {
+                "48x48": "https://issues.jboss.org/secure/useravatar?avatarId=10262",
+                "24x24": "https://issues.jboss.org/secure/useravatar?size=small&avatarId=10262",
+                "16x16": "https://issues.jboss.org/secure/useravatar?size=xsmall&avatarId=10262",
+                "32x32": "https://issues.jboss.org/secure/useravatar?size=medium&avatarId=10262"
+              },
+              "displayName": "Mark Freer",
+              "active": true,
+              "timeZone": "America/New_York"
+            },
+            "created": "2016-12-05T04:39:32.000-0500",
+            "updated": "2016-12-05T04:39:32.000-0500"
+          },
+          {
+            "self": "https://issues.jboss.org/rest/api/2/issue/12663931/comment/13340034",
+            "id": "13340034",
+            "author": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+              "name": "mwessendorf",
+              "key": "mwessendorf",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+              },
+              "displayName": "Matthias Wessendorf",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "body": "Based on initial investigations, and generally we are still not able to reproduce this, we have a new epic to put together a test-suite.\r\n\r\n[~jgallaso] and [~mziccardi] are working on it, and will verify this issue, when they review their findings from the stess-test",
+            "updateAuthor": {
+              "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+              "name": "mwessendorf",
+              "key": "mwessendorf",
+              "avatarUrls": {
+                "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+                "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+                "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+                "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+              },
+              "displayName": "Matthias Wessendorf",
+              "active": true,
+              "timeZone": "Europe/Berlin"
+            },
+            "created": "2016-12-19T04:34:36.000-0500",
+            "updated": "2016-12-19T04:34:36.000-0500"
+          }
+        ],
+        "maxResults": 12,
+        "total": 12,
+        "startAt": 0
+      },
+      "votes": {
+        "self": "https://issues.jboss.org/rest/api/2/issue/AGPUSH-1978/votes",
+        "votes": 0,
+        "hasVoted": false
+      },
+      "customfield_12311940": "2|hybvgf:"
+    },
+    "changelog": {
+      "startAt": 0,
+      "maxResults": 23,
+      "total": 23,
+      "histories": [
+        {
+          "id": "14438317",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2016-11-28T03:39:23.000-0500",
+          "items": [
+            {
+              "field": "Attachment",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": null,
+              "to": "12413463",
+              "toString": "Memory_issues.png"
+            }
+          ]
+        },
+        {
+          "id": "14438334",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2016-11-28T03:50:08.000-0500",
+          "items": [
+            {
+              "field": "Link",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": null,
+              "to": "FHOPS-994",
+              "toString": "This issue follows up on FHOPS-994"
+            }
+          ]
+        },
+        {
+          "id": "14438463",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2016-11-28T04:26:49.000-0500",
+          "items": [
+            {
+              "field": "labels",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": "",
+              "to": null,
+              "toString": "rh_ups team-engines"
+            }
+          ]
+        },
+        {
+          "id": "14438494",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2016-11-28T04:40:52.000-0500",
+          "items": [
+            {
+              "field": "Rank",
+              "fieldtype": "custom",
+              "from": "",
+              "fromString": "",
+              "to": "",
+              "toString": "Ranked higher"
+            }
+          ]
+        },
+        {
+          "id": "14438515",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mziccardi",
+            "name": "mziccardi",
+            "key": "mziccardi",
+            "avatarUrls": {
+              "48x48": "https://issues.jboss.org/secure/useravatar?avatarId=10262",
+              "24x24": "https://issues.jboss.org/secure/useravatar?size=small&avatarId=10262",
+              "16x16": "https://issues.jboss.org/secure/useravatar?size=xsmall&avatarId=10262",
+              "32x32": "https://issues.jboss.org/secure/useravatar?size=medium&avatarId=10262"
+            },
+            "displayName": "Massimiliano Ziccardi",
+            "active": true,
+            "timeZone": "Europe/Dublin"
+          },
+          "created": "2016-11-28T04:52:37.000-0500",
+          "items": [
+            {
+              "field": "assignee",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": null,
+              "to": "mziccardi",
+              "toString": "Massimiliano Ziccardi"
+            }
+          ]
+        },
+        {
+          "id": "14438750",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2016-11-28T05:32:28.000-0500",
+          "items": [
+            {
+              "field": "Story Points",
+              "fieldtype": "custom",
+              "from": null,
+              "fromString": null,
+              "to": null,
+              "toString": "13"
+            }
+          ]
+        },
+        {
+          "id": "14438754",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2016-11-28T05:32:36.000-0500",
+          "items": [
+            {
+              "field": "summary",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": "Investigate potential HortnetQ memory leak issues in UPS usage",
+              "to": null,
+              "toString": "SPIKE: Investigate potential HortnetQ memory leak issues in UPS usage"
+            }
+          ]
+        },
+        {
+          "id": "14439496",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=aliok2",
+            "name": "aliok2",
+            "key": "aliok2",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/307bdfa3d580d78abd03814ba5b451a7?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/307bdfa3d580d78abd03814ba5b451a7?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/307bdfa3d580d78abd03814ba5b451a7?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/307bdfa3d580d78abd03814ba5b451a7?d=mm&s=32"
+            },
+            "displayName": "Ali Ok",
+            "active": true,
+            "timeZone": "Europe/Moscow"
+          },
+          "created": "2016-11-28T07:43:24.000-0500",
+          "items": [
+            {
+              "field": "Story Points",
+              "fieldtype": "custom",
+              "from": null,
+              "fromString": "13",
+              "to": null,
+              "toString": "8"
+            }
+          ]
+        },
+        {
+          "id": "14439497",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=aliok2",
+            "name": "aliok2",
+            "key": "aliok2",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/307bdfa3d580d78abd03814ba5b451a7?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/307bdfa3d580d78abd03814ba5b451a7?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/307bdfa3d580d78abd03814ba5b451a7?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/307bdfa3d580d78abd03814ba5b451a7?d=mm&s=32"
+            },
+            "displayName": "Ali Ok",
+            "active": true,
+            "timeZone": "Europe/Moscow"
+          },
+          "created": "2016-11-28T07:43:58.000-0500",
+          "items": [
+            {
+              "field": "Sprint",
+              "fieldtype": "custom",
+              "from": null,
+              "fromString": null,
+              "to": "5490",
+              "toString": "IR294 - BF Openshift Jenkins"
+            }
+          ]
+        },
+        {
+          "id": "14439502",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=aliok2",
+            "name": "aliok2",
+            "key": "aliok2",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/307bdfa3d580d78abd03814ba5b451a7?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/307bdfa3d580d78abd03814ba5b451a7?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/307bdfa3d580d78abd03814ba5b451a7?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/307bdfa3d580d78abd03814ba5b451a7?d=mm&s=32"
+            },
+            "displayName": "Ali Ok",
+            "active": true,
+            "timeZone": "Europe/Moscow"
+          },
+          "created": "2016-11-28T07:45:13.000-0500",
+          "items": [
+            {
+              "field": "summary",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": "SPIKE: Investigate potential HortnetQ memory leak issues in UPS usage",
+              "to": null,
+              "toString": "Investigate potential HortnetQ memory leak issues in UPS usage"
+            }
+          ]
+        },
+        {
+          "id": "14443392",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2016-11-29T05:56:19.000-0500",
+          "items": [
+            {
+              "field": "Link",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": null,
+              "to": "RHMAP-11968",
+              "toString": "This issue is followed up by RHMAP-11968"
+            }
+          ]
+        },
+        {
+          "id": "14443609",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mziccardi",
+            "name": "mziccardi",
+            "key": "mziccardi",
+            "avatarUrls": {
+              "48x48": "https://issues.jboss.org/secure/useravatar?avatarId=10262",
+              "24x24": "https://issues.jboss.org/secure/useravatar?size=small&avatarId=10262",
+              "16x16": "https://issues.jboss.org/secure/useravatar?size=xsmall&avatarId=10262",
+              "32x32": "https://issues.jboss.org/secure/useravatar?size=medium&avatarId=10262"
+            },
+            "displayName": "Massimiliano Ziccardi",
+            "active": true,
+            "timeZone": "Europe/Dublin"
+          },
+          "created": "2016-11-29T07:06:56.000-0500",
+          "items": [
+            {
+              "field": "status",
+              "fieldtype": "jira",
+              "from": "1",
+              "fromString": "Open",
+              "to": "3",
+              "toString": "Coding In Progress"
+            }
+          ]
+        },
+        {
+          "id": "14443812",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2016-11-29T08:24:43.000-0500",
+          "items": [
+            {
+              "field": "Link",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": null,
+              "to": "RHMAP-10671",
+              "toString": "This issue is related to RHMAP-10671"
+            }
+          ]
+        },
+        {
+          "id": "14444054",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mfreer",
+            "name": "mfreer",
+            "key": "mfreer",
+            "avatarUrls": {
+              "48x48": "https://issues.jboss.org/secure/useravatar?avatarId=10262",
+              "24x24": "https://issues.jboss.org/secure/useravatar?size=small&avatarId=10262",
+              "16x16": "https://issues.jboss.org/secure/useravatar?size=xsmall&avatarId=10262",
+              "32x32": "https://issues.jboss.org/secure/useravatar?size=medium&avatarId=10262"
+            },
+            "displayName": "Mark Freer",
+            "active": true,
+            "timeZone": "America/New_York"
+          },
+          "created": "2016-11-29T09:22:35.000-0500",
+          "items": [
+            {
+              "field": "Attachment",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": null,
+              "to": "12413514",
+              "toString": "data.zip"
+            }
+          ]
+        },
+        {
+          "id": "14451241",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2016-12-02T10:55:38.000-0500",
+          "items": [
+            {
+              "field": "assignee",
+              "fieldtype": "jira",
+              "from": "mziccardi",
+              "fromString": "Massimiliano Ziccardi",
+              "to": "mwessendorf",
+              "toString": "Matthias Wessendorf"
+            }
+          ]
+        },
+        {
+          "id": "14465481",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=wtrocki",
+            "name": "wtrocki",
+            "key": "wtrocki",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/1cc65a76f8140cf84d31e7f165c1ff1e?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/1cc65a76f8140cf84d31e7f165c1ff1e?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/1cc65a76f8140cf84d31e7f165c1ff1e?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/1cc65a76f8140cf84d31e7f165c1ff1e?d=mm&s=32"
+            },
+            "displayName": "Wojciech Trocki",
+            "active": true,
+            "timeZone": "Europe/Dublin"
+          },
+          "created": "2016-12-12T08:16:43.000-0500",
+          "items": [
+            {
+              "field": "Story Points",
+              "fieldtype": "custom",
+              "from": null,
+              "fromString": "8",
+              "to": null,
+              "toString": "5"
+            }
+          ]
+        },
+        {
+          "id": "14465482",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=wtrocki",
+            "name": "wtrocki",
+            "key": "wtrocki",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/1cc65a76f8140cf84d31e7f165c1ff1e?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/1cc65a76f8140cf84d31e7f165c1ff1e?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/1cc65a76f8140cf84d31e7f165c1ff1e?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/1cc65a76f8140cf84d31e7f165c1ff1e?d=mm&s=32"
+            },
+            "displayName": "Wojciech Trocki",
+            "active": true,
+            "timeZone": "Europe/Dublin"
+          },
+          "created": "2016-12-12T08:16:54.000-0500",
+          "items": [
+            {
+              "field": "Sprint",
+              "fieldtype": "custom",
+              "from": "5490",
+              "fromString": "IR294 - BF Openshift Jenkins",
+              "to": "5490, 5534",
+              "toString": "IR294 - BF Openshift Jenkins, IR295 - eteam LastOf16"
+            }
+          ]
+        },
+        {
+          "id": "14465483",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=wtrocki",
+            "name": "wtrocki",
+            "key": "wtrocki",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/1cc65a76f8140cf84d31e7f165c1ff1e?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/1cc65a76f8140cf84d31e7f165c1ff1e?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/1cc65a76f8140cf84d31e7f165c1ff1e?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/1cc65a76f8140cf84d31e7f165c1ff1e?d=mm&s=32"
+            },
+            "displayName": "Wojciech Trocki",
+            "active": true,
+            "timeZone": "Europe/Dublin"
+          },
+          "created": "2016-12-12T08:16:54.000-0500",
+          "items": [
+            {
+              "field": "Rank",
+              "fieldtype": "custom",
+              "from": "",
+              "fromString": "",
+              "to": "",
+              "toString": "Ranked higher"
+            }
+          ]
+        },
+        {
+          "id": "14474846",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2016-12-19T04:31:03.000-0500",
+          "items": [
+            {
+              "field": "Link",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": null,
+              "to": "AGPUSH-1990",
+              "toString": "This issue is followed up by AGPUSH-1990"
+            }
+          ]
+        },
+        {
+          "id": "14474861",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2016-12-19T04:34:36.000-0500",
+          "items": [
+            {
+              "field": "status",
+              "fieldtype": "jira",
+              "from": "3",
+              "fromString": "Coding In Progress",
+              "to": "6",
+              "toString": "Closed"
+            },
+            {
+              "field": "resolution",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": null,
+              "to": "1",
+              "toString": "Done"
+            }
+          ]
+        },
+        {
+          "id": "14708483",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2017-05-16T04:39:42.000-0400",
+          "items": [
+            {
+              "field": "resolution",
+              "fieldtype": "jira",
+              "from": "1",
+              "fromString": "Done",
+              "to": null,
+              "toString": null
+            },
+            {
+              "field": "status",
+              "fieldtype": "jira",
+              "from": "6",
+              "fromString": "Closed",
+              "to": "4",
+              "toString": "Reopened"
+            }
+          ]
+        },
+        {
+          "id": "14708484",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2017-05-16T04:39:54.000-0400",
+          "items": [
+            {
+              "field": "Fix Version",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": null,
+              "to": "12334702",
+              "toString": "ups-1.2.0-beta.1"
+            },
+            {
+              "field": "Fix Version",
+              "fieldtype": "jira",
+              "from": "12327301",
+              "fromString": "ups-1.2.0",
+              "to": null,
+              "toString": null
+            }
+          ]
+        },
+        {
+          "id": "14708485",
+          "author": {
+            "self": "https://issues.jboss.org/rest/api/2/user?username=mwessendorf",
+            "name": "mwessendorf",
+            "key": "mwessendorf",
+            "avatarUrls": {
+              "48x48": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=48",
+              "24x24": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=24",
+              "16x16": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=16",
+              "32x32": "https://static.jboss.org/developer/gravatar/cc058d8d4bde1b49e2654d79981be257?d=mm&s=32"
+            },
+            "displayName": "Matthias Wessendorf",
+            "active": true,
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2017-05-16T04:40:00.000-0400",
+          "items": [
+            {
+              "field": "status",
+              "fieldtype": "jira",
+              "from": "4",
+              "fromString": "Reopened",
+              "to": "5",
+              "toString": "Resolved"
+            },
+            {
+              "field": "resolution",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": null,
+              "to": "1",
+              "toString": "Done"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

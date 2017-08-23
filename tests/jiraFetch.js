@@ -63,12 +63,27 @@ test('Fetch issue with changelog', t => {
     })
 })
 
+// this does not actually work as it downloads and transforms
 test.skip('Prepopulate agpush200 fixture', t => {
   return jiraFetch(jira, 'project = AGPUSH AND key <= AGPUSH-200',
     {fields: ['*all'], expand: ['changelog'], maxResults: 200})
     .then(issues => {
       jsonfile.writeFileSync('./tests/fixtures/agpush200.json', issues, {spaces: 2})
       t.pass()
+    })
+    .catch(err => {
+      t.fail(err, 'Unable to store sample AGPUSH data')
+    })
+})
+
+// this does not actually work as it downloads and transforms
+// use rather following command
+// curl -X GET 'https://issues.jboss.org:443/rest/api/2/search?jql=key=AGPUSH-1978&expand=changelog,names&fields=*navigable,comment' | json issues > tests/fixtures/issue-with-comments.json
+test.skip('Prepopulate issue with comments fixture', t => {
+  return jiraFetch(jira, 'key = AGPUSH-1978',
+      {fields: ['*navigable','comments'], expand: ['changelog', 'names']})
+    .then(issues => {
+      jsonfile.writeFileSync('./tests/fixtures/issue-with-comments.json', issues, {spaces: 2})
     })
     .catch(err => {
       t.fail(err, 'Unable to store sample AGPUSH data')

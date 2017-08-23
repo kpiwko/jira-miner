@@ -24,12 +24,12 @@ test('Query all agpush issues that contain Android in summary', t => {
   })
 })
 
-const fixture = function(malformation) {
+const fixture = function(malformation, name = './fixtures/agpush200.json') {
   const dbPath = tmp.fileSync()
   return DB(dbPath.name)
     .then(testdb => {
 
-      let jiraData = jsonfile.readFileSync(path.join(__dirname, './fixtures/agpush200.json'))
+      let jiraData = jsonfile.readFileSync(path.join(__dirname, name))
 
       if(malformation) {
         jiraData = malformation(jiraData)

@@ -32,8 +32,8 @@ const builder = function (yargs) {
       alias: 'f',
       describe: 'Fields to be fetched during query, comma separated syntax',
       type: 'string',
-      default: '*navigable',
-      defaultDescription: 'All navigable fields (*navigable)'
+      default: '*navigable,comment',
+      defaultDescription: 'All navigable fields (*navigable) and comments'
     })
     .option('since', {
       alias: 's',

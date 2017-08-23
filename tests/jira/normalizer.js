@@ -13,6 +13,16 @@ test('Describe fields', t => {
   t.end()
 })
 
+test('Normalize issue status', t => {
+  const extract = value => {
+    return normalizer.extractValueFromField({ schema: {type: 'status' }}, value)
+  }
+  
+  const status = extract({name: 'Resolved'})
+  t.ok(status === 'Resolved', 'Issue status is resolved')
+  t.end()
+})
+
 test('Normalize link from history', t => {
 
   const extract = value => {

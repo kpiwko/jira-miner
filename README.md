@@ -23,8 +23,8 @@ environment variable, which will provide bunyan log traces useful for debugging.
 
 ### Connecting to JIRA instance
 
-You need to point jira-miner to a JIRA instance you want to use as data source. You might need to provide your credentials as well in order to
-access restricted data.
+You need to point jira-miner to a JIRA instance you want to use as data source. You might need to provide your credentials as well in order to access restricted data.
+WARNING: Note that credentials are stored as plain text in your `$HOME` folder.
 
 ```
 jira-miner target <jiraUri> [--user <user>] [--password [password]]
@@ -35,80 +35,92 @@ jira-miner target <jiraUri> [--user <user>] [--password [password]]
 Once, you have targeted a jira, you can populate local database
 
 ```
-jira populate <jqlQuery>
+jira-miner populate <jqlQuery>
 ```
 
-EXAMPLE: `jira-miner populate "project in (AGPUSH, ARQ)"` downloads all issues (including their history) for projects AGPUSH and ARQ)
+EXAMPLE: `jira-miner populate "project in (AEROGAR, ARQ)"` downloads all issues (including their history) for projects AGPUSH and ARQ)
 
 If you rerun the query, it will rewrite all updated items. It might be a good idea to update the database since the last query to limit
 the amount of fetched data. You can do that via `--since` argument that accepts a timestamp.
 
 TIP: For very large queries, you might run out of memory. You can increase memory of node process and reduce GC calls via following:
 ```
-node --max_old_space_size=4096 --nouse-idle-notification index.js populate
+node --max_old_space_size=4096 --nouse-idle-notification dist/index.js populate
 ```
 
 ### Query the database
 
 JIRA miner provides an API to query the database. Query must be defined in one of following formats:
 
-```JavaScript
-const query = ctx => {
-  // ctx.acc contains result of previous call
-  // ctx.collection contains Loki.js collection
-  // ctx.args contains optional arguments, such as ones on command line
+```TypeScript
+import { HistoryCollection } from 'jira-miner/dist/lib/db/LocalJiraDB'
+import { QueryResult } from 'jira-miner/dist/lib/db/Query'
+
+
+export async function query(collection: HistoryCollection<any>, args?: object): Promise<any> {
+  // async is optional here, for your convenience
 }
 
-// or
-const query = [
-  ctx => {
-    return xyz    
-  },
-  ctx => {
-    // ctx.acc now contains a result of previous function call
-  }
-]
-
-// or
-const query = [
-  { 'age': {'$gt': 21 } /* Loki.js Mongo like query */ }
-]
-
-// or mix of function and Loki.js queries
-
-module.exports = {query}
-```
-
-Supposing that this file, called _my-example-query.js_ is in current directory, you call it via following
+// this is optional function
+export async function transform(result: QueryResult) {
+  // async is optional here, for your convenience
+}
 
 ```
-jira-miner query my-example-query [--args]
+
+Supposing that this file, called _my-example-query.ts_ is in current directory, and your TypeScript compiler compiles to _dist_ directory, you call your query via following
+
+```
+jira-miner query dist/my-example-query.js [--args]
 ```
 
-All arguments passed on command line will be available in ctx.args object. Example query files is available in [tests/fixtures](tests/fixtures)
+All arguments passed on command line will be available in args object. Example query files is available in [src/tests/fixtures](src/tests/fixtures)
 
 ### Debug output
 
 Simply run any command with `--debug` parameter
+
+### Image rendering example
+
+This will create a chart from
+
+```TypeScript
+
+import { TimeLineChart } from 'jira-miner/dist/lib/chart/TimeLineChart'
+
+export async function query(collection: HistoryCollection<any>, args?: object): Promise<any> {
+
+  return ['2019-01-12', '2019-08-19'].map((date) => {
+    return {
+      date,
+      value: 1// number
+    }
+  })
+}
+
+export async function transform(result: QueryResult) {
+
+  const chart = new TimeLineChart({ name: 'Name', axisNames: ['X', 'Y'] })
+  const imageBuffer = await chart.render(result.result)
+  fs.writeFileSync("dest.png", imageBuffer)
+
+}
+```
 
 ## Testing
 
 Prerequisites:
 
 ```
-npm install -g tape tap-xunit istanbul coveralls
+npm install -g typescript ava nyc
 ```
 
 Afterwards, you can run tests via following command:
 
 ```
-npm test
+npm run build && npm run test
 ```
 
-XUnit compatible report generated in _report.xml_ file:
-```
-npm run xunit
-```
 
 Code coverage (via Istanbul tool):
 ```

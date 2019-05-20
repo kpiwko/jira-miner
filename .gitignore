@@ -1,5 +1,3 @@
 node_modules
-.coveralls.yml
-coverage
-tap-report
-report.xml
+dist
+.nyc*

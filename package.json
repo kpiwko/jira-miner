@@ -11,7 +11,8 @@
     "clean": "rm -rf dist",
     "build": "tsc --declaration",
     "test": "cp -r src/tests/fixtures dist/tests/ && ava -v dist/tests/**/*.js dist/tests/*.js",
-    "coverage": "cp -r src/tests/fixtures dist/tests/ && nyc ava dist/tests/**/*.js dist/tests/*.js"
+    "coverage": "cp -r src/tests/fixtures dist/tests/ && nyc ava dist/tests/**/*.js dist/tests/*.js",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -62,8 +63,7 @@
     "proxyquire": "^1.7.10",
     "sinon": "^7.3.2",
     "nyc": "^14.1.1",
-    "string-natural-compare": "^2.0.3",
-    "tape": "^4.6.2"
+    "string-natural-compare": "^2.0.3"
   },
   "engines": {
     "node": ">=8.0.0"

@@ -1,7 +1,9 @@
 language: node_js
 node_js:
-  - "6"
+  - "8"
 before_script:
-  - npm install -g tape tap-xunit istanbul coveralls
+  - npm install -g ava typescript nyc coveralls
 script:
+  - npm run build && npm run coverage
+after_success:
   - npm run coveralls

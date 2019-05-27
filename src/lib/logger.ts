@@ -1,11 +1,23 @@
 'use strict'
 
-import { Logger, transports } from 'winston'
+import * as winston from 'winston'
 
-const logger = new Logger({
-  transports: [
-    new transports.Console({ level: process.env.DEBUG ? 'debug' : 'info' })
-  ]
-})
+export class Logger extends winston.Logger {
 
-export default logger
+  constructor() {
+    super({
+      transports: [
+        new winston.transports.Console({ level: process.env.DEBUG ? 'debug' : 'info' })
+      ]
+    })
+  }
+
+  setDebug() {
+    Object.keys(this.transports).forEach(key => {
+      this.transports[key].level = 'debug'
+    })
+  }
+
+}
+
+export default new Logger()

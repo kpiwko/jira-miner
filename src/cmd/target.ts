@@ -17,11 +17,13 @@ const builder = function (yargs) {
     `)
     .option('user', {
       alias: 'u',
-      describe: 'User name'
+      describe: 'User name',
+      type: 'string'
     })
     .option('password', {
       alias: 'p',
-      describe: 'Password'
+      describe: 'Password',
+      type: 'string'
     })
     .positional('url', {
       describe: 'JIRA instance url, example https://issues.jboss.org'
@@ -31,14 +33,15 @@ const builder = function (yargs) {
 }
 
 const handler = function (argv) {
+  const debug = argv.verbose >= 2 ? true : false
   const config = new Configuration()
   const jira = new JiraClient({
     jira: {
       url: argv.url,
       user: argv.user,
       password: argv.password
-    }
-  })
+    },
+  }, { debug })
 
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await
   async function wrap(): Promise<void> {

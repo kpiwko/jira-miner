@@ -51,14 +51,17 @@ const builder = function (yargs) {
     })
     .option('json', {
       describe: 'Print out query outcome in JSON format',
+      type: 'boolean',
       default: false
     })
     .option('csv', {
       describe: 'Print out query outcome in CSV format',
+      type: 'boolean',
       default: false
     })
     .option('tsv', {
       describe: 'Print out query outcome in Tab Separated Value format',
+      type: 'boolean',
       default: false
     })
     .positional('file', {
@@ -69,12 +72,11 @@ const builder = function (yargs) {
 }
 
 const handler = function (argv) {
-
   if ([argv.csv, argv.tsv, argv.json].filter(val => val).length > 1) {
-    logger.error(`Please provide just one of --csv, --tsv or --json flags`)
     process.exit(1)
   }
 
+  const debug = argv.verbose >= 2 ? true : false
   const config = new Configuration()
   const queryFilePath = path.resolve(process.cwd(), argv.file)
 
@@ -107,9 +109,11 @@ const handler = function (argv) {
       const query = new Query(collection)
       const result = await query.query(queryFile.query, argv)
 
-      if (queryFile.transform && queryFile.transform instanceof Function) {
+      // if no specific format flag was provided and transformation function is provided, execute it
+      if (!argv.json && !argv.csv && !argv.tsv &&
+        queryFile.transform && queryFile.transform instanceof Function) {
         const jiraAuth = await config.readConfiguration()
-        result.jiraClient = new JiraClient(jiraAuth)
+        result.jiraClient = new JiraClient(jiraAuth, { debug })
 
         await Promise.resolve(queryFile.transform(result))
       }

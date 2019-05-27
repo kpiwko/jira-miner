@@ -107,7 +107,7 @@ class HistoryCollectionImpl<E extends object> implements HistoryCollection<E> {
       }
     )
 
-    return await this.db.populate(`${HISTORY_SNAPSHOT}-${this.name}-${date.toString()}`, data)
+    return await this.db.populate(`${HISTORY_SNAPSHOT}-${this.name()}-${date.toString()}`, data)
   }
 
   removeWhere(query: ((value: E, index: number, array: E[]) => boolean) | LokiQuery<E & LokiObj>): void {

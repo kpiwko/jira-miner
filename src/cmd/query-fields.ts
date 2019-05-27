@@ -22,7 +22,9 @@ const builder = function (yargs) {
 }
 
 const handler = function (argv) {
+
   const config = new Configuration()
+  const debug = argv.verbose >= 2 ? true : false
 
   const table = new Table({
     head: ['Name', 'Type', 'Description'],
@@ -34,7 +36,7 @@ const handler = function (argv) {
   async function wrap(): Promise<void> {
     try {
       const jiraAuth = await config.readConfiguration()
-      const jira = new JiraClient(jiraAuth)
+      const jira = new JiraClient(jiraAuth, { debug })
       let description = await jira.describeFields()
 
       description = description.sort((a: any[], b: any[]) => {

@@ -37,7 +37,7 @@ const builder = function (yargs) {
     .option('since', {
       alias: 's',
       describe: 'Fetch only issues updated since the value',
-      type: ''
+      type: 'string'
     })
     .option('ignore-history', {
       describe: 'Ignore changelog of the issue',
@@ -60,13 +60,14 @@ const handler = function (argv: any) {
   }
   const query = `${argv.query}${argv.since ? ` AND updated>=${argv.since}` : ''}`
   const config = new Configuration()
+  const debug = argv.verbose >= 2 ? true : false
 
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await
   async function wrap(): Promise<void> {
     try {
       const db = await JiraDBFactory.localInstance(argv.db)
       const jiraAuth = await config.readConfiguration()
-      const jira = new JiraClient(<JiraAuth>jiraAuth)
+      const jira = new JiraClient(<JiraAuth>jiraAuth, { debug: debug })
       logger.info(`Fetched query from JIRA and will store in ${argv.db}`, { query })
 
       await db.populate(jira, query, optional)

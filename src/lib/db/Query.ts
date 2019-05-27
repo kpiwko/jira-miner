@@ -2,11 +2,13 @@
 
 
 import { HistoryCollection } from './LocalJiraDB'
-import JiraClient from '../jira/JiraClient';
+import JiraClient from '../jira/JiraClient'
+import logger, { Logger } from '../logger'
 
 export interface QueryResult {
   result: any
   collection: HistoryCollection<any>
+  logger: Logger
   args?: object
   jiraClient?: JiraClient
 }
@@ -18,11 +20,11 @@ export default class Query {
     this.collection = collection
   }
 
-  async query(queryFunction: (collection: HistoryCollection<any>, args?: object) => Promise<any> | any, args?: object): Promise<QueryResult> {
+  async query(queryFunction: (collection: HistoryCollection<any>, logger: Logger, args?: object) => Promise<any> | any, args?: object): Promise<QueryResult> {
     let result: any
     try {
       // wrapping function into promise
-      result = await Promise.resolve(queryFunction.call(null, this.collection, args))
+      result = await Promise.resolve(queryFunction.call(null, this.collection, logger, args))
     }
     catch (err) {
       throw Error(`Unable to execute query ${queryFunction.toString()}, ${err}`)
@@ -30,6 +32,7 @@ export default class Query {
     return {
       result,
       collection: this.collection,
+      logger,
       args
     }
   }

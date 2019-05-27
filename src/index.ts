@@ -3,7 +3,6 @@
 
 import * as yargs from 'yargs'
 import { stripIndent } from 'common-tags'
-import debug from './lib/debug'
 import logger from './lib/logger'
 
 const cli = function () {
@@ -17,18 +16,18 @@ const cli = function () {
     .commandDir('./cmd')
     .demandCommand()
     .help('help')
-    .option('debug', {
-      describe: 'Logs debug information to console output',
+    .option('verbose', {
+      alias: 'v',
+      describe: 'Be more verbose. You can provide this option twice',
       global: true,
-      type: 'boolean',
-      default: false
+      type: 'count'
     })
     .version()
     .wrap(null)
     .argv
 
-  if (argv.debug) {
-    debug()
+  if (argv.verbose) {
+    logger.setDebug()
     logger.debug('Enabled debug logs')
   }
 }

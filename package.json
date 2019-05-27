@@ -1,6 +1,6 @@
 {
   "name": "jira-miner",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "An utility for advanced queryies on top of JIRA",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,7 @@
     "clean": "rm -rf dist",
     "build": "tsc --declaration",
     "test": "cp -r src/tests/fixtures dist/tests/ && ava -v dist/tests/**/*.js dist/tests/*.js",
-    "coverage": "cp -r src/tests/fixtures dist/tests/ && nyc ava dist/tests/**/*.js dist/tests/*.js",
+    "coverage": "cp -r src/tests/fixtures dist/tests/ && nyc --exclude 'dist/tests/**' npm test",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {

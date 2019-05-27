@@ -78,7 +78,7 @@ All arguments passed on command line will be available in args object. Example q
 
 ### Debug output
 
-Simply run any command with `--debug` parameter
+Simply run any command with `--verbose` parameter. You can provide it twice (e.g. `-vv`) to have further level of debug output
 
 ### Image rendering example
 

@@ -4,13 +4,10 @@ import * as moment from 'moment'
 import { isSchemaTyped } from '../utils'
 import logger from '../logger'
 
-/*
+// setup moment fallback configuration
 interface moment {
   createFromInputFallback(config: any): void
 }
-*/
-
-// setup moment fallback configuration
 (<any>moment).createFromInputFallback = function (config: any) {
   throw Error(`Value ${config ? config._i : null} does not represent valid ISO date time string`)
 }

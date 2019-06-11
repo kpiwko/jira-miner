@@ -4,6 +4,7 @@ import * as svg2png from 'svg2png'
 export interface TimeLineChartItem {
   date: string
   value: number
+  link?: string
 }
 
 export interface LineChartOptions {
@@ -19,7 +20,7 @@ export interface LineChartOptions {
   tickPadding?: number
 }
 
-export class TimeLineChart {
+export default class TimeLineChart {
   options: LineChartOptions
   d3n: D3Node
 
@@ -27,17 +28,17 @@ export class TimeLineChart {
     this.options = Object.assign({
       styles: `
         text.title {
-          font: 50px "Overpass",sans-serif;
+          font: 50px 'Overpass',sans-serif;
           color: #000080;
         }
         text.label {
-          font: 25px "Overpass",sans-serif
+          font: 25px 'Overpass',sans-serif
         }
         .x-axis text {
-          font: 20px "Overpass",sans-serif
+          font: 20px 'Overpass',sans-serif
         }
         .y-axis text {
-          font: 20px "Overpass",sans-serif
+          font: 20px 'Overpass',sans-serif
         }
       `,
       width: 1920,
@@ -62,21 +63,21 @@ export class TimeLineChart {
     const svg = this.d3n.createSVG(this.options.width, this.options.height)
 
     // add styling
-    svg.append("style").text(this.options.styles)
+    svg.append('style').text(this.options.styles)
 
     // plot chart
     const image = svg.append('g')
       .attr('transform', `translate(${this.options.margin.left}, ${this.options.margin.top})`)
 
     // chart title
-    image.append("g")
-      .append("text")
+    image.append('g')
+      .append('text')
       .attr('transform', `translate(${this.options.margin.left}, -${this.options.margin.top / 2})`)
       .attr('class', 'title')
       .text(this.options.name)
 
     // x-axis scale
-    const parseTime = d3.timeParse("%Y-%m-%d");
+    const parseTime = d3.timeParse('%Y-%m-%d');
     const xScale = d3.scaleTime()
       .domain(d3.extent(data, (d: TimeLineChartItem) => parseTime(d.date)))
       .rangeRound([0, width])
@@ -102,48 +103,76 @@ export class TimeLineChart {
 
     // we want to show x-axis text oriented vertially
     const xAxisElement = image.append('g')
-      .attr("class", "x-axis")
+      .attr('class', 'x-axis')
       .attr('transform', `translate(0, ${height})`)
       .call(xAxis)
-    xAxisElement.selectAll("text")
-      .attr("y", 0)
-      .attr("x", 9)
-      .attr("dy", ".35em")
-      .attr("transform", `translate(0 ${this.options.margin.bottom}) rotate(270)`)
-      .style("text-anchor", "start");
+    xAxisElement.selectAll('text')
+      .attr('y', 0)
+      .attr('x', 9)
+      .attr('dy', '.35em')
+      .attr('transform', `translate(0 ${this.options.margin.bottom}) rotate(270)`)
+      .style('text-anchor', 'start');
 
     // text label for the x-axis
-    image.append("text")
-      .attr("transform", `translate(${width / 2} ${height + 20})`)
-      .attr("class", "label")
-      .style("text-anchor", "middle")
+    image.append('text')
+      .attr('transform', `translate(${width / 2} ${height + 20})`)
+      .attr('class', 'label')
+      .style('text-anchor', 'middle')
       .text(this.options.axisNames[0])
 
     image.append('g')
-      .attr("class", "y-axis")
+      .attr('class', 'y-axis')
       .call(yAxis)
 
     // text label for the y-axis
-    image.append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 0 - this.options.margin.left)
-      .attr("x", 0 - (height / 2))
-      .attr("dy", "1em")
-      .attr("class", "label")
-      .style("text-anchor", "middle")
+    image.append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', 0 - this.options.margin.left)
+      .attr('x', 0 - (height / 2))
+      .attr('dy', '1em')
+      .attr('class', 'label')
+      .style('text-anchor', 'middle')
       .text(this.options.axisNames[1])
 
     // actual data
     image.append('path')
       .data([data])
-      .attr("class", "line")
-      .style("stroke", this.options.lineColor)
+      .attr('class', 'line')
+      .style('stroke', this.options.lineColor)
       .attr('stroke-width', this.options.lineWidth)
       .attr('fill', 'none')
-      .attr("d", lineChartFunction)
+      .attr('d', lineChartFunction)
 
+    // add circles with links to queries in case links are provided
+    image.selectAll('.circle')
+      .data(data.filter(d => d.link))
+      .enter()
+      .append('a')
+      .attr('xlink:href', (d: TimeLineChartItem) => d.link)
+      .append('circle')
+      .attr('class', 'circle-links')
+      .attr('r', this.options.lineWidth * 5 / 3)
+      .attr('cx', (d: TimeLineChartItem) => xScale(parseTime(d.date)))
+      .attr('cy', (d: TimeLineChartItem) => yScale(d.value))
+      .attr('fill', this.options.lineColor)
+
+    // add only circles without links if none are provided
+    image.selectAll('.circle')
+      .data(data.filter(d => !d.link))
+      .enter()
+      .append('circle')
+      .attr('class', 'circle')
+      .attr('r', this.options.lineWidth * 5 / 3)
+      .attr('cx', (d: TimeLineChartItem) => xScale(parseTime(d.date)))
+      .attr('cy', (d: TimeLineChartItem) => yScale(d.value))
+      .attr('fill', this.options.lineColor)
 
     var svgBuffer = new Buffer(this.d3n.svgString(), 'utf-8')
-    return await svg2png(svgBuffer)
+    return {
+      svg: svgBuffer,
+      png: await svg2png(svgBuffer)
+    }
   }
+
+
 }

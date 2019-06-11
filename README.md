@@ -82,18 +82,20 @@ Simply run any command with `--verbose` parameter. You can provide it twice (e.g
 
 ### Image rendering example
 
-This will create a chart from
+This will render a line chart using date as x-axis and values as y-axis.
+For entries that have optional `link` attribute provided, it will additionally render a click-able link in SVG image.
 
 ```TypeScript
 
-import { TimeLineChart } from 'jira-miner/dist/lib/chart/TimeLineChart'
+import TimeLineChart from 'jira-miner/dist/lib/chart/TimeLineChart'
 
 export async function query(collection: HistoryCollection<any>, args?: object): Promise<any> {
 
   return ['2019-01-12', '2019-08-19'].map((date) => {
     return {
-      date,
-      value: 1// number
+      date: string
+      value: number
+      link?: string
     }
   })
 }
@@ -122,7 +124,7 @@ npm run build && npm run test
 ```
 
 
-Code coverage (via Istanbul tool):
+Code coverage (via nyc tool):
 ```
 npm run coverage
 ```

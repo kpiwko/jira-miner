@@ -24,14 +24,16 @@ const builder = function (yargs) {
       Query file is a Node.js module exporting "query()" function and optionally a "transform()" function.
 
         module.exports = {
-          query: (collection: HistoryCollection<any>, args?: object) => Promise<any> | any
+          query: (collection: HistoryCollection<any>, logger: Logger, args?: object) => Promise<any> | any
             // collection contains collection to be queried
+            // logger can be used to provide additional user facing output
             // args contains command line arguments that can be used to parametrize query externally
-            // query function is supposed to return any object or a promise
+            // query function is supposed to return an object or a promise
           },
           transform:(result: QueryResult) => any 
             // result.result contains result of the query
             // result.collection contains result of query function
+            // result.logger can be used to provide additional user facing output
             // result?.args contains command line arguments that were to parametrize query externally 
                or can be used to parametrize transformation
             // result?.jiraClient contains a client to query jira instance, if desired
@@ -41,7 +43,7 @@ const builder = function (yargs) {
 
       Since "transform(result: QueryResult)" function is optional by default $0 expect "query()" to return a JSON data and uses pretty print
       to output it to console. If this is not desired behavior, user can provide --json, --csv or --tsv argument.
-      In case that "transform(result: QueryResult)" is provided, it is responsible for handling output itself.
+      In case that "transform(result: QueryResult)" is provided and none of --json, --csv or --tsv flags are provided, it is responsible for handling output itself.
     `)
     .option('db', {
       alias: 'd',

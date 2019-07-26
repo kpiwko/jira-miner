@@ -73,6 +73,16 @@ export default class TimeLineChart {
     const keys = this.options.labels 
     const colors = this.options.areaColors 
 
+    // sanitize data in case some values are missing
+    data = data.map(d => {
+      return Object.assign( 
+        // provide default 0 value for every key in the list
+      keys.reduce((object:any, key:string) => {
+        object[key] = 0
+        return object
+      }, {}), d)
+    })
+
     // create SVG image
     const svg = this.d3n.createSVG(this.options.width, this.options.height)
 

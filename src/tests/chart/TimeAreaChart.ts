@@ -15,7 +15,7 @@ test('Render simple stacked area chart', async t => {
   const $ = cheerio.load(chartRender.svg, { xmlMode: true })
   t.is($('a').length, 0, 'There are no links in the svg image')
 
-  fs.writeFileSync('foo.svg', chartRender.svg)
+  //fs.writeFileSync('foo.svg', chartRender.svg)
 })
 
 test('Render simple stacked area chart with links', async t => {

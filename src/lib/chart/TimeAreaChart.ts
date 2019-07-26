@@ -44,9 +44,9 @@ export default class TimeLineChart {
           font: 20px 'Overpass',sans-serif
         }
       `,
-      width: 1920,
+      width: 2100,
       height: 1000,
-      margin: { top: 100, right: 80, bottom: 140, left: 80 },
+      margin: { top: 100, right: 260, bottom: 140, left: 80 },
       lineWidth: 3,
       lineColor: '#000080',
       // colorblind friendly palette
@@ -195,16 +195,16 @@ export default class TimeLineChart {
       .data(this.options.areaColors.slice(0, keys.length))
       .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", (d:any, i:number) => { return `translate(40, ${i*38})` })
+      .attr("transform", (d:any, i:number) => { return `translate(80, ${i*38+10})` })
 
     legend.append("rect")
-      .attr("x", width - 66)
+      .attr("x", width + 20)
       .attr("width", 36)
       .attr("height", 36)
       .style("fill", (d:any, i:number) => {return colors[i] })
 
     legend.append("text")
-      .attr("x", width - 20)
+      .attr("x", width + 66)
       .attr("y", 18)
       .attr("dy", ".35em")
       .style("text-anchor", "start")

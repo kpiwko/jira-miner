@@ -21,6 +21,13 @@ export function intersects(arr1: string[], arr2: string | string[]): boolean {
   return arr1.filter(item => arr2.includes(item)).length > 0
 }
 
+export function sumByKeys(object: object, keys?: string[]): number {
+  keys = keys || Object.keys(object)
+  return keys.reduce((acc, key) => {
+    return object[key] ? acc + object[key] : acc
+  }, 0)
+} 
+
 export function lastDays(count = 60): string[] {
   const now = moment()
   let before = now.subtract(count, 'days')

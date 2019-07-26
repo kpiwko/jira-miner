@@ -109,6 +109,34 @@ export async function transform(result: QueryResult) {
 }
 ```
 
+Following will render a stacked area chart using date as x-axis and other keys as values. For entries that have optional `link` attribute provided, it will additionally render a click-able link in SVG image.
+You provide the mapping by `labels` options during chart creation.
+
+```TypeScript
+
+import TimeAreaChart from 'jira-miner/dist/lib/chart/TimeAreaChart'
+
+export async function query(collection: HistoryCollection<any>, args?: object): Promise<any> {
+
+  return ['2019-01-12', '2019-08-19'].map((date) => {
+    return {
+      date: string
+      'Key 1': number
+      'Key 2': number
+      link?: string
+    }
+  })
+}
+
+export async function transform(result: QueryResult) {
+
+  const chart = new TimeAreaChart({ name: 'Name', axisNames: ['X', 'Y'], labels: ['Key 1', 'Key 2'] })
+  const imageBuffer = await chart.render(result.result)
+  fs.writeFileSync("dest.png", imageBuffer)
+
+}
+```
+
 ## Testing
 
 Prerequisites:

@@ -15,7 +15,7 @@ test('Render simple stacked area chart', async t => {
   const $ = cheerio.load(chartRender.svg, { xmlMode: true })
   t.is($('a').length, 0, 'There are no links in the svg image')
 
-  //fs.writeFileSync('foo.svg', chartRender.svg)
+  t.is(chartRender.json.name, 'Test No Links', 'Chart name is stored in json representation')
 })
 
 test('Render simple stacked area chart with links', async t => {
@@ -35,6 +35,8 @@ test('Render simple stacked area chart with links', async t => {
 
   const $ = cheerio.load(chartRender.svg, { xmlMode: true })
   t.is($('a').length, 2, 'There are two links in the svg image')
+
+  t.is(chartRender.json.labels.length, 2, 'Chart data labels are stored in json representation')
 })
 
 function dataFixture(): TimeAreaChartItem[] {

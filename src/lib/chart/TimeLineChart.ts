@@ -170,7 +170,11 @@ export default class TimeLineChart {
     var svgBuffer = new Buffer(this.d3n.svgString(), 'utf-8')
     return {
       svg: svgBuffer,
-      png: await svg2png(svgBuffer)
+      png: await svg2png(svgBuffer),
+      json: {
+        ...this.options,
+        data
+      }
     }
   }
 

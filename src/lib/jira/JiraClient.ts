@@ -2,13 +2,24 @@
 
 import * as JiraApi from 'jira-client'
 import * as urlParser from 'url'
-import * as rp from 'request-promise-native'
+import * as rpr from 'promise-request-retry'
 import logger from '../logger'
+import * as rp from 'request-promise'
 import { transformAll, isSchemaTyped } from '../utils'
 import { Issue } from './Issue';
 
 // max issues to be processed at once
 const MAX_RESULTS = 100
+// max retries if something goes wrong with request
+const MAX_RETRIES = 3
+
+const rpr_retry = function (options:any) : rp.RequestPromiseAPI {
+  options = Object.assign({
+    retry: MAX_RETRIES
+  }, options)
+  
+  return rpr(options)
+}
 
 export interface JiraAuth {
   jira: JiraAuthDetails
@@ -24,7 +35,7 @@ export interface JiraClientOptions {
   apiVersion?: string,
   debug?: boolean,
   strictSSL?: boolean,
-  request?: rp.RequestPromiseAPI
+  request?: any
 }
 
 export interface JsonResponse {
@@ -60,12 +71,13 @@ export default class JiraClient {
       apiVersion: '2',
       debug: !!process.env.DEBUG || process.env.NODE_DEBUG === 'request',
       strictSSL: true,
-      request: rp
+      request: rpr_retry
     }, options)
 
     if (options.debug) {
       logger.debug('Setting up JIRA request debugging on for JiraClient')
-      require('request-debug')(rp)
+      // TS claims that debug property is readonly, need to override that
+      rp['debug' as any] = true
     }
 
     this.jira = new JiraApi(Object.assign({

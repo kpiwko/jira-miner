@@ -97,6 +97,32 @@ test('Process history of issue with comments', async t => {
   })
 })
 
+/* test for https://github.com/kpiwko/jira-miner/issues/7 */
+test('Process history of issue with comments without last date', async t => {
+  const collection = await fixture(issues => {
+    return issues.map(issue => {
+      if(issue.fields.comment && issue.fields.comment.comments) {
+        issue.fields.comment.comments.forEach(comment => {
+          if(comment.id === '13328587') {
+            delete comment.updated
+          }
+        })
+      }
+      return issue
+    })
+  }, '../fixtures/issue-with-comments.json')
+  let historyCollection = await collection.history('2016-11-29')
+  t.is(historyCollection.count(), 1, 'Just one issue in the collection')
+
+  let results = historyCollection.where(() => true)
+  t.assert(results, 'Some issues were resolved after history query')
+  t.is(results.length, 1, 'Just 1 issue has been fetched')
+  results.forEach(issue => {
+    t.is(issue.Comment.length, 5, `Issue ${issue.key} has exactly 5 comments`)
+    t.assert(issue.History['Fix Version/s'].length > 0, `Issue ${issue.key} contains history of Fix Version/s`)
+  })
+})
+
 export async function fixture(malformation?: any, source = '../fixtures/aerogear200issues.json'): Promise<HistoryCollection<any>> {
   const dbpath = tmp.fileSync()
   const testDB = (await JiraDBFactory.localInstance(dbpath.name))

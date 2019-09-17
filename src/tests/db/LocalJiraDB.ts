@@ -123,6 +123,28 @@ test('Process history of issue with comments without last date', async t => {
   })
 })
 
+test('Process history of issue without any comments', async t => {
+  const collection = await fixture(issues => {
+    return issues.map(issue => {
+      if(issue.fields.comment && issue.fields.comment.comments) {
+        delete issue.fields.comment.comments
+      }
+      return issue
+    })
+  }, '../fixtures/issue-with-comments.json')
+  let historyCollection = await collection.history('2016-11-30')
+  t.is(historyCollection.count(), 1, 'Just one issue in the collection')
+
+  let results = historyCollection.where(() => true)
+  t.assert(results, 'Some issues were resolved after history query')
+  t.is(results.length, 1, 'Just 1 issue has been fetched')
+  results.forEach(issue => {
+    t.is(issue.Comment.length, 0, `Issue ${issue.key} has exactly 0 comments`)
+    t.assert(issue.History['Fix Version/s'].length > 0, `Issue ${issue.key} contains history of Fix Version/s`)
+  })
+})
+
+
 export async function fixture(malformation?: any, source = '../fixtures/aerogear200issues.json'): Promise<HistoryCollection<any>> {
   const dbpath = tmp.fileSync()
   const testDB = (await JiraDBFactory.localInstance(dbpath.name))

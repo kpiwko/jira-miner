@@ -10,8 +10,8 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "tsc --declaration",
-    "test": "cp -r src/tests/fixtures dist/tests/ && ava -v dist/tests/**/*.js dist/tests/*.js",
-    "coverage": "cp -r src/tests/fixtures dist/tests/ && nyc --exclude 'dist/tests/**' npm test",
+    "test": "ava -v src/tests/**/*.ts src/tests/*.ts",
+    "coverage": "nyc npm run test",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
@@ -66,9 +66,20 @@
     "nyc": "^14.1.1",
     "proxyquire": "^1.7.10",
     "sinon": "^7.3.2",
-    "string-natural-compare": "^2.0.3"
+    "string-natural-compare": "^2.0.3",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.3"
   },
   "engines": {
     "node": ">=8.0.0"
+  },
+  "ava": {
+    "compileEnhancements": false,
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
   }
 }

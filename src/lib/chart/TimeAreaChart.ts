@@ -1,17 +1,18 @@
 import * as D3Node from 'd3-node'
 import * as svg2png from 'svg2png'
-import { sumByKeys } from '../utils';
+import { sumByKeys, maxInKeys } from '../utils';
 
 export interface TimeAreaChartItem {
-  [key:string]: number | string | object
+  [key: string]: number | string | object
   date: string
   link?: string
 }
 
 export interface AreaChartOptions {
   name: string
-  axisNames: [string, string]
+  axisNames: [string, string, string?]
   labels: string[]
+  trendLabels?: string[]
   styles?: string
   width?: number
   height?: number
@@ -46,41 +47,67 @@ export default class TimeAreaChart {
       `,
       width: 2100,
       height: 1000,
-      margin: { top: 100, right: 260, bottom: 140, left: 80 },
+      margin: { top: 100, right: 270, bottom: 140, left: 80 },
       lineWidth: 3,
       lineColor: '#000080',
+      trendLabels: [],
       // colorblind friendly palette
-      areaColors: ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6'],
+      areaColors: ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6'],
       isCurve: false,
       tickSize: 5,
       tickPadding: 5
     }, options)
 
     // if there are more labels than colors, make sure that color palette is large enough by duplicating it
-    if(this.options.areaColors.length < this.options.labels.length) {
+    if (this.options.areaColors.length < this.options.labels.length) {
       this.options.areaColors = [].concat(
-        ...Array(Math.ceil(this.options.labels.length/this.options.areaColors.length))
-        .fill(this.options.areaColors))
+        ...Array(Math.ceil(this.options.labels.length / this.options.areaColors.length))
+          .fill(this.options.areaColors))
     }
 
     this.d3n = new D3Node({});
+  }
+
+  // returns slope, intercept and r-square of the line
+  private leastSquares(xSeries, ySeries) {
+    const reduceSumFunc = (prev: number, cur: number) => { return prev + cur }
+
+    const xBar = xSeries.reduce(reduceSumFunc) * 1.0 / xSeries.length
+    const yBar = ySeries.reduce(reduceSumFunc) * 1.0 / ySeries.length
+
+    const ssXX = xSeries.map((d: number) => { return Math.pow(d - xBar, 2) })
+      .reduce(reduceSumFunc)
+
+    const ssYY = ySeries.map((d: number) => { return Math.pow(d - yBar, 2) })
+      .reduce(reduceSumFunc)
+
+    const ssXY = xSeries.map((d: number, i: number) => { return (d - xBar) * (ySeries[i] - yBar) })
+      .reduce(reduceSumFunc)
+
+    const slope = ssXY / ssXX
+    const intercept = yBar - (xBar * slope)
+    const rSquare = Math.pow(ssXY, 2) / (ssXX * ssYY)
+
+    return [slope, intercept, rSquare]
   }
 
   async render(data: TimeAreaChartItem[]) {
     const width = this.options.width - this.options.margin.left - this.options.margin.right
     const height = this.options.height - this.options.margin.top - this.options.margin.bottom
     const d3 = this.d3n.d3
-    const keys = this.options.labels 
-    const colors = this.options.areaColors 
+    const keys = this.options.labels
+    const trendKeys = this.options.trendLabels
+    const colors = this.options.areaColors
+    const [xAxisName, yAxisName, y2AxisName] = this.options.axisNames
 
     // sanitize data in case some values are missing
     data = data.map(d => {
-      return Object.assign( 
+      return Object.assign(
         // provide default 0 value for every key in the list
-      keys.reduce((object:any, key:string) => {
-        object[key] = 0
-        return object
-      }, {}), d)
+        keys.reduce((object: any, key: string) => {
+          object[key] = 0
+          return object
+        }, {}), d)
     })
 
     // create SVG image
@@ -114,10 +141,18 @@ export default class TimeAreaChart {
 
     // y-axis scale & definition
     const yScale = d3.scaleLinear()
-      .domain([0, d3.max(data, (d: TimeAreaChartItem) => {return sumByKeys(d, keys)})])
+      .domain([0, d3.max(data, (d: TimeAreaChartItem) => { return sumByKeys(d, keys) })])
       .rangeRound([height, 0])
 
     const yAxis = d3.axisLeft(yScale)
+      .tickSize(this.options.tickSize)
+      .tickPadding(this.options.tickPadding)
+
+    const y2Scale = d3.scaleLinear()
+      .domain([0, d3.max(data, (d: TimeAreaChartItem) => { return maxInKeys(d, trendKeys) })])
+      .rangeRound([height, 0])
+
+    const y2Axis = d3.axisRight(y2Scale)
       .tickSize(this.options.tickSize)
       .tickPadding(this.options.tickPadding)
 
@@ -126,9 +161,9 @@ export default class TimeAreaChart {
       .domain(keys)
       .range(this.options.areaColors)
 
-    //stack the data?
+    //stack the data
     const stackedData = d3.stack()
-     .keys(keys)(data)
+      .keys(keys)(data)
 
     // we want to show x-axis text oriented vertially
     const xAxisElement = image.append('g')
@@ -147,7 +182,7 @@ export default class TimeAreaChart {
       .attr('transform', `translate(${width / 2} ${height + 20})`)
       .attr('class', 'label')
       .style('text-anchor', 'middle')
-      .text(this.options.axisNames[0])
+      .text(xAxisName)
 
     image.append('g')
       .attr('class', 'y-axis')
@@ -161,20 +196,37 @@ export default class TimeAreaChart {
       .attr('dy', '1em')
       .attr('class', 'label')
       .style('text-anchor', 'middle')
-      .text(this.options.axisNames[1])
+      .text(yAxisName)
+
+    if (y2AxisName) {
+      image.append('g')
+        .attr('class', 'y-axis')
+        .attr("transform", `translate(${width},0)`)
+        .call(y2Axis)
+
+      // text label for the y-axis
+      image.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', width + 20)
+        .attr('x', 0 - height / 2)
+        .attr('dy', '1em')
+        .attr('class', 'label')
+        .style('text-anchor', 'middle')
+        .text(y2AxisName)
+    }
 
     // actual data
     image
-    .selectAll(".layers")
-    .data(stackedData)
-    .enter()
-    .append("path")
-      .style("fill", (d:any) => { return colorScale(d.key) })
+      .selectAll(".layers")
+      .data(stackedData)
+      .enter()
+      .append("path")
+      .style("fill", (d: any) => { return colorScale(d.key) })
       .attr("d", d3.area()
-        .x((d:any) => { return xScale(parseTime(d.data.date)) })
-        .y0((d:any) => { return yScale(d[0]) })
-        .y1((d:any) => { return yScale(d[1]) })
-    )
+        .x((d: any) => { return xScale(parseTime(d.data.date)) })
+        .y0((d: any) => { return yScale(d[0]) })
+        .y1((d: any) => { return yScale(d[1]) })
+      )
 
     // add circles with links to queries in case links are provided
     image.selectAll('.circle')
@@ -199,27 +251,62 @@ export default class TimeAreaChart {
       .attr('cx', (d: TimeAreaChartItem) => xScale(parseTime(d.date)))
       .attr('cy', (d: TimeAreaChartItem) => yScale(sumByKeys(d, keys)))
       .attr('fill', this.options.lineColor)
-    
+
+    // add trendlines
+    if (y2AxisName) {
+      // render trendlines
+      // get the x and y values for least squares
+      const xSeries = d3.range(1, data.length + 1)
+      trendKeys.forEach((key: string, index: number) => {
+        const ySeries = data.map((d: any) => { return sumByKeys(d, [key]) })
+
+        var leastSquaresCoeff = this.leastSquares(xSeries, ySeries)
+
+        // apply the reults of the least squares regression
+        var x1 = data[0].date
+        var y1 = leastSquaresCoeff[0] + leastSquaresCoeff[1]
+        var x2 = data[data.length - 1].date
+        var y2 = leastSquaresCoeff[0] * xSeries.length + leastSquaresCoeff[1]
+        var trendData = [[x1, y1, x2, y2]]
+
+        var trendline = image.selectAll(`.trendline-${index}`)
+          .data(trendData);
+
+        trendline.enter()
+          .append('line')
+          .attr('class', 'trendline')
+          .attr('x1', function (d) { return xScale(parseTime(d[0])) })
+          .attr('y1', function (d) { return y2Scale(d[1]) })
+          .attr('x2', function (d) { return xScale(parseTime(d[2])) })
+          .attr('y2', function (d) { return y2Scale(d[3]) })
+          .attr('stroke', colors[keys.length + index])
+          .attr('stroke-width', this.options.lineWidth)
+      })
+
+    }
+
     // add legend
     const legend = svg.selectAll(".legend")
-      .data(this.options.areaColors.slice(0, keys.length))
+      .data(this.options.areaColors.slice(0, keys.length + trendKeys.length))
       .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", (d:any, i:number) => { return `translate(80, ${i*38+10})` })
+      .attr("transform", (d: any, i: number) => { return `translate(80, ${i * 38 + 10})` })
 
     legend.append("rect")
-      .attr("x", width + 20)
+      .attr("x", width + 30)
       .attr("width", 36)
       .attr("height", 36)
-      .style("fill", (d:any, i:number) => {return colors[i] })
+      .style("fill", (d: any, i: number) => { return colors[i] })
 
     legend.append("text")
-      .attr("x", width + 66)
+      .attr("x", width + 76)
       .attr("y", 18)
       .attr("dy", ".35em")
       .style("text-anchor", "start")
       .attr('class', 'label')
-      .text((d:any, i:number) => { return keys[i]})
+      .text((d: any, i: number) => {
+        return i < keys.length ? keys[i] : trendKeys[i - keys.length]
+      })
 
     var svgBuffer = new Buffer(this.d3n.svgString(), 'utf-8')
     return {

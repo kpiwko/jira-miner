@@ -28,6 +28,13 @@ export function sumByKeys(object: object, keys?: string[]): number {
   }, 0)
 } 
 
+export function maxInKeys(object: object, keys?: string[]): number {
+  keys = keys || Object.keys(object)
+  return keys.reduce((acc, key) => {
+    return object[key] ? (object[key]>acc ? object[key] : acc) : acc
+  }, 0)
+} 
+
 export function lastDays(count = 60): string[] {
   const now = moment()
   let before = now.subtract(count, 'days')

@@ -10,6 +10,7 @@ export interface TimeLineChartItem {
 export interface LineChartOptions {
   name: string
   axisNames: [string, string]
+  description?: string
   styles?: string
   width?: number
   height?: number

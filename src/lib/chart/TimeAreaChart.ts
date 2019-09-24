@@ -13,6 +13,7 @@ export interface AreaChartOptions {
   axisNames: [string, string, string?]
   labels: string[]
   trendLabels?: string[]
+  description?: string
   styles?: string
   width?: number
   height?: number

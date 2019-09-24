@@ -104,7 +104,7 @@ export async function transform(result: QueryResult) {
 
   const chart = new TimeLineChart({ name: 'Name', axisNames: ['X', 'Y'] })
   const imageBuffer = await chart.render(result.result)
-  fs.writeFileSync("dest.png", imageBuffer)
+  fs.writeFileSync("dest.png", imageBuffer.png)
 
 }
 ```
@@ -132,23 +132,25 @@ export async function transform(result: QueryResult) {
 
   const chart = new TimeAreaChart({ name: 'Name', axisNames: ['X', 'Y'], labels: ['Key 1', 'Key 2'] })
   const imageBuffer = await chart.render(result.result)
-  fs.writeFileSync("dest.png", imageBuffer)
+  fs.writeFileSync("dest.png", imageBuffer.png)
 
 }
 ```
+
+All charts are rendered as either png, svg or json
 
 ## Testing
 
 Prerequisites:
 
 ```
-npm install -g typescript ava nyc
+npm install -g typescript ava nyc ts-node
 ```
 
 Afterwards, you can run tests via following command:
 
 ```
-npm run build && npm run test
+npm run test
 ```
 
 

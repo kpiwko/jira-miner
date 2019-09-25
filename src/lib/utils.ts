@@ -24,14 +24,14 @@ export function intersects(arr1: string[], arr2: string | string[]): boolean {
 export function sumByKeys(object: object, keys?: string[]): number {
   keys = keys || Object.keys(object)
   return keys.reduce((acc, key) => {
-    return object[key] ? acc + object[key] : acc
+    return object[key] ? acc + Number.parseFloat(object[key]) : acc
   }, 0)
 } 
 
 export function maxInKeys(object: object, keys?: string[]): number {
   keys = keys || Object.keys(object)
   return keys.reduce((acc, key) => {
-    return object[key] ? (object[key]>acc ? object[key] : acc) : acc
+    return object[key] ? (Number.parseFloat(object[key])>acc ? Number.parseFloat(object[key]) : acc) : acc
   }, 0)
 } 
 

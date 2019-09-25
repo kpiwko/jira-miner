@@ -48,7 +48,7 @@ export default class TimeAreaChart {
       `,
       width: 2100,
       height: 1000,
-      margin: { top: 100, right: 270, bottom: 140, left: 80 },
+      margin: { top: 100, right: 280, bottom: 140, left: 80 },
       lineWidth: 3,
       lineColor: '#000080',
       trendLabels: [],
@@ -208,7 +208,7 @@ export default class TimeAreaChart {
       // text label for the y-axis
       image.append('text')
         .attr('transform', 'rotate(-90)')
-        .attr('y', width + 20)
+        .attr('y', width + 30)
         .attr('x', 0 - height / 2)
         .attr('dy', '1em')
         .attr('class', 'label')
@@ -260,17 +260,17 @@ export default class TimeAreaChart {
       const xSeries = d3.range(1, data.length + 1)
       trendKeys.forEach((key: string, index: number) => {
         const ySeries = data.map((d: any) => { return sumByKeys(d, [key]) })
-
-        var leastSquaresCoeff = this.leastSquares(xSeries, ySeries)
+        
+        const leastSquaresCoeff = this.leastSquares(xSeries, ySeries)
 
         // apply the reults of the least squares regression
-        var x1 = data[0].date
-        var y1 = leastSquaresCoeff[0] + leastSquaresCoeff[1]
-        var x2 = data[data.length - 1].date
-        var y2 = leastSquaresCoeff[0] * xSeries.length + leastSquaresCoeff[1]
-        var trendData = [[x1, y1, x2, y2]]
+        const x1 = data[0].date
+        const y1 = leastSquaresCoeff[0] + leastSquaresCoeff[1]
+        const x2 = data[data.length - 1].date
+        const y2 = leastSquaresCoeff[0] * xSeries.length + leastSquaresCoeff[1]
+        const trendData = [[x1, y1, x2, y2]]
 
-        var trendline = image.selectAll(`.trendline-${index}`)
+        const trendline = image.selectAll(`.trendline-${index}`)
           .data(trendData);
 
         trendline.enter()
@@ -291,16 +291,16 @@ export default class TimeAreaChart {
       .data(this.options.areaColors.slice(0, keys.length + trendKeys.length))
       .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", (d: any, i: number) => { return `translate(80, ${i * 38 + 10})` })
+      .attr("transform", (d: any, i: number) => { return `translate(90, ${i * 38 + 10})` })
 
     legend.append("rect")
-      .attr("x", width + 30)
+      .attr("x", width + 40)
       .attr("width", 36)
       .attr("height", 36)
       .style("fill", (d: any, i: number) => { return colors[i] })
 
     legend.append("text")
-      .attr("x", width + 76)
+      .attr("x", width + 86)
       .attr("y", 18)
       .attr("dy", ".35em")
       .style("text-anchor", "start")

@@ -1,5 +1,6 @@
 'use strict'
 
+import * as _ from 'lodash'
 import * as Table from 'cli-table'
 import { stripIndent } from 'common-tags'
 import Configuration from '../lib/Configuration'
@@ -25,6 +26,7 @@ const handler = function (argv) {
 
   const config = new Configuration()
   const debug = argv.verbose >= 2 ? true : false
+  const target = argv.target
 
   const table = new Table({
     head: ['Name', 'Type', 'Description'],
@@ -35,8 +37,12 @@ const handler = function (argv) {
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await
   async function wrap(): Promise<void> {
     try {
-      const jiraAuth = await config.readConfiguration()
-      const jira = new JiraClient(jiraAuth, { debug })
+      const jiraConfig = await config.readConfiguration()
+      const jiraAuth = _.find(jiraConfig, (c) => c.target === target)
+      if(!jiraAuth) {
+        throw Error(`Unable to create Jira Client with target ${target}, such configuration was not found`)
+      }
+      const jira = new JiraClient(jiraAuth.jira, { debug })
       let description = await jira.describeFields()
 
       description = description.sort((a: any[], b: any[]) => {

@@ -1,6 +1,7 @@
 'use strict'
 
 import { stripIndent } from 'common-tags'
+import * as _ from 'lodash'
 import * as path from 'path'
 import * as json2csv from 'json2csv'
 import * as prettyjson from 'prettyjson'
@@ -80,6 +81,7 @@ const handler = function (argv) {
 
   const debug = argv.verbose >= 2 ? true : false
   const config = new Configuration()
+  const target = argv.target
   const queryFilePath = path.resolve(process.cwd(), argv.file)
 
   // get query from file
@@ -114,9 +116,6 @@ const handler = function (argv) {
       // if no specific format flag was provided and transformation function is provided, execute it
       if (!argv.json && !argv.csv && !argv.tsv &&
         queryFile.transform && queryFile.transform instanceof Function) {
-        const jiraAuth = await config.readConfiguration()
-        result.jiraClient = new JiraClient(jiraAuth, { debug })
-
         await Promise.resolve(queryFile.transform(result))
       }
       else {

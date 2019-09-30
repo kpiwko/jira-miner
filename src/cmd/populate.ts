@@ -1,6 +1,7 @@
 'use strict'
 
 import * as path from 'path'
+import * as _ from 'lodash'
 import { stripIndent } from 'common-tags'
 import { JiraDBFactory } from '../lib/db/LocalJiraDB'
 import logger from '../lib/logger'
@@ -60,16 +61,20 @@ const handler = function (argv: any) {
   }
   const query = `${argv.query}${argv.since ? ` AND updated>=${argv.since}` : ''}`
   const config = new Configuration()
+  const target = argv.target
   const debug = argv.verbose >= 2 ? true : false
 
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await
   async function wrap(): Promise<void> {
     try {
       const db = await JiraDBFactory.localInstance(argv.db)
-      const jiraAuth = await config.readConfiguration()
-      const jira = new JiraClient(<JiraAuth>jiraAuth, { debug: debug })
+      const jiraConfig = await config.readConfiguration()
+      const jiraAuth = _.find(jiraConfig, (c) => c.target === target)
+      if(!jiraAuth) {
+        throw Error(`Unable to create Jira Client with target ${target}, such configuration was not found`)
+      }
+      const jira = new JiraClient(jiraAuth.jira, { debug: debug })
       logger.info(`Fetched query from JIRA and will store in ${argv.db}`, { query })
-
       await db.populate(jira, query, optional)
       await db.saveDatabase()
     }

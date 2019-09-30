@@ -34,24 +34,26 @@ const builder = function (yargs) {
 
 const handler = function (argv) {
   const debug = argv.verbose >= 2 ? true : false
+  const target = argv.target
   const config = new Configuration()
-  const jira = new JiraClient({
-    jira: {
+  const jiraClient = new JiraClient({
       url: argv.url,
       user: argv.user,
       password: argv.password
-    },
   }, { debug })
 
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await
   async function wrap(): Promise<void> {
     try {
-      const jiraAuth = await jira.checkCredentials()
+      const jira = await jiraClient.checkCredentials()
       logger.info('Successfully targeted JIRA', {
-        url: jiraAuth.jira.url,
-        user: jiraAuth.jira.user
+        url: jira.url,
+        user: jira.user
       })
-      await config.updateConfiguration(jiraAuth)
+      await config.updateConfiguration([{
+        target,
+        jira
+      }])
     }
     catch (err) {
       console.error(err)

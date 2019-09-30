@@ -22,10 +22,6 @@ const rpr_retry = function (options:any) : rp.RequestPromiseAPI {
 }
 
 export interface JiraAuth {
-  jira: JiraAuthDetails
-}
-
-export interface JiraAuthDetails {
   url: string
   user?: string
   password?: string
@@ -59,9 +55,9 @@ export default class JiraClient {
 
   constructor(auth: JiraAuth, options?: JiraClientOptions) {
     // parse config
-    const url = auth.jira.url
-    const user = auth.jira.user || ''
-    const password = auth.jira.password || ''
+    const url = auth.url
+    const user = auth.user || ''
+    const password = auth.password || ''
     const config = urlParser.parse(url)
     const protocol = config.protocol.replace(/:\s*$/, '')
     const port = config.port ? config.port : (config.protocol.startsWith('https') ? '443' : '80')
@@ -175,11 +171,10 @@ export default class JiraClient {
     // login was succesfull
     if (response.statusCode === 200) {
       return {
-        jira: {
-          url: this.url,
-          user: this.user,
-          password: this.password
-        }
+        url: this.url,
+        user: this.user,
+        password: this.password
+        
       }
     }
     // login was not successful

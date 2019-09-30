@@ -1,6 +1,6 @@
 {
   "name": "jira-miner",
-  "version": "1.3.4",
+  "version": "1.4.0",
   "description": "An utility for advanced queryies on top of JIRA",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -58,11 +58,13 @@
   },
   "devDependencies": {
     "@types/cheerio": "^0.22.11",
+    "@types/lodash": "^4.14.141",
     "@types/proxyquire": "^1.3.28",
     "@types/sinon": "^7.0.11",
     "ava": "^1.4.1",
     "blue-tape": "^1.0.0",
     "cheerio": "^1.0.0-rc.3",
+    "lodash": "^4.17.15",
     "nyc": "^14.1.1",
     "proxyquire": "^1.7.10",
     "sinon": "^7.3.2",

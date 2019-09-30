@@ -2,7 +2,6 @@
 
 
 import { HistoryCollection } from './LocalJiraDB'
-import JiraClient from '../jira/JiraClient'
 import logger, { Logger } from '../logger'
 
 export interface QueryResult {
@@ -10,7 +9,6 @@ export interface QueryResult {
   collection: HistoryCollection<any>
   logger: Logger
   args?: object
-  jiraClient?: JiraClient
 }
 
 export default class Query {

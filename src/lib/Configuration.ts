@@ -2,9 +2,15 @@
 
 import * as fs from 'fs'
 import * as path from 'path'
+import * as _ from 'lodash'
 import { promisify } from 'util'
 import logger from './logger'
 import { JiraAuth } from './jira/JiraClient';
+
+export interface JiraConfig {
+  target: string
+  jira: JiraAuth
+}
 
 export default class Configuration {
 
@@ -15,7 +21,7 @@ export default class Configuration {
     this.configurationPaths = [path.resolve(HOME, '.jira-miner'), path.resolve(process.cwd(), '.jira-miner')]
   }
 
-  async writeConfiguration(config: JiraAuth): Promise<string> {
+  async writeConfiguration(config: JiraConfig[]): Promise<string> {
     const fsWriteFile = promisify(fs.writeFile)
     // write down configuration to a file
     let configFile = this.configurationPaths[0]
@@ -28,7 +34,7 @@ export default class Configuration {
       // try to write down configuration to local directory
       configFile = this.configurationPaths[1]
       try {
-        await fsWriteFile(configFile, JSON.stringify(config))
+        await fsWriteFile(configFile, JSON.stringify(config, null, 2))
         logger.debug('JIRA miner configuration stored to local directory', configFile)
       }
       catch (err) {
@@ -40,7 +46,7 @@ export default class Configuration {
     return configFile
   }
 
-  async readConfiguration(): Promise<JiraAuth> {
+  async readConfiguration(): Promise<JiraConfig[]> {
 
     const fsReadFile = promisify(fs.readFile)
     // find configuration file
@@ -72,16 +78,27 @@ export default class Configuration {
     }
   }
 
-  async updateConfiguration(newConfig: JiraAuth): Promise<string> {
+  async updateConfiguration(newConfig: JiraConfig[]): Promise<string> {
     try {
-      const config = await this.readConfiguration()
-      Object.assign(config, newConfig)
+      let config = await this.readConfiguration()
+
+      config.forEach((subConfig: JiraConfig) => {
+        const newSubConfig = _.find(newConfig, c => c.target === subConfig.target)
+        if(newSubConfig) {
+          Object.assign(subConfig, newSubConfig)
+        }
+      })
+      newConfig.forEach((subConfig: JiraConfig) => {
+        const oldConfig = _.find(config, c => c.target === subConfig.target)
+        if(!oldConfig) {
+          config.push(subConfig)
+        }
+      })
       return await this.writeConfiguration(config)
     }
     catch (err) {
       logger.warn('Unable to read jira-miner configuration', err)
-      const freshConfiguration = Object.assign({}, newConfig)
-      return this.writeConfiguration(freshConfiguration)
+      return this.writeConfiguration(newConfig)
     }
   }
 }

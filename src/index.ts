@@ -22,6 +22,14 @@ const cli = function () {
       global: true,
       type: 'count'
     })
+    .option('target', {
+      alias: 't',
+      describe: 'Target ID, use to target multiple Jira instances',
+      global: true,
+      default: 'default',
+      defaultDescription: 'Default target id',
+      type: 'string'
+    }) 
     .version()
     .wrap(null)
     .argv

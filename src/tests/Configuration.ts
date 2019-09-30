@@ -3,6 +3,7 @@
 import test from 'ava'
 import * as path from 'path'
 import * as tmp from 'tmp'
+import * as _ from 'lodash'
 import Configuration from '../lib/Configuration'
 
 class MockedConfiguration extends Configuration {
@@ -70,21 +71,23 @@ test('Update configuration', async t => {
 
   t.plan(3)
   try {
-    const configPath = await config.updateConfiguration({
+    const configPath = await config.updateConfiguration([{
+      target: 'dummy',
       jira: {
         url: 'https://bar'
       }
-    })
+    }])
     t.truthy(configPath, 'Updated non-existing configuration')
     let configuration = await config.readConfiguration()
-    t.is(configuration.jira.url, 'https://bar', 'Configuration has been updated')
-    await config.updateConfiguration({
+    t.is(_.find(configuration, (c) => c.target === 'dummy').jira.url, 'https://bar', 'Configuration has been updated')
+    await config.updateConfiguration([{
+      target: 'dummy',
       jira: {
         url: 'https://foo'
       }
-    })
+    }])
     configuration = await config.readConfiguration()
-    t.is(configuration.jira.url, 'https://foo', 'Configuration has been updated for the second time')
+    t.is(_.find(configuration, (c) => c.target === 'dummy').jira.url, 'https://foo', 'Configuration has been updated for the second time')
   }
   catch (err) {
     console.error(err)
@@ -93,10 +96,11 @@ test('Update configuration', async t => {
 
 })
 
-const dummyConfiguration = {
+const dummyConfiguration = [ {
+  target: 'dummy',
   jira: {
     user: 'dummy',
     password: 'user',
     url: 'https://example.com'
   }
-}
+}]

@@ -9,11 +9,7 @@ class MockedJiraClient extends JiraClient {
   transformation: object
 
   constructor(transformation?: object) {
-    super({
-      jira: {
-        url: 'http://acme.com',
-      }
-    })
+    super({ url: 'http://acme.com' })
     this.transformation = transformation
   }
 

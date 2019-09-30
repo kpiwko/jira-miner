@@ -6,11 +6,7 @@ import * as sinon from 'sinon'
 import JiraClient from '../../lib/jira/JiraClient'
 
 test('Log to JIRA without user', async t => {
-  const jira = new JiraClient({
-    jira: {
-      url: 'https://issues.jboss.org'
-    }
-  })
+  const jira = new JiraClient({ url: 'https://issues.jboss.org' })
   await t.throwsAsync(jira.checkCredentials(), /Either wrong user/)
 })
 
@@ -55,12 +51,10 @@ test('Exercise JIRA check credentials logic', async t => {
 
 
 
-  const mockedJira = new JiraClient({
-    jira: {
-      url: 'https://issues.jboss.org',
-      user: 'dummy',
-      password: 'user'
-    }
+  const mockedJira = new JiraClient({    
+    url: 'https://issues.jboss.org',
+    user: 'dummy',
+    password: 'user'
   }, {
       // introduce mocked request
       request: <RequestPromiseAPI><unknown>request
@@ -71,7 +65,7 @@ test('Exercise JIRA check credentials logic', async t => {
 
   const credentials = await mockedJira.checkCredentials()
   t.truthy(credentials, 'Returned mocked configuration of jira instance')
-  t.is(credentials.jira.user, 'dummy', 'Logged in as dummy user')
+  t.is(credentials.user, 'dummy', 'Logged in as dummy user')
 
   await t.throwsAsync(mockedJira.checkCredentials(), /Captcha challenge please login via browser/)
   await t.throwsAsync(mockedJira.checkCredentials(), /Failed to login to JIRA instance/)
@@ -79,11 +73,7 @@ test('Exercise JIRA check credentials logic', async t => {
 })
 
 
-const jira = new JiraClient({
-  jira: {
-    url: 'https://issues.jboss.org'
-  }
-})
+const jira = new JiraClient({ url: 'https://issues.jboss.org' })
 
 test('Fetch issue with summary field', async t => {
   const issues = await jira.fetch('project = SEAM', { fields: ['summary'] })

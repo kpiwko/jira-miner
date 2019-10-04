@@ -65,3 +65,45 @@ test('Normalize link from history', t => {
   t.is(link.key, '', 'No key was extracted')
   t.is(link.type, 'foobar type whatever no project', 'Type is all the string')
 })
+
+test('Normalize worklog', t => {
+  const extract = value => {
+    return extractValueFromField({ schema: { type: 'array', items: 'worklog' } }, value)
+  }
+
+  let worklog = extract({
+    'startAt': 0,
+    'maxResults': 20,
+    'total': 0,
+    'worklogs': []
+  })
+
+  t.deepEqual(worklog, [], 'Worklog is empty')
+
+  worklog = extract({
+    'startAt': 0,
+    'maxResults': 20,
+    'total': 0,
+    'worklogs': [
+      'something'
+    ]
+  })
+
+  t.is(worklog.length, 1, 'Worklog contains 1 item')
+  t.is(worklog[0], 'something', 'Worklog was extracted')
+})
+
+test('Normalize array of strings - labels', t => {
+  const extract = value => {
+    return extractValueFromField({ schema: { type: 'array', items: 'string' } }, value)
+  }
+
+  let labels = extract([])
+  t.deepEqual(labels, [], 'No labels were defined')
+  
+  labels = extract(['foo', 'bar'])
+  t.is(labels.length, 2, 'Two labels vere defined')
+  t.is(labels[0], 'foo', 'First label is "foo"')
+  t.is(labels[1], 'bar', 'Secord label is "bar"')
+
+})

@@ -36,8 +36,15 @@ export class Issue {
     fieldDefinitions.forEach(fieldDefinition => {
       // check if this jira has field with current id and replace it with field name
       if (issue.fields && issue.fields[fieldDefinition.id] !== undefined) {
-        const value = extractValueFromField(fieldDefinition, issue.fields[fieldDefinition.id])
-        this[fieldDefinition.name] = value
+        let value:any = issue.fields[fieldDefinition.id]
+        try {
+          value = extractValueFromField(fieldDefinition, value)
+          this[fieldDefinition.name] = value
+        }
+        catch(e) {
+          logger.warn(`Unable to extract value in ${issue.key} for field "${fieldDefinition.name}":
+             field "${JSON.stringify(value)}", definition ${JSON.stringify(fieldDefinition)}, ${e}`)
+        }
       }
       // parse and add history  
       const [fieldName, value] = historySerie(issue, fieldDefinition)
@@ -109,7 +116,7 @@ export const historySerie = function (issue: any, field: any) {
       to = extractValueFromString(field, change.toString)
     }
     catch (e) {
-      logger.warn(`Unable to extract field ${field.name} value from history for ${issue.key} ${e}, ignoring`)
+      logger.warn(`Unable to extract field "${field.name}" value from history for ${issue.key} ${e}, ignoring`)
     }
 
     return {
@@ -149,6 +156,8 @@ export const historySerie = function (issue: any, field: any) {
 
 export const extractValueFromField = function (fieldSchema: any, value: any) {
 
+  const originalValue = value
+
   if (!isSchemaTyped(fieldSchema)) {
     return value
   }
@@ -157,13 +166,22 @@ export const extractValueFromField = function (fieldSchema: any, value: any) {
     case 'user':
       return value ? value.displayName : null
     case 'array':
-      return value ? value.map(v => {
-        return extractValueFromField({
-          schema: {
-            type: fieldSchema.schema.items
+      return value ? (() => {
+        if('total' in value) {
+          value = value[fieldSchema.schema.items] || value[`${fieldSchema.schema.items}s`]
+          if(!Array.isArray(value)) {
+            console.warn(`Unable to parse value ${originalValue} with schema ${fieldSchema}, returning empty field.`)
+            value = []
           }
-        }, v)
-      }) : []
+        }
+        return value.map((v:any) => {
+          return extractValueFromField({
+            schema: {
+              type: fieldSchema.schema.items
+            }
+          }, v)
+        })
+      })() : []
     case 'datetime':
     case 'date':
       return value ? moment.parseZone(value) : null
@@ -198,6 +216,8 @@ export const extractValueFromField = function (fieldSchema: any, value: any) {
         }
         return link ? { key: link.key, type: value.type ? value.type.name : null } : null
       })() : null
+    case 'worklog':
+      // unsure whether any parsing is needed, treat is as value
     default:
       return value ? value : null
   }

@@ -1,1 +1,10 @@
-{"jiraUrl":"foobar"}
+[
+  {
+    "target": "JiraInstance1",
+    "jira": {
+      "url": "<URL>",
+      "user": "<USER>",
+      "password": "<PASSWORD>"
+    }
+  }
+]

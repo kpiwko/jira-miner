@@ -53,8 +53,8 @@ test('Process history of issue with no author', async t => {
     t.truthy(issue.History['Component/s'], `Issue ${issue.key} contains history of Component`)
     t.truthy(issue.History['Component/s'].length > 0, `Issue ${issue.key} contains history of Component`)
     Object.keys(issue.History).forEach(key => {
-      issue.History[key].forEach((change: object) => {
-        t.falsy(change['author'], 'No author is associated with the history change')
+      issue.History[key].slice(1).forEach((change: object) => {
+        t.falsy(change['author'], 'No author is associated with the history change beyond initial change')
       })
     })
   })
@@ -94,6 +94,44 @@ test('Process history of issue with comments', async t => {
   results.forEach(issue => {
     t.is(issue.Comment.length, 6, `Issue ${issue.key} has exactly 6 comments`)
     t.assert(issue.History['Fix Version/s'].length > 0, `Issue ${issue.key} contains history of Fix Version/s`)
+  })
+
+  historyCollection = await collection.history('2016-12-10')
+  t.is(historyCollection.count(), 1, 'Just one issue in the collection')
+  results = historyCollection.where(() => true)
+  t.assert(results, 'Some issues were resolved after history query')
+  t.is(results.length, 1, 'Just 1 issue has been fetched')
+  results.forEach(issue => {
+    t.is(issue.Status, 'Coding In Progress', `Issue ${issue.key} is coding in Progress`)
+    t.deepEqual(issue['Fix Version/s'], ['ups-1.2.0'], `Issue ${issue.key} Fix Version is empty`)
+  })
+
+  historyCollection = await collection.history('2017-05-17')
+  t.is(historyCollection.count(), 1, 'Just one issue in the collection')
+  results = historyCollection.where(() => true)
+  t.assert(results, 'Some issues were resolved after history query')
+  t.is(results.length, 1, 'Just 1 issue has been fetched')
+  results.forEach(issue => {
+    t.is(issue.Status, 'Resolved', `Issue ${issue.key} is Resolved`)
+    t.deepEqual(issue['Fix Version/s'], ['ups-1.2.0-beta.1'], `Issue ${issue.key} Fix Version is empty`)
+  })
+
+})
+
+test('Process history of issue with date in future', async t => {
+
+  const collection = await fixture(null, '../fixtures/issue-with-comments.json')
+  let historyCollection = await collection.history('2038-11-29')
+  t.is(historyCollection.count(), 1, 'Just one issue in the collection')
+
+  let results = historyCollection.where(() => true)
+  t.assert(results, 'Some issues were resolved after history query')
+  t.is(results.length, 1, 'Just 1 issue has been fetched')
+  results.forEach(issue => {
+    t.is(issue.Comment.length, 12, `Issue ${issue.key} has exactly 12 comments`)
+    t.is(issue.Resolution, 'Done', `Issue ${issue.key} is marked as Done`)
+    t.assert(issue.History['Fix Version/s'].length > 0, `Issue ${issue.key} contains history of Fix Version/s`)
+    t.deepEqual(issue['Fix Version/s'], ['ups-1.2.0-beta.1'], `Issue Fix Version is set to ups-1.2.0-beta.1`)
   })
 })
 

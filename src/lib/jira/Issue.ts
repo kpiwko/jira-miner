@@ -1,6 +1,7 @@
 'use strict'
 
 import * as moment from 'moment'
+import * as _ from 'lodash'
 import { isSchemaTyped } from '../utils'
 import logger from '../logger'
 
@@ -10,6 +11,13 @@ interface moment {
 }
 (<any>moment).createFromInputFallback = function (config: any) {
   throw Error(`Value ${config ? config._i : null} does not represent valid ISO date time string`)
+}
+
+export interface FieldChange {
+  author: string,
+  change: moment.Moment,
+  from: any | any[],
+  to: any | any[]
 }
 
 export class Issue {
@@ -62,7 +70,7 @@ export const historySerie = function (issue: any, field: any) {
     return [field.name, []]
   }
 
-  let fieldChanges = issue.changelog.histories.reduce((acc, change) => {
+  let history = issue.changelog.histories.reduce((acc: FieldChange[], change) => {
     // find item in history that says the field has been changed
     const fieldChanges = change.items.filter(item => {
 
@@ -83,71 +91,54 @@ export const historySerie = function (issue: any, field: any) {
       return acc
     }
 
-    // merge field changes and change item details together and push it to history candidate
-    fieldChanges.forEach(fieldChange => {
-      acc.push(Object.assign({}, fieldChange, change))
-    })
-    return acc
-  }, [])
-
-
-
-  fieldChanges = fieldChanges.sort((a, b) => moment(a.change).diff(moment(b.change)))
-
-  // push initial value from issue creation to the list of changes
-  // if the time of the change is the same as jira creation date, skip adding initial value
-  if (fieldChanges.length > 0 && !(fieldChanges.length === 1 && moment(fieldChanges[0].created).diff(moment(issue.Created)) === 0)) {
-    fieldChanges = [{
-      author: {
-        displayName: issue.Creator
-      },
-      created: issue.Created,
-      fromString: fieldChanges[0].fromString,
-      toString: fieldChanges[0].fromString
-    }].concat(fieldChanges)
-  }
-
-  let lastChange = null
-  let history = fieldChanges.map(change => {
-
+    // identify changes
     let from, to
+    // there was just one change, this is not an array value
     try {
-      from = extractValueFromString(field, change.fromString)
-      to = extractValueFromString(field, change.toString)
+      if(fieldChanges.length === 1) {
+        from = extractValueFromString(field, fieldChanges[0].fromString)
+        to = extractValueFromString(field, fieldChanges[0].toString)
+      }
+      else {
+        from = fieldChanges.reduce((acc: any, change: any) => {
+          acc.push(change.fromString)
+          return acc
+        }, [])
+        from = _.uniq(_.compact(from))
+        from = extractValueFromString(field, from.join(','))
+        to = fieldChanges.reduce((acc: any, change: any) => {
+          acc.push(change.toString)
+          return acc
+        }, [])
+        to = _.uniq(_.compact(to))
+        to = extractValueFromString(field, to.join(','))
+      }
     }
     catch (e) {
       logger.warn(`Unable to extract field "${field.name}" value from history for ${issue.key} ${e}, ignoring`)
     }
 
-    return {
+    acc.push({
       author: change.author ? change.author.displayName : null,
-      change: change.created,
+      change: moment.parseZone(change.created),
       from,
       to
-    }
-  }).reduce((acc, change) => {
-
-    // merge field entries together if they have been done at the same time
-    if (lastChange && moment(lastChange.change).diff(moment(change.change)) === 0) {
-      acc.push({
-        author: change.author,
-        change: moment.parseZone(change.change),
-        from: change.from,
-        to: lastChange.to
-      })
-    }
-    // this has been different change, keep
-    if (lastChange && moment(lastChange.change).diff(moment(change.change)) !== 0) {
-      acc.push(lastChange)
-      lastChange = change
-    }
-    lastChange = change
+    })
     return acc
   }, [])
 
-  // do have have last change to be added?
-  if (lastChange && (history.length === 0 || moment(lastChange.change).diff(moment(history[history.length - 1].change)) !== 0)) {
-    history.push(lastChange)
+  // sort changes
+  history = history.sort((a:FieldChange, b: FieldChange) => moment(a.change).diff(moment(b.change)))
+
+  // push initial value from issue creation to the list of changes
+  // if the time of the change is the same as jira creation date, skip adding initial value
+  if (history.length > 0 && !(history.length === 1 && history[0].change.diff(moment(issue.Created)) === 0)) {
+    history = [{
+      author: issue.fields.creator ? issue.fields.creator.displayName : null,
+      change: moment.parseZone(issue.fields.created),
+      from: history[0].from,
+      to: history[0].from
+    }].concat(history)
   }
 
   // return both field name and its history
@@ -219,6 +210,7 @@ export const extractValueFromField = function (fieldSchema: any, value: any) {
     case 'worklog':
       // unsure whether any parsing is needed, treat is as value
     default:
+      // FIXME empty string vs 'null' behavior, unclear whether it has any impact
       return value ? value : null
   }
 }
@@ -268,6 +260,7 @@ export const extractValueFromString = function (fieldSchema: any, value: any) {
         type: `${parsed[1]} ${parsed[3]}`.trim()
       }
     default:
+      // FIXME empty string vs 'null' behavior, unclear whether it has any impact
       return value ? value : null
   }
 }

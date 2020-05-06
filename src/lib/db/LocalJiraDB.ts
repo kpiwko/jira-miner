@@ -5,13 +5,14 @@ import * as Loki from 'lokijs'
 import * as moment from 'moment'
 import logger from '../logger'
 import JiraClient, { JiraQueryOptions } from '../jira/JiraClient';
+import { FieldChange } from '../jira/Issue'
 
 const HISTORY_SNAPSHOT = '__hiStOry__'
 
 
 const snapshotInTime = function (date: moment.Moment | string, issue: any) {
 
-  date = date ? moment(date) : moment()
+  date = date ? moment(date) : moment() as moment.Moment
 
   // skip evaluation is issue has been created after snapshot date
   if (moment(issue.Created).isAfter(date)) {
@@ -23,10 +24,9 @@ const snapshotInTime = function (date: moment.Moment | string, issue: any) {
     // find the last change prior 'date' for each field and replace current value
     // in a copy of the issue with that value
     const last = issue.History[field]
-      .filter((fieldChange: any) => {
+      .filter((fieldChange: FieldChange) => {
         return moment(fieldChange.change).isBefore(date)
       })
-      // FIXME this might not be sorting the right direction
       .sort((a: any, b: any) => {
         // sort ascending, so the latest change is the last element in the list
         return moment(a.change).diff(moment(b.change))

@@ -6,7 +6,7 @@ import * as sinon from 'sinon'
 import JiraClient from '../../lib/jira/JiraClient'
 
 test('Log to JIRA without user', async t => {
-  const jira = new JiraClient({ url: 'https://issues.jboss.org' })
+  const jira = new JiraClient({ url: 'https://issues.redhat.com' })
   await t.throwsAsync(jira.checkCredentials(), /Either wrong user/)
 })
 
@@ -52,7 +52,7 @@ test('Exercise JIRA check credentials logic', async t => {
 
 
   const mockedJira = new JiraClient({    
-    url: 'https://issues.jboss.org',
+    url: 'https://issues.redhat.org',
     user: 'dummy',
     password: 'user'
   }, {
@@ -73,7 +73,7 @@ test('Exercise JIRA check credentials logic', async t => {
 })
 
 
-const jira = new JiraClient({ url: 'https://issues.jboss.org' })
+const jira = new JiraClient({ url: 'https://issues.redhat.com' })
 
 test('Fetch issue with summary field', async t => {
   const issues = await jira.fetch('project = SEAM', { fields: ['summary'] })

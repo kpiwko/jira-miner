@@ -50,7 +50,12 @@ const snapshotInTime = function (date: moment.Moment | string, issue: any) {
 }
 
 export interface HistoryResultset extends Resultset<any> {
+}
 
+export interface CollectionDetails {
+  name: string
+  type: string
+  count: number
 }
 
 export interface HistoryCollection<E extends object> {
@@ -62,6 +67,7 @@ export interface HistoryCollection<E extends object> {
   removeWhere(query: ((value: E, index: number, array: E[]) => boolean) | LokiQuery<E & LokiObj>): void
   insert(doc: E[]): E[] | undefined
   count(query?: LokiQuery<E & LokiObj>): number
+  dropHistoryCollections(): number
 }
 
 interface JiraDBInstance<E extends object = any> {
@@ -69,6 +75,8 @@ interface JiraDBInstance<E extends object = any> {
   populate(jira: JiraClient, query: string, optional: JiraQueryOptions, collectionName?: string): Promise<HistoryCollection<any>>
   getHistoryCollection(collectionName: string): Promise<HistoryCollection<E>>
   saveDatabase(): Promise<void>
+  listCollections(): CollectionDetails[]
+  removeCollection(name: string): void
 }
 
 // implementation
@@ -119,6 +127,18 @@ class HistoryCollectionImpl<E extends object> implements HistoryCollection<E> {
 
   count(query?: LokiQuery<E & LokiObj>): number {
     return this.collection.count(query)
+  }
+
+  dropHistoryCollections(): number {
+    const collections = this.db.listCollections()
+    let count = 0
+    collections.forEach(collection => {
+      if (collection.name.startsWith(HISTORY_SNAPSHOT)) {
+        this.db.removeCollection(collection.name)
+        count++
+      }
+    })
+    return count
   }
 }
 
@@ -206,7 +226,7 @@ export class LocalJiraDBInstance implements JiraDBInstance {
     const collections = this.db.listCollections()
     collections.forEach(collection => {
       if (collection.name.startsWith(HISTORY_SNAPSHOT)) {
-        this.db.removeCollection(collection.name)
+        this.removeCollection(collection.name)
       }
     })
 
@@ -218,4 +238,12 @@ export class LocalJiraDBInstance implements JiraDBInstance {
       logger.debug(`Database has been saved to ${this.path}`)
     })
   }
+
+  listCollections(): CollectionDetails[] {
+    return (<unknown>this.db.listCollections()) as CollectionDetails[]
+  }
+
+  removeCollection(name: string): void {
+    this.db.removeCollection(name)
+  } 
 }

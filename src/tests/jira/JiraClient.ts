@@ -7,7 +7,7 @@ import JiraClient from '../../lib/jira/JiraClient'
 
 test('Log to JIRA without user', async t => {
   const jira = new JiraClient({ url: 'https://issues.redhat.com' })
-  await t.throwsAsync(jira.checkCredentials(), /Either wrong user/)
+  await t.throwsAsync(jira.checkCredentials(), { message: /Either wrong user/ })
 })
 
 test('Exercise JIRA check credentials logic', async t => {
@@ -61,15 +61,15 @@ test('Exercise JIRA check credentials logic', async t => {
     })
 
   t.plan(6)
-  await t.throwsAsync(mockedJira.checkCredentials(), /Either wrong user dummy or wrong password provided/)
+  await t.throwsAsync(mockedJira.checkCredentials(), { message: /Either wrong user dummy or wrong password provided/ })
 
   const credentials = await mockedJira.checkCredentials()
   t.truthy(credentials, 'Returned mocked configuration of jira instance')
   t.is(credentials.user, 'dummy', 'Logged in as dummy user')
 
-  await t.throwsAsync(mockedJira.checkCredentials(), /Captcha challenge please login via browser/)
-  await t.throwsAsync(mockedJira.checkCredentials(), /Failed to login to JIRA instance/)
-  await t.throwsAsync(mockedJira.checkCredentials(), /unhandled control flow/)
+  await t.throwsAsync(mockedJira.checkCredentials(), { message: /Captcha challenge please login via browser/ })
+  await t.throwsAsync(mockedJira.checkCredentials(), { message: /Failed to login to JIRA instance/ })
+  await t.throwsAsync(mockedJira.checkCredentials(), { message: /unhandled control flow/ })
 })
 
 

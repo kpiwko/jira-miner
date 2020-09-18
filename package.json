@@ -9,7 +9,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "tsc --declaration",
+    "build": "tsc --declaration && cp src/tests/fixtures/* dist/tests/fixtures/",
     "test": "ava -v src/tests/**/*.ts src/tests/*.ts",
     "coverage": "nyc npm run test",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
@@ -57,14 +57,15 @@
     "yargs": "^13.2.4"
   },
   "devDependencies": {
+    "@ava/typescript": "^1.1.1",
     "@types/cheerio": "^0.22.11",
     "@types/lodash": "^4.14.141",
     "@types/proxyquire": "^1.3.28",
     "@types/sinon": "^7.0.11",
-    "ava": "^1.4.1",
+    "ava": "^3.12.1",
     "blue-tape": "^1.0.0",
     "cheerio": "^1.0.0-rc.3",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.20",
     "nyc": "^14.1.1",
     "proxyquire": "^1.7.10",
     "sinon": "^7.3.2",
@@ -73,15 +74,16 @@
     "typescript": "^3.6.3"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.8.0"
   },
   "ava": {
-    "compileEnhancements": false,
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ]
+    "typescript": {
+			"extensions": [
+				"ts"
+			],
+			"rewritePaths": {
+				"src/": "dist/"
+			}
+		}
   }
 }

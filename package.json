@@ -1,6 +1,6 @@
 {
   "name": "jira-miner",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "An utility for advanced queryies on top of JIRA",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -33,36 +33,36 @@
     "@types/blue-tape": "^0.1.32",
     "@types/clone": "^0.1.30",
     "@types/lokijs": "^1.5.2",
-    "@types/node": "^11.13.10",
+    "@types/node": "^11.15.35",
     "@types/request-promise": "^4.1.44",
     "@types/request-promise-native": "^1.0.16",
     "@types/tmp": "^0.1.0",
     "cli-table": "^0.3.1",
     "clone": "^2.1.2",
     "common-tags": "^1.4.0",
-    "d3-node": "^2.1.0",
-    "jira-client": "^6.7.1",
+    "d3-node": "^2.2.2",
+    "jira-client": "^6.21.1",
     "json2csv": "^3.7.3",
     "jsonfile": "^2.4.0",
-    "lokijs": "^1.4.1",
-    "moment": "^2.16.0",
+    "lokijs": "^1.5.11",
+    "moment": "^2.29.1",
     "prettyjson": "^1.2.1",
     "promise-request-retry": "^1.0.1",
     "promise-retry": "^1.1.1",
     "request": "^2.78.0",
-    "request-promise": "^4.2.4",
+    "request-promise": "^4.2.6",
     "svg2png": "^4.1.1",
     "tmp": "0.1.0",
-    "winston": "^2.4.4",
+    "winston": "^2.4.5",
     "yargs": "^13.2.4"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
-    "@types/cheerio": "^0.22.11",
-    "@types/lodash": "^4.14.141",
+    "@types/cheerio": "^0.22.22",
+    "@types/lodash": "^4.14.165",
     "@types/proxyquire": "^1.3.28",
     "@types/sinon": "^7.0.11",
-    "ava": "^3.12.1",
+    "ava": "^3.13.0",
     "blue-tape": "^1.0.0",
     "cheerio": "^1.0.0-rc.3",
     "lodash": "^4.17.20",
@@ -70,20 +70,20 @@
     "proxyquire": "^1.7.10",
     "sinon": "^7.3.2",
     "string-natural-compare": "^2.0.3",
-    "ts-node": "^8.4.1",
-    "typescript": "^3.6.3"
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
   },
   "engines": {
     "node": ">=10.8.0"
   },
   "ava": {
     "typescript": {
-			"extensions": [
-				"ts"
-			],
-			"rewritePaths": {
-				"src/": "dist/"
-			}
-		}
+      "extensions": [
+        "ts"
+      ],
+      "rewritePaths": {
+        "src/": "dist/"
+      }
+    }
   }
 }

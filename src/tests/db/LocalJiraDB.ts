@@ -62,7 +62,7 @@ test('Process history of issue with no author', async t => {
 
 test('Process history of issue with comments', async t => {
 
-  const collection = await fixture(null, '../fixtures/issue-with-comments.json')
+  const collection = await fixture(null, '../fixtures/issueWithComments.json')
   let historyCollection = await collection.history('2016-11-29')
   t.is(historyCollection.count(), 1, 'Just one issue in the collection')
 
@@ -120,7 +120,7 @@ test('Process history of issue with comments', async t => {
 
 test('Process history of issue with date in future', async t => {
 
-  const collection = await fixture(null, '../fixtures/issue-with-comments.json')
+  const collection = await fixture(null, '../fixtures/issueWithComments.json')
   let historyCollection = await collection.history('2038-11-29')
   t.is(historyCollection.count(), 1, 'Just one issue in the collection')
 
@@ -148,7 +148,7 @@ test('Process history of issue with comments without last date', async t => {
       }
       return issue
     })
-  }, '../fixtures/issue-with-comments.json')
+  }, '../fixtures/issueWithComments.json')
   let historyCollection = await collection.history('2016-11-29')
   t.is(historyCollection.count(), 1, 'Just one issue in the collection')
 
@@ -169,7 +169,7 @@ test('Process history of issue without any comments', async t => {
       }
       return issue
     })
-  }, '../fixtures/issue-with-comments.json')
+  }, '../fixtures/issueWithComments.json')
   let historyCollection = await collection.history('2016-11-30')
   t.is(historyCollection.count(), 1, 'Just one issue in the collection')
 
@@ -179,6 +179,20 @@ test('Process history of issue without any comments', async t => {
   results.forEach(issue => {
     t.is(issue.Comment.length, 0, `Issue ${issue.key} has exactly 0 comments`)
     t.assert(issue.History['Fix Version/s'].length > 0, `Issue ${issue.key} contains history of Fix Version/s`)
+  })
+})
+
+test('Process history of issue with target date', async t => {
+
+  const collection = await fixture(null, '../fixtures/issueWithTargetDate.json')
+  let historyCollection = await collection.history('2020-10-10')
+  t.is(historyCollection.count(), 1, 'Just one issue in the collection')
+
+  let results = historyCollection.where(() => true)
+  t.assert(results, 'Some issues were resolved after history query')
+  t.is(results.length, 1, 'Just 1 issue has been fetched')
+  results.forEach(issue => {
+    t.is(issue['Target end'].format('YYYY-MM-DD'), '2020-02-04', `Issue ${issue.key} has Target end set for 2020-02-04`)
   })
 })
 

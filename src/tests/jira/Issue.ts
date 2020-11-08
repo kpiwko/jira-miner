@@ -107,3 +107,12 @@ test('Normalize array of strings - labels', t => {
   t.is(labels[1], 'bar', 'Secord label is "bar"')
 
 })
+
+test('Normalize Target End from history', t => {
+  const extract = ((value: string): moment.Moment => {
+    return extractValueFromString({ schema: {type: 'date'}}, value)
+  })
+
+  const targetEnd = extract('6/Oct/2020')
+  t.is(targetEnd.format('YYYY-MM-DD'), '2020-10-06')
+})

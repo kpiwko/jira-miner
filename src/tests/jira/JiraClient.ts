@@ -100,13 +100,6 @@ test('Fetch issues via multiple calls and limit number of issues', async t => {
   t.assert(issues.length >= 100, 'More than 100 issues have been fetched')
 })
 
-// this test is skipped as it takes too long
-test.skip('Foobar', async t => {
-  const issues = await jira.fetch('project = AEROGEAR and "Story Points" > 0')
-  t.truthy(issues, 'AEROGEAR issues has been fetched')
-})
-
-
 test('Fetch issue without changelog', async t => {
   const issues = await jira.fetch('key = SEAM-1', { expand: [] })
   t.truthy(issues, 'SEAM-1 issue has been fetched')

@@ -10,7 +10,16 @@ interface moment {
   createFromInputFallback(config: any): void
 }
 (<any>moment).createFromInputFallback = function (config: any) {
-  throw Error(`Value ${config ? config._i : null} does not represent valid ISO date time string`)
+  // toString shows localized date string for changes in the field, attempt to parse it
+  const fallback = moment.parseZone(`${config ? config._i : null}+00:00`, 'D/MMM/YYYYZ')
+  if(fallback.isValid) {
+    config._d = fallback.toDate()
+    config._offset = fallback.utcOffset()
+    config._isUTC = fallback.isUTC()
+  }
+  else {
+    throw Error(`Value ${config ? config._i : null} does not represent valid ISO date time string`)
+  }
 }
 
 export interface FieldChange {

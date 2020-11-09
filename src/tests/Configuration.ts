@@ -3,8 +3,8 @@
 import test from 'ava'
 import * as path from 'path'
 import * as tmp from 'tmp'
-import * as _ from 'lodash'
-import Configuration from '../lib/Configuration'
+import _ from 'lodash'
+import Configuration from '../Configuration'
 
 class MockedConfiguration extends Configuration {
   constructor(configurationPaths: [string, string]) {
@@ -79,7 +79,7 @@ test('Update configuration', async t => {
     }])
     t.truthy(configPath, 'Updated non-existing configuration')
     let configuration = await config.readConfiguration()
-    t.is(_.find(configuration, (c) => c.target === 'dummy').jira.url, 'https://bar', 'Configuration has been updated')
+    t.is(_.find(configuration, (c) => c.target === 'dummy')?.jira.url, 'https://bar', 'Configuration has been updated')
     await config.updateConfiguration([{
       target: 'dummy',
       jira: {
@@ -87,7 +87,7 @@ test('Update configuration', async t => {
       }
     }])
     configuration = await config.readConfiguration()
-    t.is(_.find(configuration, (c) => c.target === 'dummy').jira.url, 'https://foo', 'Configuration has been updated for the second time')
+    t.is(_.find(configuration, (c) => c.target === 'dummy')?.jira.url, 'https://foo', 'Configuration has been updated for the second time')
   }
   catch (err) {
     console.error(err)

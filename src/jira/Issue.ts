@@ -1,9 +1,11 @@
 'use strict'
 
-import * as moment from 'moment'
-import * as _ from 'lodash'
+import moment from 'moment'
+import _ from 'lodash'
 import { isSchemaTyped } from '../utils'
-import logger from '../logger'
+import Logger from '../logger'
+
+const logger = new Logger()
 
 // setup moment fallback configuration
 interface moment {
@@ -12,7 +14,7 @@ interface moment {
 (<any>moment).createFromInputFallback = function (config: any) {
   // toString shows localized date string for changes in the field, attempt to parse it
   const fallback = moment.parseZone(`${config ? config._i : null}+00:00`, 'D/MMM/YYYYZ')
-  if(fallback.isValid) {
+  if(fallback.isValid()) {
     config._d = fallback.toDate()
     config._offset = fallback.utcOffset()
     config._isUTC = fallback.isUTC()
@@ -35,6 +37,7 @@ export class Issue {
   self: string
   key: string
   History: any
+  [key: string]: any
 
   // there are more fields but those are dynamic
 
@@ -50,7 +53,7 @@ export class Issue {
     this.key = issue.key
 
     // normalize field values
-    fieldDefinitions.forEach(fieldDefinition => {
+    fieldDefinitions.forEach((fieldDefinition: any) => {
       // check if this jira has field with current id and replace it with field name
       if (issue.fields && issue.fields[fieldDefinition.id] !== undefined) {
         let value:any = issue.fields[fieldDefinition.id]
@@ -79,13 +82,13 @@ export const historySerie = function (issue: any, field: any) {
     return [field.name, []]
   }
 
-  let history = issue.changelog.histories.reduce((acc: FieldChange[], change) => {
+  let history = issue.changelog.histories.reduce((acc: FieldChange[], change: any) => {
     // find item in history that says the field has been changed
-    const fieldChanges = change.items.filter(item => {
+    const fieldChanges = change.items.filter((item:any) => {
 
       const itemFieldName = item.field.toLowerCase().replace(/\s/g, '')
 
-      const names = field.clauseNames.map(name => {
+      const names = field.clauseNames.map((name:string) => {
         return name.toLowerCase().replace(/\s/g, '')
       })
 
@@ -197,7 +200,7 @@ export const extractValueFromField = function (fieldSchema: any, value: any) {
       if (!value || !value.comments) {
         return []
       }
-      return value.comments.map(c => {
+      return value.comments.map((c:any) => {
         return {
           lastAuthor: extractValueFromField({ schema: { type: 'user' } }, c.updateAuthor),
           lastUpdated: extractValueFromField({ schema: { type: 'datetime' } }, c.updated),
@@ -234,7 +237,7 @@ export const extractValueFromString = function (fieldSchema: any, value: any) {
     case 'user':
       return value ? value : null
     case 'array':
-      return value ? value.split(',').map(v => {
+      return value ? value.split(',').map((v:string) => {
         return extractValueFromString({
           schema: {
             type: fieldSchema.schema.items

@@ -1,10 +1,10 @@
 'use strict'
 
-import * as JiraApi from 'jira-client'
+import JiraApi from 'jira-client'
 import * as urlParser from 'url'
-import * as rpr from 'promise-request-retry'
-import logger from '../logger'
-import * as rp from 'request-promise'
+import promiseRetry from 'promise-request-retry'
+import Logger from '../logger'
+import rp from 'request-promise'
 import { transformAll, isSchemaTyped } from '../utils'
 import { Issue } from './Issue';
 
@@ -13,12 +13,14 @@ const MAX_RESULTS = 100
 // max retries if something goes wrong with request
 const MAX_RETRIES = 3
 
+const logger = new Logger()
+
 const rpr_retry = function (options:any) : rp.RequestPromiseAPI {
   options = Object.assign({
     retry: MAX_RETRIES
   }, options)
   
-  return rpr(options)
+  return promiseRetry(options)
 }
 
 export interface JiraAuth {
@@ -38,11 +40,11 @@ export interface JsonResponse {
   [name: string]: any;
 }
 
-export interface JiraQueryOptions {//extends JiraApi.SearchQuery {
-  startAt?: number;
-  maxResults?: number;
-  fields?: string[];
-  expand?: string[];
+export interface JiraQueryOptions { //extends JiraApi.SearchQuery 
+  startAt: number;
+  maxResults: number;
+  fields: string[];
+  expand: string[];
 }
 
 export default class JiraClient {
@@ -59,8 +61,9 @@ export default class JiraClient {
     const user = auth.user || ''
     const password = auth.password || ''
     const config = urlParser.parse(url)
-    const protocol = config.protocol.replace(/:\s*$/, '')
-    const port = config.port ? config.port : (config.protocol.startsWith('https') ? '443' : '80')
+    const protocol = config.protocol?.replace(/:\s*$/, '')
+    const port = config.port ? config.port : (config.protocol?.startsWith('https') ? '443' : '80')
+    const host = config.host || ''
 
     // set default options
     options = Object.assign({
@@ -71,17 +74,17 @@ export default class JiraClient {
     }, options)
 
     if (options.debug) {
-      logger.debug('Setting up JIRA request debugging on for JiraClient')
+      logger.debug('Setting up JIRA request debugging on for JiraClient');
       // TS claims that debug property is readonly, need to override that
-      rp['debug' as any] = true
+      (<any>rp)['debug' as any] = true
     }
 
     this.jira = new JiraApi(Object.assign({
-      protocol: protocol,
-      host: config.hostname,
-      port: port,
+      protocol,
+      host,
+      port,
       username: user,
-      password: password
+      password,
     }, options))
 
     this.url = url
@@ -90,31 +93,29 @@ export default class JiraClient {
     this.rp = options.request
   }
 
-  async fetch(query: string, options?: JiraQueryOptions): Promise<any[]> {
-
-    const defaultQueryOptions = {
+  async fetch(query: string, options?: Partial<JiraQueryOptions>): Promise<any[]> {
+    // set default options
+    const queryOptions: JiraQueryOptions = Object.assign({
       maxResults: MAX_RESULTS,
       startAt: 0,
       expand: ['changelog', 'names'],
       fields: ['*navigable']
-    }
-
+    }, options)
+    
     // allow user to specify no expand
     if (options && options.expand && Array.isArray(options.expand) && options.expand.length === 0) {
-      defaultQueryOptions.expand = []
+      queryOptions.expand = []
     }
-    // set default options
-    options = Object.assign(defaultQueryOptions, options)
 
     // query for length first and afterwards query all
     const issues = await this.jira.searchJira(query, options)
 
-    const total = issues.total, maxRes = options.maxResults
+    const total = issues.total, maxRes = queryOptions.maxResults
     let issueData: any[]
 
     // return immediately if no further processing is needed
-    if (total <= options.maxResults) {
-      logger.debug(`Found ${total} issues within limit of ${options.maxResults}, returning list for query ${query}`)
+    if (total <= queryOptions.maxResults) {
+      logger.debug(`Found ${total} issues within limit of ${queryOptions.maxResults}, returning list for query ${query}`)
       issueData = issues.issues
     }
     // construct promises to fetch all the data in JIRA query
@@ -203,7 +204,7 @@ export default class JiraClient {
 
     const fieldDefinitions = await this.listFields()
 
-    const describeField = function (fieldSchema) {
+    const describeField = (fieldSchema: any) => {
 
       if (!isSchemaTyped(fieldSchema, logger)) {
         return ['text', 'Unknown description']
@@ -213,7 +214,7 @@ export default class JiraClient {
         case 'user':
           return ['text', 'Real user name']
         case 'array':
-          const desc = ['array of '].concat(
+          const desc: any[] = ['array of '].concat(
             describeField({
               schema: {
                 type: fieldSchema.schema.items

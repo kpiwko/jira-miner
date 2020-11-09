@@ -1,17 +1,11 @@
 {
   "name": "jira-miner",
-  "version": "1.6.1",
+  "version": "2.0.0",
   "description": "An utility for advanced queryies on top of JIRA",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "bin": {
-    "jira-miner": "./dist/index.js"
-  },
-  "scripts": {
-    "clean": "rm -rf dist",
-    "build": "tsc --declaration && cp src/tests/fixtures/* dist/tests/fixtures/",
-    "test": "ava -v src/tests/**/*.ts src/tests/*.ts",
-    "coverage": "nyc npm run test"
+    "jira-miner": "./lib/index.js"
   },
   "repository": {
     "type": "git",
@@ -30,12 +24,20 @@
   "homepage": "https://github.com/kpiwko/jira-miner#readme",
   "dependencies": {
     "@types/blue-tape": "^0.1.32",
+    "@types/cli-table": "^0.3.0",
     "@types/clone": "^0.1.30",
+    "@types/common-tags": "^1.8.0",
+    "@types/jira-client": "^6.13.1",
+    "@types/jsonfile": "^6.0.0",
     "@types/lokijs": "^1.5.2",
     "@types/node": "^11.15.35",
+    "@types/prettyjson": "0.0.29",
     "@types/request-promise": "^4.1.44",
     "@types/request-promise-native": "^1.0.16",
+    "@types/string-natural-compare": "^3.0.0",
+    "@types/svg2png": "^4.1.0",
     "@types/tmp": "^0.1.0",
+    "@types/yargs": "^15.0.9",
     "cli-table": "^0.3.1",
     "clone": "^2.1.2",
     "common-tags": "^1.4.0",
@@ -52,11 +54,14 @@
     "request-promise": "^4.2.6",
     "svg2png": "^4.1.1",
     "tmp": "0.1.0",
-    "winston": "^2.4.5",
-    "yargs": "^13.2.4"
+    "winston": "^3.3.3",
+    "yargs": "^16.1.0",
+    "yargs-parser": "^15.0.1"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
+    "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@tsconfig/node10": "^1.0.7",
     "@types/cheerio": "^0.22.22",
     "@types/lodash": "^4.14.165",
     "@types/proxyquire": "^1.3.28",
@@ -65,12 +70,19 @@
     "blue-tape": "^1.0.0",
     "cheerio": "^1.0.0-rc.3",
     "lodash": "^4.17.20",
-    "nyc": "^14.1.1",
+    "nyc": "^15.1.0",
     "proxyquire": "^1.7.10",
     "sinon": "^7.3.2",
-    "string-natural-compare": "^2.0.3",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.7"
+    "source-map-support": "^0.5.19",
+    "string-natural-compare": "^3.0.1",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.5"
+  },
+  "scripts": {
+    "clean": "rm -rf dist coverage",
+    "build": "tsc --declaration && cp src/tests/fixtures/* lib/tests/fixtures/",
+    "test": "ava -v src/tests/**/*.ts src/tests/*.ts",
+    "coverage": "nyc npm run test"
   },
   "engines": {
     "node": ">=10.8.0"
@@ -78,10 +90,11 @@
   "ava": {
     "typescript": {
       "extensions": [
-        "ts"
+        "ts",
+        "json"
       ],
       "rewritePaths": {
-        "src/": "dist/"
+        "src/": "lib/"
       }
     }
   }

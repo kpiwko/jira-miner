@@ -1,7 +1,7 @@
 import test from 'ava'
 import { fixture } from './LocalJiraDB'
-import Query from '../../lib/db/Query'
-import { caseInsensitive } from 'string-natural-compare'
+import Query from '../../db/Query'
+import naturalCompare from 'string-natural-compare'
 
 test('Query issues with Android in their summary', async t => {
 
@@ -46,7 +46,7 @@ test('Manual mapReduce operation on the query', async t => {
     return col.where(issue => {
       return issue['Summary'] && issue['Summary'].includes('Android')
     })
-      .sort((a, b) => { return caseInsensitive(b.key, a.key) })
+      .sort((a, b) => { return naturalCompare(b.key, a.key, {caseInsensitive: true}) })
       .map(issue => issue.key)
       .join(' ')
   }, [])
@@ -60,12 +60,13 @@ test('Loki.js mapReduce operation on the query', async t => {
   const q = new Query(collection)
 
   const { result } = await q.query((col) => {
-    return col.mapReduce(issue => issue.key, keys =>
-      keys.sort((a, b) => caseInsensitive(b.key, a.key)))
+    return col.mapReduce(issue => issue.key, keys => {
+      return keys.sort((a, b) => naturalCompare(b, a, {caseInsensitive: true}))
+    })
   })
 
   t.is(result.length, 200, '200 issue keys are returned')
-  t.is(result[0], 'AEROGEAR-103', 'The first key is AEROGEAR-103')
+  t.is(result[0], 'AEROGEAR-202', 'The first key is AEROGEAR-202')
 })
 
 test('Async query function', async t => {

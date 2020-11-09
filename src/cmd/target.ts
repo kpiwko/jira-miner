@@ -1,13 +1,14 @@
 'use strict'
 
 import { stripIndent } from 'common-tags'
-import JiraClient from '../lib/jira/JiraClient'
-import Configuration from '../lib/Configuration'
-import logger from '../lib/logger'
+import JiraClient from '../jira/JiraClient'
+import Configuration from '../Configuration'
+import Logger from '../logger'
 
+const logger = new Logger()
 const command = 'target <url>'
 const describe = 'Connect to a JIRA module that will be used as data source'
-const builder = function (yargs) {
+const builder = function (yargs:any) {
   return yargs
     .usage(
       stripIndent`
@@ -32,7 +33,7 @@ const builder = function (yargs) {
     .wrap(null)
 }
 
-const handler = function (argv) {
+const handler = function (argv:any) {
   const debug = argv.verbose >= 2 ? true : false
   const target = argv.target
   const config = new Configuration()

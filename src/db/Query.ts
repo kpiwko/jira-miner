@@ -2,7 +2,10 @@
 
 
 import { HistoryCollection } from './LocalJiraDB'
-import logger, { Logger } from '../logger'
+import Logger from '../logger'
+
+const logger = new Logger()
+
 
 export interface QueryResult {
   result: any

@@ -3,7 +3,9 @@
 
 import * as yargs from 'yargs'
 import { stripIndent } from 'common-tags'
-import logger from './lib/logger'
+import Logger from './logger'
+
+const logger = new Logger()
 
 const cli = function () {
   var argv = yargs

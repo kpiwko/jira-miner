@@ -1,35 +1,35 @@
-import * as D3Node from 'd3-node'
-import * as svg2png from 'svg2png'
-import { sumByKeys, maxInKeys } from '../utils';
+import D3Node from 'd3-node'
+import svg2png from 'svg2png'
+import { sumByKeys, maxInKeys } from '../utils'
 
 export interface TimeAreaChartItem {
-  [key: string]: number | string | object
   date: string
   link?: string
+  [key: string]: number | string | object | undefined
 }
 
 export interface AreaChartOptions {
   name: string
   axisNames: [string, string, string?]
   labels: string[]
-  trendLabels?: string[]
-  description?: string
-  styles?: string
-  width?: number
-  height?: number
-  margin?: { top: number, right: number, bottom: number, left: number }
-  lineWidth?: number
-  lineColor?: string
-  areaColors?: string[]
-  tickSize?: number
-  tickPadding?: number
+  trendLabels: string[]
+  description: string
+  styles: string
+  width: number
+  height: number
+  margin: { top: number, right: number, bottom: number, left: number }
+  lineWidth: number
+  lineColor: string
+  areaColors: string[]
+  tickSize: number
+  tickPadding: number
 }
 
 export default class TimeAreaChart {
   options: AreaChartOptions
   d3n: D3Node
 
-  constructor(options: AreaChartOptions) {
+  constructor(options: Required<Pick<AreaChartOptions, 'name' | 'axisNames' | 'labels' >> & Partial<AreaChartOptions>) {
     this.options = Object.assign({
       styles: `
         text.title {
@@ -56,7 +56,8 @@ export default class TimeAreaChart {
       areaColors: ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6'],
       isCurve: false,
       tickSize: 5,
-      tickPadding: 5
+      tickPadding: 5,
+      description: ''
     }, options)
 
     // if there are more labels than colors, make sure that color palette is large enough by duplicating it
@@ -70,7 +71,7 @@ export default class TimeAreaChart {
   }
 
   // returns slope, intercept and r-square of the line
-  private leastSquares(xSeries, ySeries) {
+  private leastSquares(xSeries: any[], ySeries: any[]) {
     const reduceSumFunc = (prev: number, cur: number) => { return prev + cur }
 
     const xBar = xSeries.reduce(reduceSumFunc) * 1.0 / xSeries.length
@@ -276,10 +277,10 @@ export default class TimeAreaChart {
         trendline.enter()
           .append('line')
           .attr('class', 'trendline')
-          .attr('x1', function (d) { return xScale(parseTime(d[0])) })
-          .attr('y1', function (d) { return y2Scale(d[1]) })
-          .attr('x2', function (d) { return xScale(parseTime(d[2])) })
-          .attr('y2', function (d) { return y2Scale(d[3]) })
+          .attr('x1', (d:any[]) =>  { return xScale(parseTime(d[0])) })
+          .attr('y1', (d:any[]) => { return y2Scale(d[1]) })
+          .attr('x2', (d:any[]) => { return xScale(parseTime(d[2])) })
+          .attr('y2', (d:any[]) => { return y2Scale(d[3]) })
           .attr('stroke', colors[keys.length + index])
           .attr('stroke-width', this.options.lineWidth)
       })
@@ -309,7 +310,7 @@ export default class TimeAreaChart {
         return i < keys.length ? keys[i] : trendKeys[i - keys.length]
       })
 
-    var svgBuffer = new Buffer(this.d3n.svgString(), 'utf-8')
+    var svgBuffer = Buffer.from(this.d3n.svgString(), 'utf-8')
     return {
       svg: svgBuffer,
       png: await svg2png(svgBuffer),

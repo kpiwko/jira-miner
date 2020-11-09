@@ -1,7 +1,6 @@
 import test from 'ava'
-import * as fs from 'fs'
 import * as cheerio from 'cheerio'
-import TimeAreaChart, { TimeAreaChartItem } from '../../lib/chart/TimeAreaChart'
+import TimeAreaChart, { TimeAreaChartItem } from '../../chart/TimeAreaChart'
 
 test('Render simple stacked area chart', async t => {
 
@@ -26,8 +25,8 @@ test('Render simple stacked area chart with links', async t => {
     labels: ['Open', 'In Progress']
   })
 
-  const chartRender = await chart.render(dataFixture().map(d => {
-    if (d['In Progress'] > 5) {
+  const chartRender = await chart.render(dataFixture().map((d) => {
+    if (d['In Progress'] && d['In Progress'] > 5) {
       d.link = 'https://foobar.com'
     }
     return d
@@ -48,7 +47,7 @@ test('Render simple chart with trendline', async t => {
   })
 
   const chartRender = await chart.render(dataFixture().map(d => {
-    if (d['In Progress'] > 5) {
+    if (d['In Progress'] && d['In Progress'] > 5) {
       d.link = 'https://foobar.com'
     }
     return d
@@ -69,7 +68,7 @@ test('Render simple chart with two trendlines', async t => {
   })
 
   const chartRender = await chart.render(dataFixture().map(d => {
-    if (d['In Progress'] > 5) {
+    if (d['In Progress'] && d['In Progress'] > 5) {
       d.link = 'https://foobar.com'
     }
     return d

@@ -3,7 +3,7 @@
 import test from 'ava'
 import { RequestPromiseAPI } from 'request-promise-native'
 import * as sinon from 'sinon'
-import JiraClient from '../../lib/jira/JiraClient'
+import JiraClient from '../../jira/JiraClient'
 
 test('Log to JIRA without user', async t => {
   const jira = new JiraClient({ url: 'https://issues.redhat.com' })

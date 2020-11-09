@@ -11,8 +11,7 @@
     "clean": "rm -rf dist",
     "build": "tsc --declaration && cp src/tests/fixtures/* dist/tests/fixtures/",
     "test": "ava -v src/tests/**/*.ts src/tests/*.ts",
-    "coverage": "nyc npm run test",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+    "coverage": "nyc npm run test"
   },
   "repository": {
     "type": "git",

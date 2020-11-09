@@ -1,5 +1,5 @@
-import * as D3Node from 'd3-node'
-import * as svg2png from 'svg2png'
+import D3Node from 'd3-node'
+import svg2png from 'svg2png'
 
 export interface TimeLineChartItem {
   date: string
@@ -10,22 +10,22 @@ export interface TimeLineChartItem {
 export interface LineChartOptions {
   name: string
   axisNames: [string, string]
-  description?: string
-  styles?: string
-  width?: number
-  height?: number
-  margin?: { top: number, right: number, bottom: number, left: number }
-  lineWidth?: number
-  lineColor?: string
-  tickSize?: number
-  tickPadding?: number
+  description: string
+  styles: string
+  width: number
+  height: number
+  margin: { top: number, right: number, bottom: number, left: number }
+  lineWidth: number
+  lineColor: string
+  tickSize: number
+  tickPadding: number
 }
 
 export default class TimeLineChart {
   options: LineChartOptions
   d3n: D3Node
 
-  constructor(options: LineChartOptions) {
+  constructor(options: Required<Pick<LineChartOptions, 'name' | 'axisNames'>> & Partial<LineChartOptions>) {
     this.options = Object.assign({
       styles: `
         text.title {
@@ -49,7 +49,8 @@ export default class TimeLineChart {
       lineColor: '#000080',
       isCurve: false,
       tickSize: 5,
-      tickPadding: 5
+      tickPadding: 5,
+      description: ''
     }, options)
 
     this.d3n = new D3Node({});
@@ -168,7 +169,7 @@ export default class TimeLineChart {
       .attr('cy', (d: TimeLineChartItem) => yScale(d.value))
       .attr('fill', this.options.lineColor)
 
-    var svgBuffer = new Buffer(this.d3n.svgString(), 'utf-8')
+    var svgBuffer = Buffer.from(this.d3n.svgString(), 'utf-8')
     return {
       svg: svgBuffer,
       png: await svg2png(svgBuffer),

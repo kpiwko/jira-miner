@@ -1,21 +1,20 @@
 'use strict'
 
 import { stripIndent } from 'common-tags'
-import * as _ from 'lodash'
+import _ from 'lodash'
 import * as path from 'path'
-import * as json2csv from 'json2csv'
+import json2csv from 'json2csv'
 import * as prettyjson from 'prettyjson'
-import { JiraDBFactory } from '../lib/db/LocalJiraDB'
-import Configuration from '../lib/Configuration'
-import JiraClient, { JiraAuth } from '../lib/jira/JiraClient'
-import Query from '../lib/db/Query'
-import logger from '../lib/logger'
+import { JiraDBFactory } from '../db/LocalJiraDB'
+import Query from '../db/Query'
+import Logger from '../logger'
 
+const logger = new Logger()
 const command = 'query <file>'
 const describe = 'Query local database using query(ies) stored in file'
-const builder = function (yargs) {
+const builder = function (yargs: any) {
 
-  const HOME = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
+  const HOME = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE || process.cwd()
   return yargs
     .usage(stripIndent`
       usage: $0 query <file> [options]
@@ -74,18 +73,15 @@ const builder = function (yargs) {
     .wrap(null)
 }
 
-const handler = function (argv) {
+const handler = function (argv: any) {
   if ([argv.csv, argv.tsv, argv.json].filter(val => val).length > 1) {
     process.exit(1)
   }
 
-  const debug = argv.verbose >= 2 ? true : false
-  const config = new Configuration()
-  const target = argv.target
   const queryFilePath = path.resolve(process.cwd(), argv.file)
 
   // get query from file
-  let queryFile
+  let queryFile: any
   try {
     queryFile = require(queryFilePath)
   }

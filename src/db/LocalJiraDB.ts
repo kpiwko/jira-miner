@@ -1,14 +1,14 @@
 'use strict'
 
 import { promisify } from 'util'
-import * as Loki from 'lokijs'
-import * as moment from 'moment'
-import logger from '../logger'
+import Loki from 'lokijs'
+import moment from 'moment'
+import Logger from '../logger'
 import JiraClient, { JiraQueryOptions } from '../jira/JiraClient';
 import { FieldChange } from '../jira/Issue'
 
 const HISTORY_SNAPSHOT = '__hiStOry__'
-
+const logger = new Logger()
 
 const snapshotInTime = function (date: moment.Moment | string, issue: any) {
 
@@ -38,7 +38,7 @@ const snapshotInTime = function (date: moment.Moment | string, issue: any) {
   })
 
   // remove all comments that have been created after snapshot
-  copy.Comment = issue.Comment.filter(comment => {
+  copy.Comment = issue.Comment.filter((comment: any) => {
     return moment(comment.lastUpdated).isBefore(date)
   })
 
@@ -72,7 +72,7 @@ export interface HistoryCollection<E extends object> {
 
 interface JiraDBInstance<E extends object = any> {
   populate(collectionName: string, data: any): Promise<HistoryCollection<E>>
-  populate(jira: JiraClient, query: string, optional: JiraQueryOptions, collectionName?: string): Promise<HistoryCollection<any>>
+  populate(jira: JiraClient, query: string, optional?: Partial<JiraQueryOptions>, collectionName?: string): Promise<HistoryCollection<any>>
   getHistoryCollection(collectionName: string): Promise<HistoryCollection<E>>
   saveDatabase(): Promise<void>
   listCollections(): CollectionDetails[]
@@ -181,7 +181,7 @@ export class LocalJiraDBInstance implements JiraDBInstance {
 
     return new HistoryCollectionImpl(collection, this)
   }
-  async populate(jira: JiraClient, query: string, optional: JiraQueryOptions, collectionName?: string): Promise<HistoryCollection<any>>
+  async populate(jira: JiraClient, query: string, optional?: Partial<JiraQueryOptions>, collectionName?: string): Promise<HistoryCollection<any>>
   async populate(collectionName: string, data: any): Promise<HistoryCollection<any>>
   async populate(...args: any): Promise<HistoryCollection<any>> {
     if (args.length === 2 && typeof args[0] === 'string') {

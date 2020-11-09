@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as _ from 'lodash'
 import { promisify } from 'util'
-import logger from './logger'
+import Logger from './logger'
 import { JiraAuth } from './jira/JiraClient';
 
 export interface JiraConfig {
@@ -12,12 +12,14 @@ export interface JiraConfig {
   jira: JiraAuth
 }
 
+const logger = new Logger()
+
 export default class Configuration {
 
   configurationPaths: [string, string]
 
   constructor() {
-    const HOME = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
+    const HOME = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE || process.cwd()
     this.configurationPaths = [path.resolve(HOME, '.jira-miner'), path.resolve(process.cwd(), '.jira-miner')]
   }
 

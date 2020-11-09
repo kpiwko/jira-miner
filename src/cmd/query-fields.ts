@@ -1,15 +1,15 @@
 'use strict'
 
-import * as _ from 'lodash'
-import * as Table from 'cli-table'
+import _ from 'lodash'
+import Table from 'cli-table'
 import { stripIndent } from 'common-tags'
-import Configuration from '../lib/Configuration'
-import JiraClient, { JiraAuth } from '../lib/jira/JiraClient'
-import logger from '../lib/logger'
+import Configuration from '../Configuration'
+import JiraClient from '../jira/JiraClient'
+import logger from '../logger'
 
 const command = 'query-fields'
 const describe = 'List fields that can be queried by query command'
-const builder = function (yargs) {
+const builder = function (yargs:any) {
 
   return yargs
     .usage(
@@ -22,7 +22,7 @@ const builder = function (yargs) {
     .wrap(null)
 }
 
-const handler = function (argv) {
+const handler = function (argv:any) {
 
   const config = new Configuration()
   const debug = argv.verbose >= 2 ? true : false

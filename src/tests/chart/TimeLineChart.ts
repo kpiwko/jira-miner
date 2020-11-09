@@ -1,7 +1,6 @@
 import test from 'ava'
-import * as fs from 'fs'
 import * as cheerio from 'cheerio'
-import TimeLineChart, { TimeLineChartItem } from '../../lib/chart/TimeLineChart'
+import TimeLineChart, { TimeLineChartItem } from '../../chart/TimeLineChart'
 
 test('Render simple chart without links', async t => {
 

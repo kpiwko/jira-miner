@@ -1,4 +1,4 @@
-import * as moment from 'moment'
+import moment from 'moment'
 
 /**
  * Executes all promises in parallel and unifies the data to a single array.
@@ -21,14 +21,14 @@ export function intersects(arr1: string[], arr2: string | string[]): boolean {
   return arr1.filter(item => arr2.includes(item)).length > 0
 }
 
-export function sumByKeys(object: object, keys?: string[]): number {
+export function sumByKeys(object: {[key:string]: any}, keys?: string[]): number {
   keys = keys || Object.keys(object)
   return keys.reduce((acc, key) => {
     return object[key] ? acc + Number.parseFloat(object[key]) : acc
   }, 0)
 } 
 
-export function maxInKeys(object: object, keys?: string[]): number {
+export function maxInKeys(object: {[key:string]: any}, keys?: string[]): number {
   keys = keys || Object.keys(object)
   return keys.reduce((acc, key) => {
     return object[key] ? (Number.parseFloat(object[key])>acc ? Number.parseFloat(object[key]) : acc) : acc

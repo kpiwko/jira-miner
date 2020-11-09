@@ -4,8 +4,8 @@ import test from 'ava'
 import * as tmp from 'tmp'
 import * as jsonfile from 'jsonfile'
 import * as path from 'path'
-import { JiraDBFactory, HistoryCollection } from '../../lib/db/LocalJiraDB'
-import { Issue } from '../../lib/jira/Issue'
+import { JiraDBFactory, HistoryCollection } from '../../db/LocalJiraDB'
+import { Issue } from '../../jira/Issue'
 
 test('Initialize empty db with collection', async t => {
   const dbpath = tmp.fileSync();
@@ -35,11 +35,11 @@ test('Check history of issues', async t => {
 
 test('Process history of issue with no author', async t => {
 
-  const collection = await fixture(issues => {
+  const collection = await fixture((issues: any[]) => {
     // remove author
     return issues.map(issue => {
       if (issue.changelog && issue.changelog.histories) {
-        issue.changelog.histories.forEach(history => {
+        issue.changelog.histories.forEach((history:any) => {
           delete history.author
         })
       }
@@ -53,7 +53,7 @@ test('Process history of issue with no author', async t => {
     t.truthy(issue.History['Component/s'], `Issue ${issue.key} contains history of Component`)
     t.truthy(issue.History['Component/s'].length > 0, `Issue ${issue.key} contains history of Component`)
     Object.keys(issue.History).forEach(key => {
-      issue.History[key].slice(1).forEach((change: object) => {
+      issue.History[key].slice(1).forEach((change: any) => {
         t.falsy(change['author'], 'No author is associated with the history change beyond initial change')
       })
     })
@@ -137,10 +137,10 @@ test('Process history of issue with date in future', async t => {
 
 /* test for https://github.com/kpiwko/jira-miner/issues/7 */
 test('Process history of issue with comments without last date', async t => {
-  const collection = await fixture(issues => {
+  const collection = await fixture((issues: any[]) => {
     return issues.map(issue => {
       if(issue.fields.comment && issue.fields.comment.comments) {
-        issue.fields.comment.comments.forEach(comment => {
+        issue.fields.comment.comments.forEach((comment: any) => {
           if(comment.id === '13328587') {
             delete comment.updated
           }
@@ -162,7 +162,7 @@ test('Process history of issue with comments without last date', async t => {
 })
 
 test('Process history of issue without any comments', async t => {
-  const collection = await fixture(issues => {
+  const collection = await fixture((issues: any[]) => {
     return issues.map(issue => {
       if(issue.fields.comment && issue.fields.comment.comments) {
         delete issue.fields.comment.comments

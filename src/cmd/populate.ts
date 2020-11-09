@@ -1,19 +1,19 @@
 'use strict'
 
-import * as path from 'path'
-import * as _ from 'lodash'
+import path from 'path'
+import _ from 'lodash'
 import { stripIndent } from 'common-tags'
-import { JiraDBFactory } from '../lib/db/LocalJiraDB'
-import logger from '../lib/logger'
-import Configuration from '../lib/Configuration'
-import JiraClient, { JiraAuth } from '../lib/jira/JiraClient'
+import { JiraDBFactory } from '../db/LocalJiraDB'
+import Logger from '../logger'
+import Configuration from '../Configuration'
+import JiraClient, { JiraAuth, JiraQueryOptions } from '../jira/JiraClient'
 
-
+const logger = new Logger()
 const command = 'populate <query>'
 const describe = 'Populate local database with data based on query'
-const builder = function (yargs) {
+const builder = function (yargs: any) {
 
-  const HOME = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
+  const HOME = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE || process.cwd()
 
   return yargs
     .usage(stripIndent`
@@ -55,7 +55,7 @@ const builder = function (yargs) {
 
 const handler = function (argv: any) {
 
-  const optional = {
+  const optional: Partial<JiraQueryOptions> = {
     fields: argv.fields.split(','),
     expand: !argv.ignoreHistory ? ['changelog', 'names'] : ['names']
   }

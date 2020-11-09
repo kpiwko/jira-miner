@@ -1,12 +1,12 @@
 import test from 'ava'
 import { readFileSync } from 'jsonfile'
 import * as path from 'path'
-import JiraClient from '../../lib/jira/JiraClient'
-import { Issue, extractValueFromField, extractValueFromString } from '../../lib/jira/Issue'
+import JiraClient from '../../jira/JiraClient'
+import { extractValueFromField, extractValueFromString } from '../../jira/Issue'
 
 class MockedJiraClient extends JiraClient {
 
-  transformation: object
+  transformation?: object
 
   constructor(transformation?: object) {
     super({ url: 'http://acme.com' })
@@ -27,12 +27,12 @@ class MockedJiraClient extends JiraClient {
 
 test('Describe fields', async t => {
   const fieldDesc = await new MockedJiraClient().describeFields()
-  t.is(fieldDesc.filter(fd => fd[0] === 'Fix Version/s').length, 1, 'There is one field with name "Fix Version/s"')
+  t.is(fieldDesc.filter((fd: string) => fd[0] === 'Fix Version/s').length, 1, 'There is one field with name "Fix Version/s"')
 })
 
 
 test('Normalize issue status', t => {
-  const extract = value => {
+  const extract = (value: object) => {
     return extractValueFromField({ schema: { type: 'status' } }, value)
   }
   const status = extract({ name: 'Resolved' })
@@ -41,7 +41,7 @@ test('Normalize issue status', t => {
 
 test('Normalize link from history', t => {
 
-  const extract = value => {
+  const extract = (value: string) => {
     return extractValueFromString({ schema: { type: 'issuelinks' } }, value)
   }
 
@@ -67,7 +67,7 @@ test('Normalize link from history', t => {
 })
 
 test('Normalize worklog', t => {
-  const extract = value => {
+  const extract = (value: object) => {
     return extractValueFromField({ schema: { type: 'array', items: 'worklog' } }, value)
   }
 
@@ -94,7 +94,7 @@ test('Normalize worklog', t => {
 })
 
 test('Normalize array of strings - labels', t => {
-  const extract = value => {
+  const extract = (value: object) => {
     return extractValueFromField({ schema: { type: 'array', items: 'string' } }, value)
   }
 

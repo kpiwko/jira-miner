@@ -1,4 +1,4 @@
-# JIRA Miner ![example workflow name](https://github.com/actions/kpiwko/jira-miner/CI/badge.svg)
+# JIRA Miner ![CI](https://github.com/kpiwko/jira-miner/workflows/CI/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/kpiwko/jira-miner/badge.svg?branch=main)](https://coveralls.io/github/kpiwko/jira-miner?branch=main)
 
 A tool to gather data from JIRA and query them locally for better speed and more flexible query language than jql. The tool stores
 entries available in JIRA locally in [Loki.js](http://lokijs.org) database in a file. This means the tool has no dependency but Node.js

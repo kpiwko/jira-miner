@@ -1,9 +1,0 @@
-language: node_js
-node_js:
-  - "10"
-before_script:
-  - npm install -g ava typescript nyc coveralls
-script:
-  - npm run build && npm run coverage
-after_success:
-  - npm run coveralls

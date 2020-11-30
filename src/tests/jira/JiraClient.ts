@@ -2,7 +2,7 @@
 
 import test from 'ava'
 import { RequestPromiseAPI } from 'request-promise-native'
-import * as sinon from 'sinon'
+import sinon from 'sinon'
 import JiraClient from '../../jira/JiraClient'
 
 test('Log to JIRA without user', async t => {
@@ -75,7 +75,7 @@ test('Exercise JIRA check credentials logic', async t => {
 
 const jira = new JiraClient({ url: 'https://issues.redhat.com' })
 
-test('Fetch issue with summary field', async t => {
+test('Fetch issues with summary field', async t => {
   const issues = await jira.fetch('project = SEAM', { fields: ['summary'] })
   t.assert(issues.length > 0, 'SEAM issues have been fetched')
   t.truthy(issues[0]['Summary'], 'Summary is available on the first issue')

@@ -14,7 +14,7 @@ export default class Logger {
     else {
       this.logger = winston.createLogger({
         transports: [
-          new winston.transports.Console({ level: process.env.DEBUG ? 'debug' : 'info' })
+          new winston.transports.Console({ level: process.env.DEBUG && process.env.DEBUG.includes('jira-miner') ? 'debug' : 'info' })
         ]
       })
       Logger.instance = this  

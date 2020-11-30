@@ -1,8 +1,6 @@
 import moment from 'moment'
 import _ from 'lodash'
 
-export const TRANSFORMATION_CHUNK_SIZE = 10
-
 /**
  * Executes all promises in parallel and unifies the data to a single array.
  * Allows a transformation of result returned by each of the promise to a format/object
@@ -12,15 +10,8 @@ export const TRANSFORMATION_CHUNK_SIZE = 10
  * @returns an array of objects of type R
  */
 export async function transformAll<T, R>(transform: (o: T) => R, promises: Promise<T>[]): Promise<R[]> {
-
-  // limit transformation 10 parallel requests at maximum
-  // forEach loop does not wait of resolution of a promise
-  const results: any[] = []
-  for await (const promisesSlice of _.chunk(promises, TRANSFORMATION_CHUNK_SIZE)) {
-    const slice = await Promise.all(promisesSlice)
-    results.push(...slice)
-  }
-
+  const results = await Promise.all(promises)
+  
   return results.reduce((acc: R[], sublist: T) => {
     return acc.concat(transform(sublist))
   }, [])

@@ -5,13 +5,16 @@ import * as urlParser from 'url'
 import promiseRetry from 'promise-request-retry'
 import Logger from '../logger'
 import rp from 'request-promise'
+import pLimit from 'p-limit'
 import { transformAll, isSchemaTyped } from '../utils'
 import { Issue } from './Issue';
 
 // max issues to be processed at once
-const MAX_RESULTS = 100
+export const MAX_RESULTS = 100
 // max retries if something goes wrong with request
-const MAX_RETRIES = 3
+export const MAX_RETRIES = 3
+// max concurrent requests to JIRA API
+export const MAX_CONCURRENT_REQUESTS = 10
 
 const logger = new Logger()
 
@@ -30,21 +33,22 @@ export interface JiraAuth {
 }
 
 export interface JiraClientOptions {
-  apiVersion?: string,
-  debug?: boolean,
-  strictSSL?: boolean,
+  apiVersion?: string
+  debug?: boolean
+  strictSSL?: boolean
   request?: any
+  maxConcurrentRequests?: number
 }
 
 export interface JsonResponse {
-  [name: string]: any;
+  [name: string]: any
 }
 
 export interface JiraQueryOptions { //extends JiraApi.SearchQuery 
-  startAt: number;
-  maxResults: number;
-  fields: string[];
-  expand: string[];
+  startAt: number
+  maxResults: number
+  fields: string[]
+  expand: string[]
 }
 
 export default class JiraClient {
@@ -54,6 +58,7 @@ export default class JiraClient {
   password: string
   jira: JiraApi
   rp: rp.RequestPromiseAPI
+  maxConcurrentRequests: number
 
   constructor(auth: JiraAuth, options?: JiraClientOptions) {
     // parse config
@@ -64,11 +69,13 @@ export default class JiraClient {
     const protocol = config.protocol?.replace(/:\s*$/, '')
     const port = config.port ? config.port : (config.protocol?.startsWith('https') ? '443' : '80')
     const host = config.host || ''
+    const requestDebug = (process.env.NODE_DEBUG && process.env.NODE_DEBUG.includes('request')) ||
+      (process.env.DEBUG && process.env.DEBUG.includes('request'))
 
     // set default options
     options = Object.assign({
       apiVersion: '2',
-      debug: !!process.env.DEBUG || process.env.NODE_DEBUG === 'request',
+      debug: requestDebug,
       strictSSL: true,
       request: rpr_retry
     }, options)
@@ -91,6 +98,7 @@ export default class JiraClient {
     this.user = user
     this.password = password
     this.rp = options.request
+    this.maxConcurrentRequests = options.maxConcurrentRequests || MAX_CONCURRENT_REQUESTS
   }
 
   async fetch(query: string, options?: Partial<JiraQueryOptions>): Promise<any[]> {
@@ -120,22 +128,28 @@ export default class JiraClient {
     }
     // construct promises to fetch all the data in JIRA query
     else {
-      logger.debug(`Found ${total} issues, will trigger multiple queries to get full list for query ${query}`)
-      const plist: Promise<JsonResponse>[] = []
+      logger.debug(`Found ${total} issues, going to trigger multiple queries (max ${this.maxConcurrentRequests} concurrently) to get all data for the query ${query}`)
+      const plist: Promise<any>[] = []
+      const promiseLimit = pLimit(this.maxConcurrentRequests) 
       let fetched: number = 0
+
       for (let i = 0; i <= total; i += maxRes) {
         const limit = i + maxRes > total ? total - i : maxRes
-        logger.debug(`Query for items ${i}..${i + limit} out of ${total} in query '${query}'`)
-        plist.push(this.jira.searchJira(query, Object.assign(options, {
-          maxResults: limit,
-          startAt: i
-        })
-        ).then(async (issues: any) => {
-          // chain promise to notify user about progress
-          fetched++
-          logger.debug(`Fetched ${(fetched * 100.0 / plist.length).toFixed(2)}% of results`, query)
-          return issues
-        }))
+        plist.push( 
+          // limit number of concurrently executed promises
+          promiseLimit(async () => {
+            logger.debug(`Query for items ${i}..${i + limit} out of ${total} in query '${query}'`)
+            return await Promise.resolve(this.jira.searchJira(query, Object.assign(options, {
+              maxResults: limit,
+              startAt: i
+            }))).then(async (issues: any) => {
+              // chain promise to notify user about progress
+              fetched++
+              logger.debug(`Fetched ${(fetched * 100.0 / plist.length).toFixed(2)}% of results`, query)
+              return issues
+            })
+          })
+        )
       }
       issueData = await transformAll<JsonResponse, any>((json: JsonResponse) => json.issues, plist)
     }

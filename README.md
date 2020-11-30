@@ -1,14 +1,13 @@
 # JIRA Miner ![CI](https://github.com/kpiwko/jira-miner/workflows/CI/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/kpiwko/jira-miner/badge.svg?branch=main)](https://coveralls.io/github/kpiwko/jira-miner?branch=main)
 
-A tool to gather data from JIRA and query them locally for better speed and more flexible query language than jql. The tool stores
-entries available in JIRA locally in [Loki.js](http://lokijs.org) database in a file. This means the tool has no dependency but Node.js
+A tool to gather data from JIRA and query them locally for better speed and more flexible query language than jql. The tool stores entries available in JIRA locally in [Loki.js](http://lokijs.org) database in a file. This means the tool has no dependency but Node.js.
 
 ## Usage
 
 The tool is intended to act both as command line tool or a library in other projects. In order to be able to effectively query something,
 you need to populate the database first. Afterwards, you can query content of the database pretty easily.
 
-You can install the tool by
+You can install the tool by running
 ```
 npm install -g jira-miner
 ```
@@ -38,14 +37,14 @@ Once, you have targeted a jira, you can populate local database
 jira-miner populate <jqlQuery>
 ```
 
-EXAMPLE: `jira-miner populate "project in (AEROGAR, ARQ)"` downloads all issues (including their history) for projects AGPUSH and ARQ)
+**EXAMPLE**: `jira-miner populate "project in (AEROGAR, ARQ)"` downloads all issues (including their history) for projects AGPUSH and ARQ)
 
 If you rerun the query, it will rewrite all updated items. It might be a good idea to update the database since the last query to limit
 the amount of fetched data. You can do that via `--since` argument that accepts a timestamp.
 
 TIP: For very large queries, you might run out of memory. You can increase memory of node process and reduce GC calls via following:
 ```
-node --max_old_space_size=4096 --nouse-idle-notification dist/index.js populate
+npx -n "--max-old-space-size=4096" jira-miner populate
 ```
 
 ### Query the database
@@ -53,8 +52,8 @@ node --max_old_space_size=4096 --nouse-idle-notification dist/index.js populate
 JIRA miner provides an API to query the database. Query must be defined in one of following formats:
 
 ```TypeScript
-import { HistoryCollection } from 'jira-miner/dist/lib/db/LocalJiraDB'
-import { QueryResult } from 'jira-miner/dist/lib/db/Query'
+import { HistoryCollection } from 'jira-miner/lib/db/LocalJiraDB'
+import { QueryResult } from 'jira-miner/lib/db/Query'
 
 
 export async function query(collection: HistoryCollection<any>, args?: object): Promise<any> {
@@ -78,7 +77,9 @@ All arguments passed on command line will be available in args object. Example q
 
 ### Debug output
 
-Simply run any command with `--verbose` parameter. You can provide it twice (e.g. `-vv`) to have further level of debug output
+Simply run any command with `--verbose` parameter. You can provide it twice (e.g. `-vv`) to have further level of debug output.
+
+You can also setup environment variable `DEBUG` to include `jira-miner` value to get the equivalent of verbose logging.
 
 ### Image rendering example
 
@@ -87,7 +88,7 @@ For entries that have optional `link` attribute provided, it will additionally r
 
 ```TypeScript
 
-import TimeLineChart from 'jira-miner/dist/lib/chart/TimeLineChart'
+import TimeLineChart from 'jira-miner/lib/chart/TimeLineChart'
 
 export async function query(collection: HistoryCollection<any>, args?: object): Promise<any> {
 
@@ -114,7 +115,7 @@ You provide the mapping by `labels` options during chart creation.
 
 ```TypeScript
 
-import TimeAreaChart from 'jira-miner/dist/lib/chart/TimeAreaChart'
+import TimeAreaChart from 'jira-miner/lib/chart/TimeAreaChart'
 
 export async function query(collection: HistoryCollection<any>, args?: object): Promise<any> {
 
@@ -144,17 +145,17 @@ All charts are rendered as either png, svg or json
 Prerequisites:
 
 ```
-npm install -g typescript ava nyc ts-node
+npm install -g ava typescript nyc coveralls
 ```
 
-Afterwards, you can run tests via following command:
+Afterwards, you can run tests via following commands:
 
 ```
 npm run test
 ```
 
 
-Code coverage (via nyc tool):
+Code coverage (via `nyc` tool):
 ```
 npm run coverage
 ```

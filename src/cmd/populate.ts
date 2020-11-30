@@ -6,7 +6,7 @@ import { stripIndent } from 'common-tags'
 import { JiraDBFactory } from '../db/LocalJiraDB'
 import Logger from '../logger'
 import Configuration from '../Configuration'
-import JiraClient, { JiraAuth, JiraQueryOptions } from '../jira/JiraClient'
+import JiraClient, { JiraQueryOptions, MAX_CONCURRENT_REQUESTS } from '../jira/JiraClient'
 
 const logger = new Logger()
 const command = 'populate <query>'
@@ -40,6 +40,12 @@ const builder = function (yargs: any) {
       describe: 'Fetch only issues updated since the value',
       type: 'string'
     })
+    .option('throttle', {
+      alias: 'l',
+      describe: 'Limit number of concurrent API requests to JIRA during data fetch',
+      type: 'number',
+      default: MAX_CONCURRENT_REQUESTS
+    })
     .option('ignore-history', {
       describe: 'Ignore changelog of the issue',
       type: 'boolean',
@@ -62,7 +68,8 @@ const handler = function (argv: any) {
   const query = `${argv.query}${argv.since ? ` AND updated>=${argv.since}` : ''}`
   const config = new Configuration()
   const target = argv.target
-  const debug = argv.verbose >= 2 ? true : false
+  const debugRequestModule = argv.verbose >= 2 ? true : false
+  const throttle = argv.throttle
 
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await
   async function wrap(): Promise<void> {
@@ -73,7 +80,7 @@ const handler = function (argv: any) {
       if(!jiraAuth) {
         throw Error(`Unable to create Jira Client with target ${target}, such configuration was not found`)
       }
-      const jira = new JiraClient(jiraAuth.jira, { debug: debug })
+      const jira = new JiraClient(jiraAuth.jira, { debug: debugRequestModule, maxConcurrentRequests: throttle })
       logger.info(`Fetched query from JIRA and will store in ${argv.db}`, { query })
       await db.populate(jira, query, optional)
       await db.saveDatabase()

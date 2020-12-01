@@ -86,15 +86,17 @@ const handler = function (argv: any) {
     queryFile = require(queryFilePath)
   }
   catch (e) {
-    console.error(`Unable to load ${queryFilePath}\n`)
-    console.error(e)
+    logger.error(`Unable to load ${queryFilePath}\n`)
+    logger.error(e)
     process.exit(2)
   }
 
   if (!queryFile.query) {
-    logger.error(`Query file ${queryFilePath} does not contain query`)
+    logger.error(`Query file ${queryFilePath} does not contain query() script`)
     process.exit(1)
   }
+
+  logger.info(`Executing query from ${queryFilePath}`)
 
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await
   async function wrap(): Promise<void> {

@@ -1,6 +1,6 @@
 'use strict'
 
-import winston from 'winston'
+import winston, { format } from 'winston'
 
 export default class Logger {
 
@@ -12,10 +12,12 @@ export default class Logger {
       return Logger.instance
     }
     else {
+      const level = process.env.DEBUG && process.env.DEBUG.includes('jira-miner') ? 'debug' : 'info'
       this.logger = winston.createLogger({
         transports: [
-          new winston.transports.Console({ level: process.env.DEBUG && process.env.DEBUG.includes('jira-miner') ? 'debug' : 'info' })
-        ]
+          new winston.transports.Console({ level}),
+        ],
+        format: format.combine(format.timestamp(), format.label({label: 'jira-miner', message: true}), format.json())
       })
       Logger.instance = this  
     }
@@ -48,11 +50,10 @@ export default class Logger {
     return this
   }
 
-  debug(message: string): Logger
-  debug(message: string, meta: any): Logger
-  debug(message: string, ...meta: any): Logger
-  debug(...args: any): Logger {
-    this.logger.debug.apply(this.logger, args)
+  http(message: string, ...meta: any): Logger
+  http(message: string, meta: any): Logger
+  http(...args: any): Logger {
+    this.logger.http.apply(this.logger, args)
     return this
   }
 
@@ -62,4 +63,21 @@ export default class Logger {
     this.logger.verbose.apply(this.logger, args)
     return this
   }
+
+  debug(message: string): Logger
+  debug(message: string, meta: any): Logger
+  debug(message: string, ...meta: any): Logger
+  debug(...args: any): Logger {
+    this.logger.debug.apply(this.logger, args)
+    return this
+  }
+
+  silly(message: string, ...meta: any): Logger
+  silly(message: string, meta: any): Logger
+  silly(...args: any): Logger {
+    this.logger.silly.apply(this.logger, args)
+    return this
+  }
+
+
 }

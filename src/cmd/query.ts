@@ -85,9 +85,9 @@ const handler = function (argv: any) {
   try {
     queryFile = require(queryFilePath)
   }
-  catch (e) {
-    logger.error(`Unable to load ${queryFilePath}\n`)
-    logger.error(e)
+  catch (err) {
+    logger.error(`Unable to load ${queryFilePath}`)
+    logger.error(err)
     process.exit(2)
   }
 
@@ -139,6 +139,7 @@ const handler = function (argv: any) {
       }
     }
     catch (err) {
+      logger.error(`Unable to execute query() or transform function in ${queryFilePath}`)
       logger.error(err)
       process.exit(1)
     }

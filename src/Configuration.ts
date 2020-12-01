@@ -29,18 +29,20 @@ export default class Configuration {
     let configFile = this.configurationPaths[0]
     try {
       await fsWriteFile(configFile, JSON.stringify(config))
-      logger.debug('JIRA miner configuration stored to HOME directory', configFile)
+      logger.debug(`JIRA miner configuration stored to HOME directory (${configFile})`)
     }
     catch (err) {
-      logger.warn('Unable to write down configuration to HOME directory', configFile, err)
+      logger.warn(`Unable to write down configuration to HOME directory (${configFile})`)
+      logger.warn(err)
       // try to write down configuration to local directory
       configFile = this.configurationPaths[1]
       try {
         await fsWriteFile(configFile, JSON.stringify(config, null, 2))
-        logger.debug('JIRA miner configuration stored to local directory', configFile)
+        logger.debug(`JIRA miner configuration stored to local directory (${configFile})`)
       }
       catch (err) {
-        logger.warn('Unable to write down configuration to current working directory neither', configFile, err)
+        logger.warn(`Unable to write down configuration to current working directory neither (${configFile})`)
+        logger.warn(err)
         throw err
       }
     }
@@ -56,17 +58,18 @@ export default class Configuration {
     let configurationData: Buffer
     try {
       configurationData = await fsReadFile(configFile)
-      logger.debug('Loaded configuration from HOME directory', configFile)
+      logger.debug(`Loaded configuration from HOME directory ${configFile}`)
     }
     catch (err) {
-      logger.warn('Unable to read configuration file from HOME directory', configFile, err)
+      logger.warn(`Unable to read configuration file from HOME directory ${configFile}`)
       configFile = configFile = this.configurationPaths[1]
       try {
         configurationData = await fsReadFile(configFile)
-        logger.debug('Loaded configuration from current working directory', { configFile })
+        logger.debug(`Loaded configuration from current working directory ${configFile}`)
       }
       catch (err) {
-        logger.warn('Unable to read configuration file from current working directory neither', configFile, err)
+        logger.warn(`Unable to read configuration file from current working directory neither ${configFile}`)
+        logger.warn(err)
         throw err
       }
     }
@@ -75,7 +78,8 @@ export default class Configuration {
       return JSON.parse(configurationData.toString('utf-8'))
     }
     catch (err) {
-      logger.error('Unable to parse configuration data', configFile)
+      logger.error(`Unable to parse configuration data ${configFile}`)
+      logger.error(err)
       throw err
     }
   }

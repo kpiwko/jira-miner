@@ -232,7 +232,8 @@ export class LocalJiraDBInstance implements JiraDBInstance {
 
     this.db.saveDatabase((err) => {
       if (err) {
-        logger.error('Unable to store database', err)
+        logger.error(`Unable to store database ${this.path}`)
+        logger.error(err)
         throw err
       }
       logger.debug(`Database has been saved to ${this.path}`)

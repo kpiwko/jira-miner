@@ -1,27 +1,9 @@
-'use strict'
-
-import moment from 'moment'
+import { formatISO, compareAsc } from 'date-fns'
 import _ from 'lodash'
-import { isSchemaTyped } from '../utils'
+import { isSchemaTyped, parseTimeValue } from '../utils'
 import Logger from '../logger'
 
 const logger = new Logger()
-
-// setup moment fallback configuration
-interface moment {
-  createFromInputFallback(config: any): void
-}
-;(<any>moment).createFromInputFallback = function (config: any) {
-  // toString shows localized date string for changes in the field, attempt to parse it
-  const fallback = moment.parseZone(`${config ? config._i : null}+00:00`, 'D/MMM/YYYYZ')
-  if (fallback.isValid()) {
-    config._d = fallback.toDate()
-    config._offset = fallback.utcOffset()
-    config._isUTC = fallback.isUTC()
-  } else {
-    throw Error(`Value ${config ? config._i : null} does not represent valid ISO date time string`)
-  }
-}
 
 export type IssueJson = {
   id: string
@@ -53,7 +35,7 @@ export type FieldJson = {
 
 export type FieldChange = {
   author: string
-  change: moment.Moment
+  change: string
   from: any | any[]
   to: any | any[]
 }
@@ -149,7 +131,7 @@ export const historySerie = (issue: IssueJson, field: FieldJson): [string, any[]
 
     acc.push({
       author: change.author ? change.author.displayName : '',
-      change: moment.parseZone(change.created),
+      change: formatISO(parseTimeValue(change.created)),
       from,
       to,
     })
@@ -157,14 +139,21 @@ export const historySerie = (issue: IssueJson, field: FieldJson): [string, any[]
   }, [] as FieldChange[])
 
   // sort changes
-  history = history.sort((a: FieldChange, b: FieldChange) => moment(a.change).diff(moment(b.change)))
+  history = history.sort((a: FieldChange, b: FieldChange) => {
+    return compareAsc(parseTimeValue(a.change), parseTimeValue(b.change))
+  })
 
   // push initial value from issue creation to the list of changes
+  // ignore if only a subset of fields was queried, e.g. 'issue.fields.created' might be empty
   // if the time of the change is the same as jira creation date, skip adding initial value
-  if (history.length > 0 && !(history.length === 1 && history[0].change.diff(moment(<string>issue.fields?.created)) === 0)) {
+  if (
+    history.length > 0 &&
+    issue.fields.created &&
+    !(history.length === 1 && compareAsc(parseTimeValue(history[0].change), parseTimeValue(<string>issue.fields.created)) === 0)
+  ) {
     history.unshift({
       author: issue.fields.creator ? (<Record<string, string>>issue.fields?.creator)?.displayName : '',
-      change: moment.parseZone((<Record<string, string>>issue.fields)?.created),
+      change: formatISO(parseTimeValue((<Record<string, string>>issue.fields)?.created)),
       from: history[0].from,
       to: history[0].from,
     })
@@ -210,7 +199,7 @@ export const extractValueFromField = (fieldSchema: FieldJson, value: unknown): u
         : []
     case 'datetime':
     case 'date':
-      return value ? moment.parseZone(<string>value) : null
+      return value ? formatISO(parseTimeValue(<string>value)) : null
     case 'project':
     case 'priority':
     case 'status':
@@ -280,7 +269,7 @@ export const extractValueFromString = (fieldSchema: FieldJson, value: string): u
         : []
     case 'datetime':
     case 'date':
-      return value ? moment.parseZone(value) : null
+      return value ? formatISO(parseTimeValue(<string>value)) : null
     case 'project':
       return value ? <string>value : null
     case 'priority':

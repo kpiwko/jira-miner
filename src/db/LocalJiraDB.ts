@@ -2,7 +2,7 @@
 
 import { promisify } from 'util'
 import Loki from 'lokijs'
-import moment from 'moment'
+import { parseISO, formatISO, isAfter, isBefore, compareAsc } from 'date-fns'
 import Logger from '../logger'
 import { JiraClient, JiraQuery } from '../jira/JiraClient'
 import { FieldChange, Issue } from '../jira/Issue'
@@ -10,11 +10,11 @@ import { FieldChange, Issue } from '../jira/Issue'
 const HISTORY_SNAPSHOT = '__hiStOry__'
 const logger = new Logger()
 
-const snapshotInTime = function (date: moment.Moment | string, issue: any) {
-  date = date ? moment(date) : (moment() as moment.Moment)
+const snapshotInTime = function (date: string, issue: Issue) {
+  const reference = parseISO(date)
 
   // skip evaluation is issue has been created after snapshot date
-  if (moment(issue.Created).isAfter(date)) {
+  if (isAfter(parseISO(issue.Created), reference)) {
     return null
   }
   const copy = Object.assign({}, issue)
@@ -24,11 +24,11 @@ const snapshotInTime = function (date: moment.Moment | string, issue: any) {
     // in a copy of the issue with that value
     const last = issue.History[field]
       .filter((fieldChange: FieldChange) => {
-        return moment(fieldChange.change).isBefore(date)
+        return isBefore(parseISO(fieldChange.change), reference)
       })
       .sort((a: any, b: any) => {
         // sort ascending, so the latest change is the last element in the list
-        return moment(a.change).diff(moment(b.change))
+        return compareAsc(parseISO(a.change), parseISO(b.change))
       })
 
     if (last.length > 0) {
@@ -38,10 +38,10 @@ const snapshotInTime = function (date: moment.Moment | string, issue: any) {
 
   // remove all comments that have been created after snapshot
   copy.Comment = issue.Comment.filter((comment: any) => {
-    return moment(comment.lastUpdated).isBefore(date)
+    return isBefore(parseISO(comment.lastUpdated), reference)
   })
 
-  copy.SnapshotVersion = date.format()
+  copy.SnapshotVersion = formatISO(reference)
   // remove loki metadata
   delete copy['$loki']
 
@@ -56,7 +56,7 @@ export type CollectionDetails = {
 
 export interface HistoryCollection {
   name(): string
-  history(date: moment.Moment | string): Promise<HistoryCollection>
+  history(date: string): Promise<HistoryCollection>
   where(fun: (data: Issue) => boolean): (Issue & LokiObj)[]
   chain(): Resultset<Issue & LokiObj>
   mapReduce<U, R>(mapFunction: (value: Issue, index: number, array: Issue[]) => U, reduceFunction: (ary: U[]) => R): R
@@ -99,7 +99,7 @@ class HistoryCollectionImpl implements HistoryCollection {
     return this.collection.chain()
   }
 
-  async history(date: moment.Moment | string): Promise<HistoryCollection> {
+  async history(date: string): Promise<HistoryCollection> {
     const data = this.mapReduce(
       (issue: any) => {
         return snapshotInTime(date, issue)

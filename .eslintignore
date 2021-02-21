@@ -1,2 +1,4 @@
 # Ignore output of tsc compiler
-dist/*
+lib/*
+**/node_modules
+node_modules

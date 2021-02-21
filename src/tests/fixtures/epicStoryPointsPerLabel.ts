@@ -1,36 +1,43 @@
-import { HistoryCollection } from "../../db/LocalJiraDB"
+import { HistoryCollection } from '../../db/LocalJiraDB'
+import Logger from '../../logger'
 
 // usage jira-miner query <path-to-this-file> --fixVersion=<fixVersion> --label=<label>
-export function query(collection: HistoryCollection<any>, args: any) {
-
-  const testPlans = collection.chain()
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function query(collection: HistoryCollection, logger: Logger, args?: any): any {
+  const testPlans = collection
+    .chain()
     // find all epics with fix version
-    .where((issue:any) => {
+    .where((issue: any) => {
       return issue['Issue Type'] === 'Epic' && issue['Fix Version/s'].includes(args.fixVersion)
     })
     // where these epic contain a label
-    .where((issue:any) => {
+    .where((issue: any) => {
       return issue.Labels.includes(args.label)
     })
-    .data().map((issue:any) => issue.key)
+    .data()
+    .map((issue: any) => issue.key)
 
-  return collection.chain()
-    .where((issue:any) => {
+  return collection
+    .chain()
+    .where((issue: any) => {
       // return issue if a part of the epic
       return testPlans.includes(issue['Epic Link'])
     })
-    .mapReduce((issue:any) => {
-      return {
-        key: issue.key,
-        sp: issue['Story Points'],
-        labels: issue.Labels
+    .mapReduce(
+      (issue: any) => {
+        return {
+          key: issue.key,
+          sp: issue['Story Points'],
+          labels: issue.Labels,
+        }
+      },
+      (issues: any[]) => {
+        return issues.reduce((acc: any, issue: any) => {
+          issue.labels.forEach((label: string) => {
+            acc[label] = (acc[label] ? acc[label] : 0) + issue.sp
+          })
+          return acc
+        }, {})
       }
-    }, (issues:any[]) => {
-      return issues.reduce((acc: any, issue: any) => {
-        issue.labels.forEach((label: string) => {
-          acc[label] = (acc[label] ? acc[label] : 0) + issue.sp
-        })
-        return acc
-      }, {})
-    })
+    )
 }

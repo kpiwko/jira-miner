@@ -6,8 +6,8 @@ import promiseRetry from 'promise-request-retry'
 import Logger from '../logger'
 import rp from 'request-promise'
 import pLimit from 'p-limit'
-import { transformAll, isSchemaTyped } from '../utils'
-import { Issue } from './Issue';
+import { isSchemaTyped } from '../utils'
+import { changeFieldSchemaType, FieldJson, Issue, IssueJson } from './Issue'
 
 // max issues to be processed at once
 export const MAX_RESULTS = 100
@@ -18,147 +18,145 @@ export const MAX_CONCURRENT_REQUESTS = 10
 
 const logger = new Logger()
 
-const rpr_retry = function (options:any) : rp.RequestPromiseAPI {
-  options = Object.assign({
-    retry: MAX_RETRIES
-  }, options)
-  
-  return promiseRetry(options)
-}
-
-export interface JiraAuth {
+export type JiraAuth = {
   url: string
   user?: string
   password?: string
+  oauth?: JiraApi.OAuth
 }
 
-export interface JiraClientOptions {
+export type JiraClientOptions = {
   apiVersion?: string
   debug?: boolean
   strictSSL?: boolean
-  request?: any
+  request?: (options: Record<string, unknown>) => Promise<any>
   maxConcurrentRequests?: number
 }
 
-export interface JsonResponse {
-  [name: string]: any
+export type JiraQuery = {
+  //extends JiraApi.SearchQuery
+  query: string
+  startAt?: number
+  maxResults?: number
+  fields?: string[]
+  expand?: string[]
 }
 
-export interface JiraQueryOptions { //extends JiraApi.SearchQuery 
-  startAt: number
-  maxResults: number
-  fields: string[]
-  expand: string[]
-}
+export class JiraClient {
+  public jira: JiraApi
+  private url: string
+  private user: string
+  private password: string
+  private maxConcurrentRequests: number
+  private rp: (options: Record<string, unknown>) => Promise<any>
 
-export default class JiraClient {
-
-  user: string
-  url: string
-  password: string
-  jira: JiraApi
-  rp: rp.RequestPromiseAPI
-  maxConcurrentRequests: number
-
-  constructor(auth: JiraAuth, options?: JiraClientOptions) {
-    // parse config
-    const url = auth.url
-    const user = auth.user || ''
-    const password = auth.password || ''
-    const config = urlParser.parse(url)
-    const protocol = config.protocol?.replace(/:\s*$/, '')
-    const port = config.port ? config.port : (config.protocol?.startsWith('https') ? '443' : '80')
-    const host = config.host || ''
-    const requestDebug = (process.env.NODE_DEBUG && process.env.NODE_DEBUG.includes('request')) ||
-      (process.env.DEBUG && process.env.DEBUG.includes('request'))
-
-    // set default options
-    options = Object.assign({
+  constructor(
+    { url, user = '', password = '' }: JiraAuth,
+    clientOptions = {
       apiVersion: '2',
-      debug: requestDebug,
+      debug: process.env.NODE_DEBUG?.includes('request') || process.env.DEBUG?.includes('request'),
+      request: rpr_retry,
       strictSSL: true,
-      request: rpr_retry
-    }, options)
-
-    if (options.debug) {
-      logger.debug('Setting up JIRA request debugging on for JiraClient');
+      maxConcurrentRequests: MAX_CONCURRENT_REQUESTS,
+    } as JiraClientOptions
+  ) {
+    if (clientOptions.debug) {
+      logger.debug('Setting up JIRA request debugging on for JiraClient')
       // TS claims that debug property is readonly, need to override that
-      (<any>rp)['debug' as any] = true
+      ;(<any>rp)['debug' as any] = true
     }
 
-    this.jira = new JiraApi(Object.assign({
-      protocol,
-      host,
-      port,
-      username: user,
-      password,
-    }, options))
+    // parse url to find values for jira API
+    const config = urlParser.parse(url)
 
+    this.jira = new JiraApi({
+      // connection details
+      host: config.host ?? '',
+      base: config.pathname ?? '',
+      protocol: config.protocol?.replace(/:\s*$/, ''),
+      port: config.port ?? config.protocol?.startsWith('https') ? '443' : '80',
+      apiVersion: clientOptions.apiVersion ?? '2',
+      // specific settings
+      strictSSL: clientOptions.strictSSL ?? true,
+      request: clientOptions.request ?? rpr_retry,
+      // credentials
+      username: user,
+      password: password,
+    })
+    this.maxConcurrentRequests = clientOptions.maxConcurrentRequests ?? MAX_CONCURRENT_REQUESTS
     this.url = url
     this.user = user
     this.password = password
-    this.rp = options.request
-    this.maxConcurrentRequests = options.maxConcurrentRequests || MAX_CONCURRENT_REQUESTS
+    this.rp = clientOptions.request ?? rpr_retry
   }
 
-  async fetch(query: string, options?: Partial<JiraQueryOptions>): Promise<any[]> {
+  async fetch({
+    query,
+    startAt = 0,
+    maxResults = MAX_RESULTS,
+    expand = ['changelog', 'names'],
+    fields = ['*navigable'],
+  }: JiraQuery): Promise<Issue[]> {
     // set default options
-    const queryOptions: JiraQueryOptions = Object.assign({
-      maxResults: MAX_RESULTS,
-      startAt: 0,
-      expand: ['changelog', 'names'],
-      fields: ['*navigable']
-    }, options)
-    
-    // allow user to specify no expand
-    if (options && options.expand && Array.isArray(options.expand) && options.expand.length === 0) {
-      queryOptions.expand = []
-    }
-
     // query for length first and afterwards query all
-    const issues = await this.jira.searchJira(query, options)
+    const issues = await this.jira.searchJira(query, {
+      startAt,
+      maxResults,
+      expand,
+      fields,
+    })
 
-    const total = issues.total, maxRes = queryOptions.maxResults
-    let issueData: any[]
+    const total = issues.total,
+      maxRes = maxResults
+    let issueData: Array<IssueJson> = []
 
     // return immediately if no further processing is needed
-    if (total <= queryOptions.maxResults) {
-      logger.debug(`Found ${total} issues within limit of ${queryOptions.maxResults}, returning list for query ${query}`)
+    if (total <= maxResults) {
+      logger.debug(`Found ${total} issues within limit of ${maxResults}, returning list for query ${query}`)
       issueData = issues.issues
     }
     // construct promises to fetch all the data in JIRA query
     else {
-      logger.debug(`Found ${total} issues, going to trigger multiple queries (max ${this.maxConcurrentRequests} concurrently) to get all data for the query ${query}`)
-      const plist: Promise<any>[] = []
-      const promiseLimit = pLimit(this.maxConcurrentRequests) 
-      let fetched: number = 0
+      logger.debug(
+        `Found ${total} issues, going to trigger multiple queries (max ${this.maxConcurrentRequests} concurrently) to get all data for the query ${query}`
+      )
+      const plist: Promise<JiraApi.JsonResponse>[] = []
+      const promiseLimit = pLimit(this.maxConcurrentRequests)
+      let fetched = 0
 
       for (let i = 0; i <= total; i += maxRes) {
         const limit = i + maxRes > total ? total - i : maxRes
-        plist.push( 
+        plist.push(
           // limit number of concurrently executed promises
           promiseLimit(async () => {
             logger.debug(`Query for items ${i}..${i + limit} out of ${total} in query '${query}'`)
-            return await Promise.resolve(this.jira.searchJira(query, Object.assign(options, {
-              maxResults: limit,
-              startAt: i
-            }))).then(async (issues: any) => {
+            return await Promise.resolve(
+              this.jira.searchJira(query, {
+                maxResults: limit,
+                startAt: i,
+                fields,
+                expand,
+              })
+            ).then(async (issues: any) => {
               // chain promise to notify user about progress
               fetched++
-              logger.debug(`Fetched ${(fetched * 100.0 / plist.length).toFixed(2)}% of results`, query)
+              logger.debug(`Fetched ${((fetched * 100.0) / plist.length).toFixed(2)}% of results`, query)
               return issues
             })
           })
         )
       }
-      issueData = await transformAll<JsonResponse, any>((json: JsonResponse) => json.issues, plist)
+      const results = await Promise.all(plist)
+      results.forEach((json: JiraApi.JsonResponse) => {
+        issueData.push(...json.issues)
+      })
     }
 
     logger.debug('Querying jira for custom fields in order to remap them in issues and populate issue history')
     const jiraFields = await this.listFields()
 
     return issueData.map((issue, index) => {
-      if (((index + 1) % maxRes) === 0) {
+      if ((index + 1) % maxRes === 0) {
         logger.debug(`Remapped fields and added history of the first ${index + 1} issues`)
       }
       return new Issue(issue, jiraFields)
@@ -166,18 +164,17 @@ export default class JiraClient {
   }
 
   async checkCredentials(): Promise<JiraAuth> {
-
     const options = {
       method: 'POST',
       url: `${this.url}/rest/auth/1/session`,
       resolveWithFullResponse: true,
       headers: {
-        "content-type": "application/json",
+        'content-type': 'application/json',
       },
       json: true,
       body: {
-        'username': this.user,
-        'password': this.password
+        username: this.user,
+        password: this.password,
       },
       simple: false,
     }
@@ -188,8 +185,7 @@ export default class JiraClient {
       return {
         url: this.url,
         user: this.user,
-        password: this.password
-        
+        password: this.password,
       }
     }
     // login was not successful
@@ -198,28 +194,25 @@ export default class JiraClient {
     }
     // captcha triggered
     else if (response.statusCode == 403) {
-      Object.keys(response.headers).forEach(header => {
+      Object.keys(response.headers).forEach((header) => {
         if (header === 'x-authentication-denied-reason' && response.headers[header].includes('CAPTCHA_CHALLENGE')) {
           throw Error(`Captcha challenge please login via browser at ${response.headers[header]} first`)
         }
       })
       throw Error(`Failed to login to JIRA instance ${this.url} `)
-    }
-    else {
+    } else {
       throw Error(`Failed to login to JIRA instance ${this.url}, unhandled control flow`)
     }
   }
 
-  async listFields() {
+  async listFields(): Promise<any> {
     return await this.jira.listFields()
   }
 
-  async describeFields() {
-
+  async describeFields(): Promise<Array<[string, string, string]>> {
     const fieldDefinitions = await this.listFields()
 
-    const describeField = (fieldSchema: any) => {
-
+    const describeField = (fieldSchema: FieldJson) => {
       if (!isSchemaTyped(fieldSchema, logger)) {
         return ['text', 'Unknown description']
       }
@@ -228,13 +221,7 @@ export default class JiraClient {
         case 'user':
           return ['text', 'Real user name']
         case 'array':
-          const desc: any[] = ['array of '].concat(
-            describeField({
-              schema: {
-                type: fieldSchema.schema.items
-              }
-            })
-          )
+          const desc: any[] = ['array of '].concat(describeField(changeFieldSchemaType(fieldSchema, fieldSchema.schema.items)))
           return [desc[0] + desc[1], desc[2]]
         case 'datetime':
           return ['datetime', 'Date time value, such as YYYY-MM-DD HH:MM']
@@ -257,15 +244,25 @@ export default class JiraClient {
         case 'issuelinks':
           return ['{key, type}', 'Issue key associated with the link and type of link,\nsuch as Duplicate']
         case 'comments-page':
-          return ['array of {lastAuthor, lastUpdated, content}', 'Comments on the issue with last editing user real name,\nthe last date of modification and content']
+          return [
+            'array of {lastAuthor, lastUpdated, content}',
+            'Comments on the issue with last editing user real name,\nthe last date of modification and content',
+          ]
         default:
           return ['text', 'Unknown description']
       }
     }
 
-    return fieldDefinitions.reduce((acc: any, field: any) => {
+    return fieldDefinitions.reduce((acc: any, field: FieldJson) => {
       acc.push([field.name].concat(describeField(field)))
       return acc
     }, [])
   }
+}
+
+const rpr_retry = (options: Record<string, unknown>): Promise<any> => {
+  return promiseRetry({
+    retry: MAX_RETRIES,
+    ...options,
+  })
 }

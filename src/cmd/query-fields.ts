@@ -4,13 +4,11 @@ import _ from 'lodash'
 import Table from 'cli-table'
 import { stripIndent } from 'common-tags'
 import Configuration from '../Configuration'
-import JiraClient from '../jira/JiraClient'
-import logger from '../logger'
+import { JiraClient } from '../jira/JiraClient'
 
 const command = 'query-fields'
 const describe = 'List fields that can be queried by query command'
-const builder = function (yargs:any) {
-
+const builder = (yargs: any): any => {
   return yargs
     .usage(
       stripIndent`
@@ -22,8 +20,7 @@ const builder = function (yargs:any) {
     .wrap(null)
 }
 
-const handler = function (argv:any) {
-
+const handler = (argv: any): any => {
   const config = new Configuration()
   const debug = argv.verbose >= 2 ? true : false
   const target = argv.target
@@ -33,13 +30,12 @@ const handler = function (argv:any) {
     colWidths: [30, 30, 65],
   })
 
-
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await
   async function wrap(): Promise<void> {
     try {
       const jiraConfig = await config.readConfiguration()
       const jiraAuth = _.find(jiraConfig, (c) => c.target === target)
-      if(!jiraAuth) {
+      if (!jiraAuth) {
         throw Error(`Unable to create Jira Client with target ${target}, such configuration was not found`)
       }
       const jira = new JiraClient(jiraAuth.jira, { debug })
@@ -60,8 +56,7 @@ const handler = function (argv:any) {
 
       description.forEach((desc: any[]) => table.push(desc))
       console.log(table.toString())
-    }
-    catch (err) {
+    } catch (err) {
       console.error(err)
       process.exit(1)
     }

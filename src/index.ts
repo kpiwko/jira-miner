@@ -8,13 +8,15 @@ import Logger from './logger'
 const logger = new Logger()
 
 const cli = function () {
-  var argv = yargs
-    .usage(stripIndent`
+  const argv = yargs
+    .usage(
+      stripIndent`
       usage: $0 <command>
 
       Jira-miner is a tool that allows you to query and transform locally cached JIRA database.
       For more information about commands, use run '$0 help <command>'
-    `)
+    `
+    )
     .commandDir('./cmd')
     .demandCommand()
     .help('help')
@@ -22,7 +24,7 @@ const cli = function () {
       alias: 'v',
       describe: 'Be more verbose. You can provide this option twice',
       global: true,
-      type: 'count'
+      type: 'count',
     })
     .option('target', {
       alias: 't',
@@ -30,11 +32,10 @@ const cli = function () {
       global: true,
       default: 'default',
       defaultDescription: 'Default target id',
-      type: 'string'
-    }) 
+      type: 'string',
+    })
     .version()
-    .wrap(null)
-    .argv
+    .wrap(null).argv
 
   if (argv.verbose) {
     logger.setDebug()

@@ -1,47 +1,51 @@
 'use strict'
 
 import { stripIndent } from 'common-tags'
-import JiraClient from '../jira/JiraClient'
+import { JiraClient } from '../jira/JiraClient'
 import Configuration from '../Configuration'
 import Logger from '../logger'
 
 const logger = new Logger()
 const command = 'target <url>'
 const describe = 'Connect to a JIRA module that will be used as data source'
-const builder = function (yargs:any) {
+const builder = function (yargs: any) {
   return yargs
     .usage(
       stripIndent`
       usage: $0 target <url> [options]
 
       Connects to JIRA <url> that will used as data source.
-    `)
+    `
+    )
     .option('user', {
       alias: 'u',
       describe: 'User name',
-      type: 'string'
+      type: 'string',
     })
     .option('password', {
       alias: 'p',
       describe: 'Password',
-      type: 'string'
+      type: 'string',
     })
     .positional('url', {
-      describe: 'JIRA instance url, example https://issues.jboss.org'
+      describe: 'JIRA instance url, example https://issues.jboss.org',
     })
     .help('help')
     .wrap(null)
 }
 
-const handler = function (argv:any) {
+const handler = function (argv: any) {
   const debug = argv.verbose >= 2 ? true : false
   const target = argv.target
   const config = new Configuration()
-  const jiraClient = new JiraClient({
+  const jiraClient = new JiraClient(
+    {
       url: argv.url,
       user: argv.user,
-      password: argv.password
-  }, { debug })
+      password: argv.password,
+    },
+    { debug }
+  )
 
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await
   async function wrap(): Promise<void> {
@@ -49,14 +53,15 @@ const handler = function (argv:any) {
       const jira = await jiraClient.checkCredentials()
       logger.info('Successfully targeted JIRA', {
         url: jira.url,
-        user: jira.user
+        user: jira.user,
       })
-      await config.updateConfiguration([{
-        target,
-        jira
-      }])
-    }
-    catch (err) {
+      await config.updateConfiguration([
+        {
+          target,
+          jira,
+        },
+      ])
+    } catch (err) {
       console.error(err)
       process.exit(1)
     }

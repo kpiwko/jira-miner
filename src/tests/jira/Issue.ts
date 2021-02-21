@@ -1,14 +1,13 @@
 import test from 'ava'
 import { readFileSync } from 'jsonfile'
 import * as path from 'path'
-import JiraClient from '../../jira/JiraClient'
-import { extractValueFromField, extractValueFromString } from '../../jira/Issue'
+import { JiraClient } from '../../jira/JiraClient'
+import { extractValueFromField, extractValueFromString, changeFieldSchemaType, FieldJson } from '../../jira/Issue'
 
 class MockedJiraClient extends JiraClient {
+  transformation?: any
 
-  transformation?: object
-
-  constructor(transformation?: object) {
+  constructor(transformation?: any) {
     super({ url: 'http://acme.com' })
     this.transformation = transformation
   }
@@ -18,31 +17,28 @@ class MockedJiraClient extends JiraClient {
 
     if (this.transformation && this.transformation instanceof Function) {
       return this.transformation(fieldDesc)
-    }
-    else {
+    } else {
       return fieldDesc
     }
   }
 }
 
-test('Describe fields', async t => {
+test('Describe fields', async (t) => {
   const fieldDesc = await new MockedJiraClient().describeFields()
-  t.is(fieldDesc.filter((fd: string) => fd[0] === 'Fix Version/s').length, 1, 'There is one field with name "Fix Version/s"')
+  t.is(fieldDesc.filter((fd: string[]) => fd[0] === 'Fix Version/s').length, 1, 'There is one field with name "Fix Version/s"')
 })
 
-
-test('Normalize issue status', t => {
-  const extract = (value: object) => {
-    return extractValueFromField({ schema: { type: 'status' } }, value)
+test('Normalize issue status', (t) => {
+  const extract = (value: any) => {
+    return extractValueFromField(changeFieldSchemaType(dummyFieldSchema, 'status'), value)
   }
   const status = extract({ name: 'Resolved' })
   t.is(status, 'Resolved', 'Issue status is resolved')
 })
 
-test('Normalize link from history', t => {
-
+test('Normalize link from history', (t) => {
   const extract = (value: string) => {
-    return extractValueFromString({ schema: { type: 'issuelinks' } }, value)
+    return <Record<string, string>>extractValueFromString(changeFieldSchemaType(dummyFieldSchema, 'issuelinks'), value)
   }
 
   let link = extract('This issue duplicates RHMAP-13021')
@@ -66,53 +62,60 @@ test('Normalize link from history', t => {
   t.is(link.type, 'foobar type whatever no project', 'Type is all the string')
 })
 
-test('Normalize worklog', t => {
-  const extract = (value: object) => {
-    return extractValueFromField({ schema: { type: 'array', items: 'worklog' } }, value)
+test('Normalize worklog', (t) => {
+  const extract = (value: any) => {
+    return extractValueFromField(changeFieldSchemaType(dummyFieldSchema, 'array', 'worklog'), value)
   }
 
-  let worklog = extract({
-    'startAt': 0,
-    'maxResults': 20,
-    'total': 0,
-    'worklogs': []
+  let worklog = <Array<string>>extract({
+    startAt: 0,
+    maxResults: 20,
+    total: 0,
+    worklogs: [],
   })
 
   t.deepEqual(worklog, [], 'Worklog is empty')
 
-  worklog = extract({
-    'startAt': 0,
-    'maxResults': 20,
-    'total': 0,
-    'worklogs': [
-      'something'
-    ]
+  worklog = <Array<string>>extract({
+    startAt: 0,
+    maxResults: 20,
+    total: 0,
+    worklogs: ['something'],
   })
 
   t.is(worklog.length, 1, 'Worklog contains 1 item')
   t.is(worklog[0], 'something', 'Worklog was extracted')
 })
 
-test('Normalize array of strings - labels', t => {
-  const extract = (value: object) => {
-    return extractValueFromField({ schema: { type: 'array', items: 'string' } }, value)
+test('Normalize array of strings - labels', (t) => {
+  const extract = (value: any) => {
+    return extractValueFromField(changeFieldSchemaType(dummyFieldSchema, 'array', 'string'), value)
   }
 
-  let labels = extract([])
+  let labels: string[] = <string[]>extract([])
   t.deepEqual(labels, [], 'No labels were defined')
-  
-  labels = extract(['foo', 'bar'])
+
+  labels = <string[]>extract(['foo', 'bar'])
   t.is(labels.length, 2, 'Two labels vere defined')
   t.is(labels[0], 'foo', 'First label is "foo"')
   t.is(labels[1], 'bar', 'Secord label is "bar"')
-
 })
 
-test('Normalize Target End from history', t => {
-  const extract = ((value: string): moment.Moment => {
-    return extractValueFromString({ schema: {type: 'date'}}, value)
-  })
+test('Normalize Target End from history', (t) => {
+  const extract = (value: string): moment.Moment => {
+    return <moment.Moment>extractValueFromString(changeFieldSchemaType(dummyFieldSchema, 'date'), value)
+  }
 
   const targetEnd = extract('6/Oct/2020')
   t.is(targetEnd.format('YYYY-MM-DD'), '2020-10-06')
 })
+
+const dummyFieldSchema: FieldJson = {
+  id: 'dummy',
+  name: 'dummy',
+  clauseNames: ['dummy'],
+  schema: {
+    type: 'dummy',
+    items: 'string',
+  },
+}

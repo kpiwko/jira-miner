@@ -5,7 +5,7 @@ import * as path from 'path'
 import * as _ from 'lodash'
 import { promisify } from 'util'
 import Logger from './logger'
-import { JiraAuth } from './jira/JiraClient';
+import { JiraAuth } from './jira/JiraClient'
 
 export interface JiraConfig {
   target: string
@@ -15,7 +15,6 @@ export interface JiraConfig {
 const logger = new Logger()
 
 export default class Configuration {
-
   configurationPaths: [string, string]
 
   constructor() {
@@ -30,8 +29,7 @@ export default class Configuration {
     try {
       await fsWriteFile(configFile, JSON.stringify(config))
       logger.debug(`JIRA miner configuration stored to HOME directory (${configFile})`)
-    }
-    catch (err) {
+    } catch (err) {
       logger.warn(`Unable to write down configuration to HOME directory (${configFile})`)
       logger.warn(err)
       // try to write down configuration to local directory
@@ -39,8 +37,7 @@ export default class Configuration {
       try {
         await fsWriteFile(configFile, JSON.stringify(config, null, 2))
         logger.debug(`JIRA miner configuration stored to local directory (${configFile})`)
-      }
-      catch (err) {
+      } catch (err) {
         logger.warn(`Unable to write down configuration to current working directory neither (${configFile})`)
         logger.warn(err)
         throw err
@@ -51,7 +48,6 @@ export default class Configuration {
   }
 
   async readConfiguration(): Promise<JiraConfig[]> {
-
     const fsReadFile = promisify(fs.readFile)
     // find configuration file
     let configFile = this.configurationPaths[0]
@@ -59,15 +55,13 @@ export default class Configuration {
     try {
       configurationData = await fsReadFile(configFile)
       logger.debug(`Loaded configuration from HOME directory ${configFile}`)
-    }
-    catch (err) {
+    } catch (err) {
       logger.warn(`Unable to read configuration file from HOME directory ${configFile}`)
       configFile = configFile = this.configurationPaths[1]
       try {
         configurationData = await fsReadFile(configFile)
         logger.debug(`Loaded configuration from current working directory ${configFile}`)
-      }
-      catch (err) {
+      } catch (err) {
         logger.warn(`Unable to read configuration file from current working directory neither ${configFile}`)
         logger.warn(err)
         throw err
@@ -76,8 +70,7 @@ export default class Configuration {
 
     try {
       return JSON.parse(configurationData.toString('utf-8'))
-    }
-    catch (err) {
+    } catch (err) {
       logger.error(`Unable to parse configuration data ${configFile}`)
       logger.error(err)
       throw err
@@ -86,23 +79,22 @@ export default class Configuration {
 
   async updateConfiguration(newConfig: JiraConfig[]): Promise<string> {
     try {
-      let config = await this.readConfiguration()
+      const config = await this.readConfiguration()
 
       config.forEach((subConfig: JiraConfig) => {
-        const newSubConfig = _.find(newConfig, c => c.target === subConfig.target)
-        if(newSubConfig) {
+        const newSubConfig = _.find(newConfig, (c) => c.target === subConfig.target)
+        if (newSubConfig) {
           Object.assign(subConfig, newSubConfig)
         }
       })
       newConfig.forEach((subConfig: JiraConfig) => {
-        const oldConfig = _.find(config, c => c.target === subConfig.target)
-        if(!oldConfig) {
+        const oldConfig = _.find(config, (c) => c.target === subConfig.target)
+        if (!oldConfig) {
           config.push(subConfig)
         }
       })
       return await this.writeConfiguration(config)
-    }
-    catch (err) {
+    } catch (err) {
       logger.warn('Unable to read jira-miner configuration', err)
       return this.writeConfiguration(newConfig)
     }

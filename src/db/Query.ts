@@ -1,40 +1,40 @@
 'use strict'
 
-
 import { HistoryCollection } from './LocalJiraDB'
 import Logger from '../logger'
 
 const logger = new Logger()
 
-
-export interface QueryResult {
-  result: any
-  collection: HistoryCollection<any>
+export interface QueryResult<T> {
+  result: T
+  collection: HistoryCollection
   logger: Logger
-  args?: object
+  args?: Record<string, unknown>
 }
 
 export default class Query {
-  collection: HistoryCollection<any>
+  collection: HistoryCollection
 
-  constructor(collection: HistoryCollection<any>) {
+  constructor(collection: HistoryCollection) {
     this.collection = collection
   }
 
-  async query(queryFunction: (collection: HistoryCollection<any>, logger: Logger, args?: object) => Promise<any> | any, args?: object): Promise<QueryResult> {
-    let result: any
+  async query<T = any>(
+    queryFunction: (collection: HistoryCollection, logger: Logger, args?: Record<string, unknown>) => Promise<T> | T,
+    args?: Record<string, unknown>
+  ): Promise<QueryResult<T>> {
+    let result: T
     try {
       // wrapping function into promise
       result = await Promise.resolve(queryFunction.call(null, this.collection, logger, args))
-    }
-    catch (err) {
+    } catch (err) {
       throw Error(`Unable to execute query ${queryFunction.toString()}, ${err}`)
     }
     return {
       result,
       collection: this.collection,
       logger,
-      args
+      args,
     }
   }
 }

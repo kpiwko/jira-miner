@@ -1,47 +1,48 @@
 import moment from 'moment'
-import _ from 'lodash'
+import { FieldJson } from './jira/Issue'
+import Logger from './logger'
 
-/**
- * Executes all promises in parallel and unifies the data to a single array.
- * Allows a transformation of result returned by each of the promise to a format/object
- * 
- * @param transform Function thats tranforms object T to object R
- * @param promises Promises that return object T
- * @returns an array of objects of type R
- */
-export async function transformAll<T, R>(transform: (o: T) => R, promises: Promise<T>[]): Promise<R[]> {
-  const results = await Promise.all(promises)
-  
-  return results.reduce((acc: R[], sublist: T) => {
-    return acc.concat(transform(sublist))
-  }, [])
+export const intersects = (arr1: string[], arr2: string | string[]): boolean => {
+  if (arr2 === null) {
+    return false
+  }
+  arr1 = (Array.isArray(arr1) ? arr1 : [arr1]).map((e) => e.toLowerCase())
+  arr2 = (Array.isArray(arr2) ? arr2 : [arr2]).map((e) => e.toLowerCase())
+  return arr1.filter((item) => arr2.includes(item)).length > 0
 }
 
-export function intersects(arr1: string[], arr2: string | string[]): boolean {
-  arr1 = (Array.isArray(arr1) ? arr1 : [arr1]).map(e => e.toLowerCase())
-  arr2 = (Array.isArray(arr2) ? arr2 : [arr2]).map(e => e.toLowerCase())
-  return arr1.filter(item => arr2.includes(item)).length > 0
+export const sumByKeys = (object: Record<string, number | string>, keys?: string[]): number => {
+  keys = keys ?? Object.keys(object)
+  return keys.reduce((acc, key) => {
+    const value = object[key]
+    if (value !== undefined && typeof value === 'number') {
+      return acc + value
+    } else if (value !== undefined && typeof value === 'string') {
+      return acc + Number.parseFloat(value)
+    }
+    return acc
+  }, 0)
 }
 
-export function sumByKeys(object: {[key:string]: any}, keys?: string[]): number {
-  keys = keys || Object.keys(object)
+export const maxInKeys = (object: Record<string, number | string>, keys?: string[]): number => {
+  keys = keys ?? Object.keys(object)
   return keys.reduce((acc, key) => {
-    return object[key] ? acc + Number.parseFloat(object[key]) : acc
+    const value = object[key]
+    if (value !== undefined && typeof value === 'number') {
+      return value > acc ? value : acc
+    } else if (value !== undefined && typeof value === 'string') {
+      const n = Number.parseFloat(value)
+      return n > acc ? n : acc
+    }
+    return acc
   }, 0)
-} 
+}
 
-export function maxInKeys(object: {[key:string]: any}, keys?: string[]): number {
-  keys = keys || Object.keys(object)
-  return keys.reduce((acc, key) => {
-    return object[key] ? (Number.parseFloat(object[key])>acc ? Number.parseFloat(object[key]) : acc) : acc
-  }, 0)
-} 
-
-export function lastDays(count = 60): string[] {
+export const lastDays = (count = 60): string[] => {
   const now = moment()
   let before = now.subtract(count, 'days')
 
-  const dates = []
+  const dates: string[] = []
   for (let i = 0; i < count; i++) {
     before = before.add(1, 'days')
     dates.push(before.format('YYYY-MM-DD'))
@@ -49,13 +50,14 @@ export function lastDays(count = 60): string[] {
   return dates
 }
 
-export function isSchemaTyped(fieldSchema: any, logger?: any): boolean {
-
-  if (!fieldSchema || !!!fieldSchema.schema || !fieldSchema.schema.type) {
-    if (fieldSchema && (fieldSchema.id == 'issuekey' || fieldSchema.id === 'thumbnail')) {
+export function isSchemaTyped(fieldSchema: FieldJson, logger?: Logger): boolean {
+  const type = fieldSchema?.schema?.type ?? ''
+  if (type === '') {
+    if (intersects(['issuekey', 'thumbnail'], fieldSchema.id)) {
       // this is expected, not to produce log message
       return false
     }
+
     if (logger) {
       logger.warn(`Unknown field schema ${JSON.stringify(fieldSchema, null, 2)}, passing original value as is`)
     }
@@ -63,4 +65,3 @@ export function isSchemaTyped(fieldSchema: any, logger?: any): boolean {
   }
   return true
 }
-

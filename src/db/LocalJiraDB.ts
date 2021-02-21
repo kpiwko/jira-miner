@@ -4,15 +4,14 @@ import { promisify } from 'util'
 import Loki from 'lokijs'
 import moment from 'moment'
 import Logger from '../logger'
-import JiraClient, { JiraQueryOptions } from '../jira/JiraClient';
-import { FieldChange } from '../jira/Issue'
+import { JiraClient, JiraQuery } from '../jira/JiraClient'
+import { FieldChange, Issue } from '../jira/Issue'
 
 const HISTORY_SNAPSHOT = '__hiStOry__'
 const logger = new Logger()
 
 const snapshotInTime = function (date: moment.Moment | string, issue: any) {
-
-  date = date ? moment(date) : moment() as moment.Moment
+  date = date ? moment(date) : (moment() as moment.Moment)
 
   // skip evaluation is issue has been created after snapshot date
   if (moment(issue.Created).isAfter(date)) {
@@ -20,7 +19,7 @@ const snapshotInTime = function (date: moment.Moment | string, issue: any) {
   }
   const copy = Object.assign({}, issue)
 
-  Object.keys(issue.History).forEach(field => {
+  Object.keys(issue.History).forEach((field) => {
     // find the last change prior 'date' for each field and replace current value
     // in a copy of the issue with that value
     const last = issue.History[field]
@@ -44,36 +43,33 @@ const snapshotInTime = function (date: moment.Moment | string, issue: any) {
 
   copy.SnapshotVersion = date.format()
   // remove loki metadata
-  delete copy["$loki"]
+  delete copy['$loki']
 
   return copy
 }
 
-export interface HistoryResultset extends Resultset<any> {
-}
-
-export interface CollectionDetails {
+export type CollectionDetails = {
   name: string
   type: string
   count: number
 }
 
-export interface HistoryCollection<E extends object> {
+export interface HistoryCollection {
   name(): string
-  history(date: moment.Moment | string): Promise<HistoryCollection<E>>
-  where(fun: (data: E) => boolean): (E & LokiObj)[]
-  chain(): HistoryResultset
-  mapReduce<U, R>(mapFunction: (value: E, index: number, array: E[]) => U, reduceFunction: (ary: U[]) => R): R
-  removeWhere(query: ((value: E, index: number, array: E[]) => boolean) | LokiQuery<E & LokiObj>): void
-  insert(doc: E[]): E[] | undefined
-  count(query?: LokiQuery<E & LokiObj>): number
+  history(date: moment.Moment | string): Promise<HistoryCollection>
+  where(fun: (data: Issue) => boolean): (Issue & LokiObj)[]
+  chain(): Resultset<Issue & LokiObj>
+  mapReduce<U, R>(mapFunction: (value: Issue, index: number, array: Issue[]) => U, reduceFunction: (ary: U[]) => R): R
+  removeWhere(query: ((value: Issue, index: number, array: Issue[]) => boolean) | LokiQuery<Issue & LokiObj>): void
+  insert(doc: Issue[]): Issue[] | undefined
+  count(query?: LokiQuery<Issue & LokiObj>): number
   dropHistoryCollections(): number
 }
 
-interface JiraDBInstance<E extends object = any> {
-  populate(collectionName: string, data: any): Promise<HistoryCollection<E>>
-  populate(jira: JiraClient, query: string, optional?: Partial<JiraQueryOptions>, collectionName?: string): Promise<HistoryCollection<any>>
-  getHistoryCollection(collectionName: string): Promise<HistoryCollection<E>>
+interface JiraDBInstance {
+  populate(collectionName: string, data: any): Promise<HistoryCollection>
+  populate(jira: JiraClient, query: JiraQuery, collectionName?: string): Promise<HistoryCollection>
+  getHistoryCollection(collectionName: string): Promise<HistoryCollection>
   saveDatabase(): Promise<void>
   listCollections(): CollectionDetails[]
   removeCollection(name: string): void
@@ -81,31 +77,29 @@ interface JiraDBInstance<E extends object = any> {
 
 // implementation
 
-class HistoryCollectionImpl<E extends object> implements HistoryCollection<E> {
-
-  collection: Collection<E>
+class HistoryCollectionImpl implements HistoryCollection {
+  collection: Collection<Issue>
   db: JiraDBInstance
 
-  constructor(collection: Collection<E>, db: JiraDBInstance) {
+  constructor(collection: Collection<Issue>, db: JiraDBInstance) {
     this.collection = collection
     this.db = db
   }
   name() {
     return this.collection.name
   }
-  where(fun: (data: E) => boolean): (E & LokiObj)[] {
+  where(fun: (data: Issue) => boolean): (Issue & LokiObj)[] {
     return this.collection.where(fun)
   }
-  mapReduce<U, R>(mapFunction: (value: E, index: number, array: E[]) => U, reduceFunction: (ary: U[]) => R): R {
+  mapReduce<U, R>(mapFunction: (value: Issue, index: number, array: Issue[]) => U, reduceFunction: (ary: U[]) => R): R {
     return this.collection.mapReduce(mapFunction, reduceFunction)
   }
 
-  chain(): HistoryResultset {
+  chain(): Resultset<Issue & LokiObj> {
     return this.collection.chain()
   }
 
-  async history(date: moment.Moment | string): Promise<HistoryCollection<E>> {
-
+  async history(date: moment.Moment | string): Promise<HistoryCollection> {
     const data = this.mapReduce(
       (issue: any) => {
         return snapshotInTime(date, issue)
@@ -118,21 +112,21 @@ class HistoryCollectionImpl<E extends object> implements HistoryCollection<E> {
     return await this.db.populate(`${HISTORY_SNAPSHOT}-${this.name()}-${date.toString()}`, data)
   }
 
-  removeWhere(query: ((value: E, index: number, array: E[]) => boolean) | LokiQuery<E & LokiObj>): void {
+  removeWhere(query: ((value: Issue, index: number, array: Issue[]) => boolean) | LokiQuery<Issue & LokiObj>): void {
     return this.collection.removeWhere(query)
   }
-  insert(doc: E[]): E[] | undefined {
+  insert(doc: Issue[]): Issue[] | undefined {
     return this.collection.insert(doc)
   }
 
-  count(query?: LokiQuery<E & LokiObj>): number {
+  count(query?: LokiQuery<Issue & LokiObj>): number {
     return this.collection.count(query)
   }
 
   dropHistoryCollections(): number {
     const collections = this.db.listCollections()
     let count = 0
-    collections.forEach(collection => {
+    collections.forEach((collection) => {
       if (collection.name.startsWith(HISTORY_SNAPSHOT)) {
         this.db.removeCollection(collection.name)
         count++
@@ -143,19 +137,15 @@ class HistoryCollectionImpl<E extends object> implements HistoryCollection<E> {
 }
 
 export class JiraDBFactory {
-  constructor() {
-  }
-
-  static async localInstance(path: string) {
+  static async localInstance(path: string): Promise<LocalJiraDBInstance> {
     const db = new Loki(path, {
-      adapter: new Loki.LokiFsAdapter()
+      adapter: new Loki.LokiFsAdapter(),
     })
     const loadDB = promisify<any>(db.loadDatabase).bind(db, {})
     try {
       await loadDB()
       logger.debug(`Local JIRA database loaded from ${path}`)
-    }
-    catch (err) {
+    } catch (err) {
       logger.warn('Unable to load database, ignoring', path, err)
     }
     return new LocalJiraDBInstance(db, path)
@@ -163,7 +153,6 @@ export class JiraDBFactory {
 }
 
 export class LocalJiraDBInstance implements JiraDBInstance {
-
   db: Loki
   path: string
 
@@ -172,43 +161,44 @@ export class LocalJiraDBInstance implements JiraDBInstance {
     this.path = path
   }
 
-  async getHistoryCollection(collectionName: string): Promise<HistoryCollection<any>> {
+  async getHistoryCollection(collectionName: string): Promise<HistoryCollection> {
     let collection = this.db.getCollection(collectionName)
     if (collection === null) {
       logger.debug(`Created collection ${collectionName} in database`)
-      collection = this.db.addCollection(collectionName, { indices: ['id', 'key'] })
+      collection = this.db.addCollection(collectionName, {
+        indices: ['id', 'key'],
+      })
     }
 
     return new HistoryCollectionImpl(collection, this)
   }
-  async populate(jira: JiraClient, query: string, optional?: Partial<JiraQueryOptions>, collectionName?: string): Promise<HistoryCollection<any>>
-  async populate(collectionName: string, data: any): Promise<HistoryCollection<any>>
-  async populate(...args: any): Promise<HistoryCollection<any>> {
+  async populate(jira: JiraClient, query: JiraQuery, collectionName?: string): Promise<HistoryCollection>
+  async populate(collectionName: string, data: Issue[]): Promise<HistoryCollection>
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  async populate(...args: any): Promise<HistoryCollection> {
     if (args.length === 2 && typeof args[0] === 'string') {
       return await this._populate(args[0], args[1])
-    }
-    else if (args.length > 2 && args[0] instanceof JiraClient) {
-      const collectionName = (args.length === 4 && args[3]) ? args[3] : 'default'
-      const issues = await (<JiraClient>args[0]).fetch(args[1], args[2])
+    } else if (args.length > 2 && args[0] instanceof JiraClient) {
+      const collectionName = args.length === 3 && args[2] ? args[2] : 'default'
+      const issues = await (<JiraClient>args[0]).fetch(args[1])
       return await this._populate(collectionName, issues)
-    }
-    else {
+    } else {
       throw Error(`Invalid populate() call`)
     }
   }
 
-  async _populate(collectionName: string, data: any): Promise<HistoryCollection<any>> {
-    let collection = await this.getHistoryCollection(collectionName)
+  async _populate(collectionName: string, data: Issue[]): Promise<HistoryCollection> {
+    const collection = await this.getHistoryCollection(collectionName)
 
     // data are already in, update based on issue id
     // update might be done a better way - for now it just deletes all previous entries
-    const toBeDeleted = data.reduce((acc: string[], issue: any) => {
+    const toBeDeleted = data.reduce((acc: string[], issue: Issue) => {
       acc.push(issue.id)
       return acc
     }, [])
 
     logger.debug(`Going to drop ${toBeDeleted.length} entries from collection ${collectionName} as they have been updated`)
-    collection.removeWhere((issue: any) => {
+    collection.removeWhere((issue: Issue) => {
       return toBeDeleted.includes(issue.id)
     })
 
@@ -221,10 +211,9 @@ export class LocalJiraDBInstance implements JiraDBInstance {
   }
 
   async saveDatabase(): Promise<void> {
-
     // drop all collections that are actually history snapshots
     const collections = this.db.listCollections()
-    collections.forEach(collection => {
+    collections.forEach((collection) => {
       if (collection.name.startsWith(HISTORY_SNAPSHOT)) {
         this.removeCollection(collection.name)
       }
@@ -246,5 +235,5 @@ export class LocalJiraDBInstance implements JiraDBInstance {
 
   removeCollection(name: string): void {
     this.db.removeCollection(name)
-  } 
+  }
 }

@@ -6,6 +6,7 @@ import * as jsonfile from 'jsonfile'
 import * as path from 'path'
 import { JiraDBFactory, HistoryCollection } from '../../db/LocalJiraDB'
 import { Issue, IssueJson } from '../../jira/Issue'
+import { format, parseISO } from 'date-fns'
 
 test('Initialize empty db with collection', async (t) => {
   const dbpath = tmp.fileSync()
@@ -202,7 +203,7 @@ test('Process history of issue with target date', async (t) => {
   t.assert(results, 'Some issues were resolved after history query')
   t.is(results.length, 1, 'Just 1 issue has been fetched')
   results.forEach((issue) => {
-    t.is(issue['Target end'].format('YYYY-MM-DD'), '2020-02-04', `Issue ${issue.key} has Target end set for 2020-02-04`)
+    t.is(format(parseISO(issue['Target end']), 'yyyy-LL-dd'), '2020-02-04', `Issue ${issue.key} has Target end set for 2020-02-04`)
   })
 })
 

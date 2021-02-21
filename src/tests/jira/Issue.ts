@@ -3,6 +3,7 @@ import { readFileSync } from 'jsonfile'
 import * as path from 'path'
 import { JiraClient } from '../../jira/JiraClient'
 import { extractValueFromField, extractValueFromString, changeFieldSchemaType, FieldJson } from '../../jira/Issue'
+import { parseISO, format } from 'date-fns'
 
 class MockedJiraClient extends JiraClient {
   transformation?: any
@@ -102,12 +103,12 @@ test('Normalize array of strings - labels', (t) => {
 })
 
 test('Normalize Target End from history', (t) => {
-  const extract = (value: string): moment.Moment => {
-    return <moment.Moment>extractValueFromString(changeFieldSchemaType(dummyFieldSchema, 'date'), value)
+  const extract = (value: string): string => {
+    return <string>extractValueFromString(changeFieldSchemaType(dummyFieldSchema, 'date'), value)
   }
 
-  const targetEnd = extract('6/Oct/2020')
-  t.is(targetEnd.format('YYYY-MM-DD'), '2020-10-06')
+  const targetEnd = parseISO(extract('6/Oct/2020'))
+  t.is(format(targetEnd, 'yyyy-LL-dd'), '2020-10-06')
 })
 
 const dummyFieldSchema: FieldJson = {

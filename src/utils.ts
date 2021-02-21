@@ -1,4 +1,4 @@
-import moment from 'moment'
+import { subDays, addDays, format, parseISO, parse as dateFnsParse, isValid } from 'date-fns'
 import { FieldJson } from './jira/Issue'
 import Logger from './logger'
 
@@ -39,18 +39,16 @@ export const maxInKeys = (object: Record<string, number | string>, keys?: string
 }
 
 export const lastDays = (count = 60): string[] => {
-  const now = moment()
-  let before = now.subtract(count, 'days')
+  const before = subDays(new Date(), 60)
 
   const dates: string[] = []
   for (let i = 0; i < count; i++) {
-    before = before.add(1, 'days')
-    dates.push(before.format('YYYY-MM-DD'))
+    dates.push(format(addDays(before, i), 'YYYY-LL-dd'))
   }
   return dates
 }
 
-export function isSchemaTyped(fieldSchema: FieldJson, logger?: Logger): boolean {
+export const isSchemaTyped = (fieldSchema: FieldJson, logger?: Logger): boolean => {
   const type = fieldSchema?.schema?.type ?? ''
   if (type === '') {
     if (intersects(['issuekey', 'thumbnail'], fieldSchema.id)) {
@@ -64,4 +62,26 @@ export function isSchemaTyped(fieldSchema: FieldJson, logger?: Logger): boolean 
     return false
   }
   return true
+}
+
+const additionalDateFormats = ['d/LLL/yy', 'd/LLL/yyyy']
+const ref = new Date(2020, 0, 1)
+export const parseTimeValue = (d: string): Date => {
+  let date = parseISO(d)
+  if (isValid(date)) {
+    return date
+  }
+
+  for (const format of additionalDateFormats) {
+    date = dateFnsParse(d, format, ref)
+    if (isValid(date)) {
+      break
+    }
+  }
+
+  if (!isValid(date)) {
+    throw Error(`invalid date: ${d}`)
+  }
+
+  return date
 }

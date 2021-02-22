@@ -51,7 +51,7 @@ export class JiraClient {
   private rp: (options: Record<string, unknown>) => Promise<any>
 
   constructor(
-    { url, user = '', password = '' }: JiraAuth,
+    { url: urlToParse, user = '', password = '' }: JiraAuth,
     clientOptions = {
       apiVersion: '2',
       debug: process.env.NODE_DEBUG?.includes('request') || process.env.DEBUG?.includes('request'),
@@ -64,17 +64,20 @@ export class JiraClient {
       logger.debug('Setting up JIRA request debugging on for JiraClient')
       // TS claims that debug property is readonly, need to override that
       ;(<any>rp)['debug' as any] = true
+    } else {
+      // since we are changing global state of request, make sure that we change the configuration back to default state
+      ;(<any>rp)['debug' as any] = false
     }
 
     // parse url to find values for jira API
-    const config = urlParser.parse(url)
+    const url = urlParser.parse(urlToParse)
 
     this.jira = new JiraApi({
       // connection details
-      host: config.host ?? '',
-      base: config.pathname ?? '',
-      protocol: config.protocol?.replace(/:\s*$/, ''),
-      port: config.port ?? config.protocol?.startsWith('https') ? '443' : '80',
+      host: url.hostname ?? '',
+      base: url.pathname?.replace(/\/$/, '') ?? '',
+      protocol: url.protocol?.replace(/:\s*$/, ''),
+      port: url.port ?? (url.protocol?.startsWith('https') ? '443' : '80'),
       apiVersion: clientOptions.apiVersion ?? '2',
       // specific settings
       strictSSL: clientOptions.strictSSL ?? true,
@@ -84,7 +87,7 @@ export class JiraClient {
       password: password,
     })
     this.maxConcurrentRequests = clientOptions.maxConcurrentRequests ?? MAX_CONCURRENT_REQUESTS
-    this.url = url
+    this.url = urlToParse
     this.user = user
     this.password = password
     this.rp = clientOptions.request ?? rpr_retry

@@ -81,6 +81,18 @@ test('Exercise JIRA check credentials logic', async (t) => {
 
 const jira = new JiraClient({ url: 'https://issues.apache.org/jira/' })
 
+test('Check additional JiraClient options', async (t) => {
+  const debugJira = new JiraClient(
+    { url: 'https://issues.apache.org:445/jira/' },
+    {
+      debug: true,
+    }
+  )
+  await t.throwsAsync(debugJira.fetch({ query: 'project = AMQ AND key < AMQ-2', fields: ['summary'] }), {
+    message: /connect ECONNREFUSED/,
+  })
+})
+
 test('Fetch issues with summary field', async (t) => {
   const issues = await jira.fetch({ query: 'project = AMQ AND key < AMQ-2', fields: ['summary'] })
   t.assert(issues.length > 0, 'AMQ issues have been fetched')

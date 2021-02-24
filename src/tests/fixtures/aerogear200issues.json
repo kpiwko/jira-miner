@@ -46083,6 +46083,14 @@
           "archived": false,
           "released": true,
           "releaseDate": "2012-01-31"
+        },
+        {
+          "self": "https://issues.jboss.org/rest/api/2/version/12319253",
+          "id": "12319253",
+          "name": "1.0.0.M2c",
+          "archived": false,
+          "released": true,
+          "releaseDate": "2012-03-14"
         }
       ],
       "aggregatetimespent": null,

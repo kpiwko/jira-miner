@@ -37,7 +37,7 @@ const snapshotInTime = function (date: string, issue: Issue) {
   })
 
   // remove all comments that have been created after snapshot
-  copy.Comment = issue.Comment.filter((comment: any) => {
+  copy.Comment = issue.Comment?.filter((comment: any) => {
     return isBefore(parseISO(comment.lastUpdated), reference)
   })
 
@@ -67,8 +67,9 @@ export interface HistoryCollection {
 }
 
 interface JiraDBInstance {
-  populate(collectionName: string, data: any): Promise<HistoryCollection>
-  populate(jira: JiraClient, query: JiraQuery, collectionName?: string): Promise<HistoryCollection>
+  populate(
+    ...args: [jira: JiraClient, query: JiraQuery, collectionName?: string] | [collectionName: string, data: Issue[]]
+  ): Promise<HistoryCollection>
   getHistoryCollection(collectionName: string): Promise<HistoryCollection>
   saveDatabase(): Promise<void>
   listCollections(): CollectionDetails[]
@@ -172,18 +173,18 @@ export class LocalJiraDBInstance implements JiraDBInstance {
 
     return new HistoryCollectionImpl(collection, this)
   }
-  async populate(jira: JiraClient, query: JiraQuery, collectionName?: string): Promise<HistoryCollection>
-  async populate(collectionName: string, data: Issue[]): Promise<HistoryCollection>
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  async populate(...args: any): Promise<HistoryCollection> {
+  async populate(
+    ...args: [jira: JiraClient, query: JiraQuery, collectionName?: string] | [collectionName: string, data: Issue[]]
+  ): Promise<HistoryCollection> {
     if (args.length === 2 && typeof args[0] === 'string') {
-      return await this._populate(args[0], args[1])
-    } else if (args.length > 2 && args[0] instanceof JiraClient) {
+      return await this._populate(args[0], <Issue[]>args[1])
+    } else if (args.length >= 2 && args.length <= 3 && args[0] instanceof JiraClient) {
       const collectionName = args.length === 3 && args[2] ? args[2] : 'default'
-      const issues = await (<JiraClient>args[0]).fetch(args[1])
+      const issues = await (<JiraClient>args[0]).fetch(<JiraQuery>args[1])
       return await this._populate(collectionName, issues)
     } else {
-      throw Error(`Invalid populate() call`)
+      throw Error(`Invalid populate(${((<unknown>args) as any[]).map((a: any) => typeof a).join(', ')}}) call`)
     }
   }
 

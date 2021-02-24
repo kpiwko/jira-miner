@@ -1,9 +1,6 @@
 import { formatISO, compareAsc } from 'date-fns'
-import _ from 'lodash'
+import { compact, flow, join, map, uniq } from 'lodash/fp'
 import { isSchemaTyped, parseTimeValue } from '../utils'
-import Logger from '../logger'
-
-const logger = new Logger()
 
 export type IssueJson = {
   id: string
@@ -44,15 +41,13 @@ export class Issue {
   id: string
   self: string
   key: string
-  History: any;
+  History: Record<string, any>;
   [key: string]: any
 
   // there are more fields but those are dynamic
 
   constructor(issue: IssueJson, fieldDefinitions: FieldJson[]) {
-    if (!this.History) {
-      this.History = {}
-    }
+    this.History = {}
 
     // there three properties are present on any jira issue
     this.id = issue.id
@@ -63,23 +58,21 @@ export class Issue {
     fieldDefinitions.forEach((fieldDefinition: FieldJson) => {
       // check if this jira has field with current id and replace it with field name
       if (issue?.fields[fieldDefinition.id] !== undefined) {
-        let value: unknown = issue.fields[fieldDefinition.id]
-        try {
-          value = extractValueFromField(fieldDefinition, value)
-          this[fieldDefinition.name] = value
-        } catch (e) {
-          logger.warn(`Unable to extract value in ${issue.key} for field "${fieldDefinition.name}":
-             field "${JSON.stringify(value)}", definition ${JSON.stringify(fieldDefinition)}, ${e}`)
-        }
+        const value: unknown = issue.fields[fieldDefinition.id]
+        this[fieldDefinition.name] = extractValueFromField(fieldDefinition, value)
       }
       // parse and add history
       const [fieldName, value] = historySerie(issue, fieldDefinition)
       // add history for field in case any changes have been reported
-      if (value && value.length > 0) {
+      if (value?.length > 0) {
         this.History[fieldName] = value
       }
     })
   }
+}
+
+export const historyExtractor = (fieldDefinition: FieldJson, fieldChanges: any[], mapper: (value: any) => any): any => {
+  return extractValueFromString(fieldDefinition, flow(map(mapper), compact, uniq, join(','))(fieldChanges))
 }
 
 export const historySerie = (issue: IssueJson, field: FieldJson): [string, any[]] => {
@@ -99,42 +92,22 @@ export const historySerie = (issue: IssueJson, field: FieldJson): [string, any[]
       return names.includes(itemFieldName)
     })
 
-    // if no such field change has been found, ignore this change
-    if (fieldChanges.length === 0) {
-      return acc
+    if (fieldChanges.length === 1) {
+      acc.push({
+        author: change.author ? change.author.displayName : '',
+        change: formatISO(parseTimeValue(change.created)),
+        from: extractValueFromString(field, fieldChanges[0].fromString),
+        to: extractValueFromString(field, fieldChanges[0].toString),
+      })
+    } else if (fieldChanges.length > 1) {
+      acc.push({
+        author: change.author ? change.author.displayName : '',
+        change: formatISO(parseTimeValue(change.created)),
+        from: historyExtractor(field, fieldChanges, (fc: any) => fc.fromString),
+        to: historyExtractor(field, fieldChanges, (fc: any) => fc.toString),
+      })
     }
-
-    // identify changes
-    let from, to
-    // there was just one change, this is not an array value
-    try {
-      if (fieldChanges.length === 1) {
-        from = extractValueFromString(field, fieldChanges[0].fromString)
-        to = extractValueFromString(field, fieldChanges[0].toString)
-      } else {
-        from = fieldChanges.reduce((acc: any, change: any) => {
-          acc.push(change.fromString)
-          return acc
-        }, [])
-        from = _.uniq(_.compact(from))
-        from = extractValueFromString(field, from.join(','))
-        to = fieldChanges.reduce((acc: any, change: any) => {
-          acc.push(change.toString)
-          return acc
-        }, [])
-        to = _.uniq(_.compact(to))
-        to = extractValueFromString(field, to.join(','))
-      }
-    } catch (e) {
-      logger.warn(`Unable to extract field "${field.name}" value from history for ${issue.key} ${e}, ignoring`)
-    }
-
-    acc.push({
-      author: change.author ? change.author.displayName : '',
-      change: formatISO(parseTimeValue(change.created)),
-      from,
-      to,
-    })
+    // if there were no changes, return acc unchanged
     return acc
   }, [] as FieldChange[])
 
@@ -246,7 +219,7 @@ export const extractValueFromField = (fieldSchema: FieldJson, value: unknown): u
           })()
         : null
     case 'worklog':
-    // unsure whether any parsing is needed, treat is as value
+    // unsure whether any parsing is needed, treat is as default
     default:
       // FIXME empty string vs 'null' behavior, unclear whether it has any impact
       return value ? value : null
@@ -271,7 +244,6 @@ export const extractValueFromString = (fieldSchema: FieldJson, value: string): u
     case 'date':
       return value ? formatISO(parseTimeValue(<string>value)) : null
     case 'project':
-      return value ? <string>value : null
     case 'priority':
     case 'status':
     case 'resolution':

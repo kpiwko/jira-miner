@@ -12,11 +12,6 @@ You can install the tool by running
 npm install -g jira-miner
 ```
 
-Or, use development copy by
-```
-git clone https://github.com/kpiwko/jira-miner.git && cd jira-miner && npm link
-```
-
 Command line usage follows next, make sure you consult `jira-miner help` if you need further information. You can also run the tool setting `DEBUG=1`
 environment variable, which will provide bunyan log traces useful for debugging.
 
@@ -26,7 +21,7 @@ You need to point jira-miner to a JIRA instance you want to use as data source. 
 WARNING: Note that credentials are stored as plain text in your `$HOME` folder.
 
 ```
-jira-miner target <jiraUri> [--user <user>] [--password [password]]
+jira-miner target [-t <id>] <jiraUri> [--user <user>] [--password [password]]
 ```
 
 ### Populate & update local database
@@ -34,10 +29,10 @@ jira-miner target <jiraUri> [--user <user>] [--password [password]]
 Once, you have targeted a jira, you can populate local database
 
 ```
-jira-miner populate <jqlQuery>
+jira-miner populate [-t <id>] <jqlQuery>
 ```
 
-**EXAMPLE**: `jira-miner populate "project in (AEROGAR, ARQ)"` downloads all issues (including their history) for projects AGPUSH and ARQ)
+**EXAMPLE**: `jira-miner populate "project in (AEROGEAR, ARQ)"` downloads all issues (including their history) for projects AEROGEAR and ARQ)
 
 If you rerun the query, it will rewrite all updated items. It might be a good idea to update the database since the last query to limit
 the amount of fetched data. You can do that via `--since` argument that accepts a timestamp.
@@ -54,14 +49,15 @@ JIRA miner provides an API to query the database. Query must be defined in one o
 ```TypeScript
 import { HistoryCollection } from 'jira-miner/lib/db/LocalJiraDB'
 import { QueryResult } from 'jira-miner/lib/db/Query'
+import Logger from 'jira-miner/lib/logger'
 
 
-export async function query(collection: HistoryCollection<any>, args?: object): Promise<any> {
+export async function query<T>(collection: HistoryCollection<Issue>, logger: Logger, args?: Record<string, unknown>): Promise<QueryResult<T>> {
   // async is optional here, for your convenience
 }
 
 // this is optional function
-export async function transform(result: QueryResult) {
+export async function transform(result: QueryResult<T>) {
   // async is optional here, for your convenience
 }
 
@@ -80,65 +76,6 @@ All arguments passed on command line will be available in args object. Example q
 Simply run any command with `--verbose` parameter. You can provide it twice (e.g. `-vv`) to have further level of debug output.
 
 You can also setup environment variable `DEBUG` to include `jira-miner` value to get the equivalent of verbose logging.
-
-### Image rendering example
-
-This will render a line chart using date as x-axis and values as y-axis.
-For entries that have optional `link` attribute provided, it will additionally render a click-able link in SVG image.
-
-```TypeScript
-
-import TimeLineChart from 'jira-miner/lib/chart/TimeLineChart'
-
-export async function query(collection: HistoryCollection<any>, args?: object): Promise<any> {
-
-  return ['2019-01-12', '2019-08-19'].map((date) => {
-    return {
-      date: string
-      value: number
-      link?: string
-    }
-  })
-}
-
-export async function transform(result: QueryResult) {
-
-  const chart = new TimeLineChart({ name: 'Name', axisNames: ['X', 'Y'] })
-  const imageBuffer = await chart.render(result.result)
-  fs.writeFileSync("dest.png", imageBuffer.png)
-
-}
-```
-
-Following will render a stacked area chart using date as x-axis and other keys as values. For entries that have optional `link` attribute provided, it will additionally render a click-able link in SVG image.
-You provide the mapping by `labels` options during chart creation.
-
-```TypeScript
-
-import TimeAreaChart from 'jira-miner/lib/chart/TimeAreaChart'
-
-export async function query(collection: HistoryCollection<any>, args?: object): Promise<any> {
-
-  return ['2019-01-12', '2019-08-19'].map((date) => {
-    return {
-      date: string
-      'Key 1': number
-      'Key 2': number
-      link?: string
-    }
-  })
-}
-
-export async function transform(result: QueryResult) {
-
-  const chart = new TimeAreaChart({ name: 'Name', axisNames: ['X', 'Y'], labels: ['Key 1', 'Key 2'] })
-  const imageBuffer = await chart.render(result.result)
-  fs.writeFileSync("dest.png", imageBuffer.png)
-
-}
-```
-
-All charts are rendered as either png, svg or json
 
 ## Testing
 

@@ -1,10 +1,10 @@
 import test from 'ava'
-import { fixture } from './LocalJiraDB'
 import Query from '../../db/Query'
 import naturalCompare from 'string-natural-compare'
+import { dbFixture } from '../fixtures/fixtures'
 
 test('Query issues with Android in their summary', async (t) => {
-  const collection = await fixture({})
+  const collection = await dbFixture({})
   const q = new Query(collection)
 
   const { result } = await q.query((col) => {
@@ -17,7 +17,7 @@ test('Query issues with Android in their summary', async (t) => {
 })
 
 test('Query with syntax issue shows broken error', async (t) => {
-  const collection = await fixture({})
+  const collection = await dbFixture({})
   const q = new Query(collection)
 
   try {
@@ -39,7 +39,7 @@ test('Query with syntax issue shows broken error', async (t) => {
 })
 
 test('Manual mapReduce operation on the query', async (t) => {
-  const collection = await fixture({})
+  const collection = await dbFixture({})
   const q = new Query(collection)
 
   const { result } = await q.query((col) => {
@@ -58,7 +58,7 @@ test('Manual mapReduce operation on the query', async (t) => {
 })
 
 test('Loki.js mapReduce operation on the query', async (t) => {
-  const collection = await fixture({})
+  const collection = await dbFixture({})
   const q = new Query(collection)
 
   const { result } = await q.query((col) => {
@@ -75,7 +75,7 @@ test('Loki.js mapReduce operation on the query', async (t) => {
 })
 
 test('Async query function', async (t) => {
-  const collection = await fixture({})
+  const collection = await dbFixture({})
   const q = new Query(collection)
 
   const { result } = await q.query(() => {
@@ -86,7 +86,7 @@ test('Async query function', async (t) => {
 })
 
 test('Async query function with async keyword', async (t) => {
-  const collection = await fixture({})
+  const collection = await dbFixture({})
   const q = new Query(collection)
 
   const { result } = await q.query(async () => {
@@ -101,7 +101,7 @@ test('Async query function with async keyword', async (t) => {
 })
 
 test('Execute query from file', async (t) => {
-  const collection = await fixture({})
+  const collection = await dbFixture({})
   const q = new Query(collection)
 
   const queryFile = await import('../fixtures/epicStoryPointsPerLabel')

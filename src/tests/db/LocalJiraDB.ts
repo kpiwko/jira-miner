@@ -1,12 +1,34 @@
-'use strict'
-
 import test from 'ava'
-import * as tmp from 'tmp'
-import * as jsonfile from 'jsonfile'
-import * as path from 'path'
-import { JiraDBFactory, HistoryCollection } from '../../db/LocalJiraDB'
-import { Issue, IssueJson } from '../../jira/Issue'
+import tmp from 'tmp'
+import { JiraDBFactory } from '../../db/LocalJiraDB'
+import { IssueJson } from '../../jira/Issue'
 import { format, parseISO } from 'date-fns'
+import { JiraClient } from '../../jira/JiraClient'
+import { dbFixture } from '../fixtures/fixtures'
+
+test('Create collection from a JiraClient', async (t) => {
+  const dbpath = tmp.fileSync()
+  const jiraClient = new JiraClient({ url: 'https://issues.apache.org/jira/' })
+  const testDB = await JiraDBFactory.localInstance(dbpath.name)
+  let collection = await testDB.populate(jiraClient, {
+    query: 'key = AMQ-71',
+  })
+
+  t.is(collection.count(), 1, 'There is a single issue in the collection')
+  let collections = testDB.listCollections()
+  t.is(collections.length, 1, 'There is one collection created')
+  t.is(collections[0].name, 'default', 'The collection is called default')
+  testDB.removeCollection('default')
+  collections = testDB.listCollections()
+  t.is(collections.length, 0, 'The are no longer any collections')
+
+  collection = await testDB.populate(jiraClient, { query: 'key = AMQ-71' }, 'sample')
+  t.is(collection.count(), 1, 'There is a single issue in the collection')
+  collections = testDB.listCollections()
+  t.is(collections.length, 1, 'There is one collection created')
+  t.is(collections[0].name, 'sample', 'The collection is called sample')
+  testDB.saveDatabase()
+})
 
 test('Initialize empty db with collection', async (t) => {
   const dbpath = tmp.fileSync()
@@ -16,7 +38,7 @@ test('Initialize empty db with collection', async (t) => {
 })
 
 test('Query all agpush issues that contain Android in summary', async (t) => {
-  const collection = await fixture({})
+  const collection = await dbFixture({})
   const results = collection
     .chain()
     .find({ Summary: { $contains: 'Android' } })
@@ -27,7 +49,7 @@ test('Query all agpush issues that contain Android in summary', async (t) => {
 })
 
 test('Check history of issues', async (t) => {
-  const collection = await fixture({})
+  const collection = await dbFixture({})
   const results = collection
     .chain()
     .find({ Summary: { $contains: 'Android' } })
@@ -41,7 +63,7 @@ test('Check history of issues', async (t) => {
 })
 
 test('Process history of issue with no author', async (t) => {
-  const collection = await fixture({
+  const collection = await dbFixture({
     malformation: (issues: IssueJson[]) => {
       // remove author
       return issues.map((issue) => {
@@ -70,7 +92,7 @@ test('Process history of issue with no author', async (t) => {
 })
 
 test('Process history of issue with comments', async (t) => {
-  const collection = await fixture({ source: '../fixtures/issueWithComments.json' })
+  const collection = await dbFixture({ source: '../fixtures/issueWithComments.json' })
   let historyCollection = await collection.history('2016-11-29')
   t.is(historyCollection.count(), 1, 'Just one issue in the collection')
 
@@ -126,7 +148,7 @@ test('Process history of issue with comments', async (t) => {
 })
 
 test('Process history of issue with date in future', async (t) => {
-  const collection = await fixture({ source: '../fixtures/issueWithComments.json' })
+  const collection = await dbFixture({ source: '../fixtures/issueWithComments.json' })
   const historyCollection = await collection.history('2038-11-29')
   t.is(historyCollection.count(), 1, 'Just one issue in the collection')
 
@@ -143,7 +165,7 @@ test('Process history of issue with date in future', async (t) => {
 
 /* test for https://github.com/kpiwko/jira-miner/issues/7 */
 test('Process history of issue with comments without last date', async (t) => {
-  const collection = await fixture({
+  const collection = await dbFixture({
     malformation: (issues: any[]) => {
       return issues.map((issue) => {
         if (issue.fields.comment && issue.fields.comment.comments) {
@@ -171,7 +193,7 @@ test('Process history of issue with comments without last date', async (t) => {
 })
 
 test('Process history of issue without any comments', async (t) => {
-  const collection = await fixture({
+  const collection = await dbFixture({
     malformation: (issues: any[]) => {
       return issues.map((issue) => {
         if (issue.fields.comment && issue.fields.comment.comments) {
@@ -195,7 +217,7 @@ test('Process history of issue without any comments', async (t) => {
 })
 
 test('Process history of issue with target date', async (t) => {
-  const collection = await fixture({ source: '../fixtures/issueWithTargetDate.json' })
+  const collection = await dbFixture({ source: '../fixtures/issueWithTargetDate.json' })
   const historyCollection = await collection.history('2020-10-10')
   t.is(historyCollection.count(), 1, 'Just one issue in the collection')
 
@@ -206,28 +228,3 @@ test('Process history of issue with target date', async (t) => {
     t.is(format(parseISO(issue['Target end']), 'yyyy-LL-dd'), '2020-02-04', `Issue ${issue.key} has Target end set for 2020-02-04`)
   })
 })
-
-type Malformation<T> = (data: T[]) => T[]
-
-export async function fixture({
-  malformation = (data) => data,
-  source = '../fixtures/aerogear200issues.json',
-}: {
-  malformation?: Malformation<IssueJson>
-  source?: string
-}): Promise<HistoryCollection> {
-  const dbpath = tmp.fileSync()
-  const testDB = await JiraDBFactory.localInstance(dbpath.name)
-
-  let jiraData = jsonfile.readFileSync(path.join(__dirname, source)) as IssueJson[]
-  if (malformation) {
-    jiraData = malformation(jiraData)
-  }
-
-  const jiraFields = jsonfile.readFileSync(path.join(__dirname, '../fixtures/jiraFields.json'))
-  const issues = jiraData.map((issue: any) => {
-    return new Issue(issue, jiraFields)
-  })
-
-  return await testDB.populate('aerogear200issues', issues)
-}

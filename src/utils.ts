@@ -1,14 +1,15 @@
 import { subDays, addDays, format, parseISO, parse as dateFnsParse, isValid } from 'date-fns'
+import { HistoryCollection } from './db/LocalJiraDB'
 import { FieldJson } from './jira/Issue'
 import Logger from './logger'
 
-export const intersects = (arr1: string[], arr2: string | string[]): boolean => {
-  if (arr2 === null) {
+export const intersects = (arr1: string[], arr2?: string | string[]): boolean => {
+  if (arr2 === null || arr2 === undefined) {
     return false
   }
   arr1 = (Array.isArray(arr1) ? arr1 : [arr1]).map((e) => e.toLowerCase())
   arr2 = (Array.isArray(arr2) ? arr2 : [arr2]).map((e) => e.toLowerCase())
-  return arr1.filter((item) => arr2.includes(item)).length > 0
+  return arr1.filter((item) => arr2?.includes(item)).length > 0
 }
 
 export const sumByKeys = (object: Record<string, number | string>, keys?: string[]): number => {
@@ -39,13 +40,30 @@ export const maxInKeys = (object: Record<string, number | string>, keys?: string
 }
 
 export const lastDays = (count = 60): string[] => {
-  const before = subDays(new Date(), 60)
+  const before = subDays(new Date(), count)
 
   const dates: string[] = []
   for (let i = 0; i < count; i++) {
-    dates.push(format(addDays(before, i), 'YYYY-LL-dd'))
+    dates.push(format(addDays(before, i), 'yyyy-LL-dd'))
   }
   return dates
+}
+
+export const historySeries = async ({
+  collection,
+  timestamps,
+  logger = new Logger(),
+}: {
+  collection: HistoryCollection
+  timestamps: string[]
+  logger?: Logger
+}): Promise<Array<HistoryCollection>> => {
+  return Promise.all(
+    timestamps.map((m) => {
+      logger.info(`Populating history of available JIRA entries at ${m}`)
+      return collection.history(m)
+    })
+  )
 }
 
 export const isSchemaTyped = (fieldSchema: FieldJson, logger?: Logger): boolean => {
@@ -85,3 +103,9 @@ export const parseTimeValue = (d: string): Date => {
 
   return date
 }
+
+export const asKey = (name: string): string =>
+  name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/gi, ' ')
+    .replace(/\s+/gi, '-')

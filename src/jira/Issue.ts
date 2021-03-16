@@ -1,5 +1,6 @@
 import { formatISO, compareAsc } from 'date-fns'
 import { compact, flow, join, map, uniq } from 'lodash/fp'
+import { striptags } from 'striptags'
 import { isSchemaTyped, parseTimeValue } from '../utils'
 
 export type IssueJson = {
@@ -218,10 +219,14 @@ export const extractValueFromField = (fieldSchema: FieldJson, value: unknown): u
             return link ? { key: link.key, type: type } : null
           })()
         : null
-    case 'worklog':
-    // unsure whether any parsing is needed, treat is as default
+    case 'option':
+      return value
+        ? (() => {
+            const v: string = (<Record<string, string>>value)?.['value']
+            return v ? striptags(v).trim() : null
+          })()
+        : null
     default:
-      // FIXME empty string vs 'null' behavior, unclear whether it has any impact
       return value ? value : null
   }
 }
@@ -242,7 +247,7 @@ export const extractValueFromString = (fieldSchema: FieldJson, value: string): u
         : []
     case 'datetime':
     case 'date':
-      return value ? formatISO(parseTimeValue(<string>value)) : null
+      return value ? formatISO(parseTimeValue(value)) : null
     case 'project':
     case 'priority':
     case 'status':
@@ -266,6 +271,8 @@ export const extractValueFromString = (fieldSchema: FieldJson, value: string): u
         key: parsed[2],
         type: `${parsed[1]} ${parsed[3]}`.trim(),
       }
+    case 'option':
+      return value ? striptags(value).trim() : null
     default:
       return value ?? null
   }

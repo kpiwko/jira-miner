@@ -111,6 +111,29 @@ test('Normalize Target End from history', (t) => {
   t.is(format(targetEnd, 'yyyy-LL-dd'), '2020-10-06')
 })
 
+test('Normalize Severity Option from history', (t) => {
+  const extract = (value: string): string => {
+    return <string>extractValueFromString(changeFieldSchemaType(dummyFieldSchema, 'option'), value)
+  }
+
+  const severity = extract(' \t<img alt="" src="/images/icons/priorities/major.svg" width="16" height="16"> Medium')
+  t.is(severity, 'Medium')
+})
+
+test('Normalize Severity Option from field', (t) => {
+  const extract = (value: any) => {
+    return extractValueFromField(changeFieldSchemaType(dummyFieldSchema, 'option'), value)
+  }
+
+  const severity = extract({
+    self: 'https://url/14280',
+    value: ' \t<img alt="" src="/images/icons/priorities/major.svg" width="16" height="16"> Medium',
+    id: '14280',
+    disabled: false,
+  })
+  t.is(severity, 'Medium')
+})
+
 const dummyFieldSchema: FieldJson = {
   id: 'dummy',
   name: 'dummy',

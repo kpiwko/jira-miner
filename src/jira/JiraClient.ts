@@ -233,7 +233,7 @@ export class JiraClient {
         case 'project':
           return ['text', 'Project key in JIRA']
         case 'priority':
-          return ['text', 'Proct priority']
+          return ['text', 'Project priority']
         case 'status':
           return ['text', 'Status of the issue']
         case 'resolution':
@@ -252,7 +252,7 @@ export class JiraClient {
             'Comments on the issue with last editing user real name,\nthe last date of modification and content',
           ]
         default:
-          return ['text', 'Unknown description']
+          return ['text', `Unknown description for type '${fieldSchema.schema.type}'`]
       }
     }
 

@@ -28,7 +28,8 @@ export default class Query {
       // wrapping function into promise
       result = await Promise.resolve(queryFunction.call(null, this.collection, logger, args))
     } catch (err) {
-      throw Error(`Unable to execute query ${queryFunction.toString()}, ${err}`)
+      logger.error(err)
+      throw Error(`Unable to execute query ${queryFunction.toString()}`)
     }
     return {
       result,

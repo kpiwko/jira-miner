@@ -5,9 +5,10 @@ export type JiraSchema = {
   completeStates: string[]
   incompleteStates: string[]
   reviewStates: string[]
-  priorities: string[] // note priorities are supposed to be ordered from lower to highest priority
+  priorities?: string[] // note priorities are supposed to be ordered from lower to highest priority
+  severities?: string[] // note severities are supposed to be ordered from lower to highest priority
   bugsTypes: string[]
-  enhancementTypes: string[]
+  enhancementTypes?: string[]
 }
 
 export type ComposedJiraSchema = {

@@ -1,6 +1,6 @@
 import test from 'ava'
 import { some, isEmpty } from 'lodash'
-import { flow, map, flatten, uniq } from 'lodash/fp'
+import { flow, map, flatten, compact, uniq } from 'lodash/fp'
 import { Issue } from '../../jira/Issue'
 import { ComposedJiraSchema, composeJiraSchema, JiraSchema } from '../../jira/JiraSchema'
 import {
@@ -64,6 +64,7 @@ class ModifiedReportMetric extends Metric<ModifiedReport> {
     })
     this.keys = flow(
       map((s: JiraSchema) => s.priorities),
+      compact,
       flatten,
       uniq
     )(schema.schemas)

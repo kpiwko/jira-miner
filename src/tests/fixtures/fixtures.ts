@@ -12,6 +12,7 @@ export const schemaFixture: JiraSchema = {
   incompleteStates: ['Resolved'],
   reviewStates: ['Resolved'],
   priorities: ['Minor', 'Major', 'Critical', 'Blocker'],
+  severities: ['Minor', 'Major', 'Critical', 'Blocker'],
   enhancementTypes: ['Enhancement', 'Feature Request'],
   bugsTypes: ['Bug'],
 }

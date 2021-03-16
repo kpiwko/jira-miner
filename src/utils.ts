@@ -1,15 +1,21 @@
 import { subDays, addDays, format, parseISO, parse as dateFnsParse, isValid } from 'date-fns'
+import { flow, compact, map } from 'lodash/fp'
 import { HistoryCollection } from './db/LocalJiraDB'
 import { FieldJson } from './jira/Issue'
 import Logger from './logger'
 
-export const intersects = (arr1: string[], arr2?: string | string[]): boolean => {
-  if (arr2 === null || arr2 === undefined) {
-    return false
+export const intersects = (arr1: string | string[], arr2?: string | string[]): boolean => {
+  const toArray = (a?: string | string[]): string[] => {
+    return flow(
+      compact,
+      map((v: string) => v.toLowerCase())
+    )(Array.isArray(a) ? a : [a])
   }
-  arr1 = (Array.isArray(arr1) ? arr1 : [arr1]).map((e) => e.toLowerCase())
-  arr2 = (Array.isArray(arr2) ? arr2 : [arr2]).map((e) => e.toLowerCase())
-  return arr1.filter((item) => arr2?.includes(item)).length > 0
+
+  const array1 = toArray(arr1)
+  const array2 = toArray(arr2)
+
+  return array1.filter((item) => array2.includes(item)).length > 0
 }
 
 export const sumByKeys = (object: Record<string, number | string>, keys?: string[]): number => {

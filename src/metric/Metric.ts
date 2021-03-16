@@ -61,12 +61,12 @@ export type AltReduceTriggerData = {
 }
 
 export class Metric<R extends MetricReport = MetricReport> {
-  private name: string
-  private description: string
-  private filter: MetricFilter
-  private map: MetricMap
-  private reduce: MetricReduce
-  private data: MetricResults[]
+  name: string
+  description: string
+  filter: MetricFilter
+  map: MetricMap
+  reduce: MetricReduce
+  data: MetricResults[]
 
   constructor({
     name,

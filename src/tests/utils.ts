@@ -1,5 +1,5 @@
 import test from 'ava'
-import { maxInKeys, sumByKeys } from '../utils'
+import { maxInKeys, sumByKeys, intersects } from '../utils'
 
 const object1 = {
   x: 3,
@@ -20,7 +20,7 @@ const object3 = {
   a: 'foobar',
 }
 
-test('utilities: sum by keys', (t) => {
+test('sum by keys', (t) => {
   t.is(sumByKeys(object1), 12)
   t.is(sumByKeys(object1, ['x']), 3)
   t.is(sumByKeys(object1, ['x', 'non-existent']), 3)
@@ -29,7 +29,7 @@ test('utilities: sum by keys', (t) => {
   t.assert(Math.abs(sumByKeys(object3, ['x', 'y']) - 7) < Number.EPSILON)
 })
 
-test('utilities: max in keys', (t) => {
+test('max in keys', (t) => {
   t.is(maxInKeys(object1), 5)
   t.is(maxInKeys(object1, ['x']), 3)
   t.is(maxInKeys(object1, ['non-existent']), 0)
@@ -39,4 +39,15 @@ test('utilities: max in keys', (t) => {
   t.assert(Math.abs(maxInKeys(object2, ['x', 'foobar']) - 3) < Number.EPSILON)
   t.assert(Math.abs(maxInKeys(object3, ['x', 'y']) - 4) < Number.EPSILON)
   t.assert(Math.abs(maxInKeys(object3, ['y', 'z']) - 4) < Number.EPSILON)
+})
+
+test('intersection', (t) => {
+  t.is(intersects([], []), false)
+  t.is(intersects([], ''), false)
+  t.is(intersects(['foo'], 'foobar'), false)
+  t.is(intersects(['foo'], 'foo'), true)
+  t.is(intersects(['foo'], ['foo', 'bar']), true)
+  // this requires quite some casts
+  t.is(intersects([<string>(<unknown>null)], 'foobar'), false)
+  t.is(intersects([<string>(<unknown>null)], <string>(<unknown>null)), false)
 })

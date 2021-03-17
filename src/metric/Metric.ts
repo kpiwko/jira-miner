@@ -194,7 +194,7 @@ export const statusPriorityReducer = (): MetricReduce => {
       metadata: [...link(mapResult)],
       values: [
         ...countBy(mapResult, 'Status'),
-        ...countBy(mapResult, 'Priority'),
+        ...countBy(mapResult, (i) => i['Priority'] ?? i['Severity']),
         {
           id: 'total',
           value: mapResult.length,
@@ -211,7 +211,7 @@ export const trendReducer = (trend: string): MetricReduce => {
       metadata: [...link(mapResult)],
       values: [
         ...countBy(mapResult, 'Status'),
-        ...countBy(mapResult, 'Priority'),
+        ...countBy(mapResult, (i) => i['Priority'] ?? i['Severity']),
         {
           id: trend,
           value: mapResult.length,

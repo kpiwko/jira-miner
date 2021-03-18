@@ -191,20 +191,24 @@ export class LocalJiraDBInstance implements JiraDBInstance {
   async _populate(collectionName: string, data: Issue[]): Promise<HistoryCollection> {
     const collection = await this.getHistoryCollection(collectionName)
 
-    // data are already in, update based on issue id
+    // there might be some data already in the collection, drop previous data with the same id
     // update might be done a better way - for now it just deletes all previous entries
-    const toBeDeleted = data.reduce((acc: string[], issue: Issue) => {
-      acc.push(issue.id)
-      return acc
-    }, [])
-
-    logger.debug(`Going to drop ${toBeDeleted.length} entries from collection ${collectionName} as they have been updated`)
+    const toBeDeleted = data.map((issue: Issue) => issue.id)
+    let deleted = 0
     collection.removeWhere((issue: Issue) => {
-      return toBeDeleted.includes(issue.id)
+      const removeItem = toBeDeleted.includes(issue.id)
+      if (removeItem) {
+        deleted++
+      }
+      return removeItem
     })
 
     // insert data into database
-    logger.debug(`Inserting ${data.length} entries into collection ${collectionName}`)
+    logger.debug(
+      `Populating collection ${collectionName} with ${data.length} entries. ${deleted} entries will be updated, ${
+        data.length - deleted
+      } are net new.`
+    )
     collection.insert(data)
 
     logger.debug(`Collection ${collectionName} now contains ${collection.count()} entries`)

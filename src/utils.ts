@@ -1,5 +1,6 @@
-import { subDays, addDays, format, parseISO, parse as dateFnsParse, isValid } from 'date-fns'
+import { subDays, addDays, format, parseISO, parse as dateFnsParse, isValid, formatISO, parse } from 'date-fns'
 import { flow, compact, map } from 'lodash/fp'
+import pLimit from 'p-limit'
 import { HistoryCollection } from './db/LocalJiraDB'
 import { FieldJson } from './jira/Issue'
 import Logger from './logger'
@@ -64,12 +65,17 @@ export const historySeries = async ({
   timestamps: string[]
   logger?: Logger
 }): Promise<Array<HistoryCollection>> => {
-  return Promise.all(
-    timestamps.map((m) => {
-      logger.info(`Populating history of available JIRA entries at ${m}`)
-      return collection.history(m)
+  const limit = pLimit(1)
+  const requests = timestamps.map(async (m: string) => {
+    return await limit(async () => {
+      const dayEnd = formatISO(parse(`${m} 23:59:59+00:00`, 'yyyy-LL-dd HH:mm:ssXXXXX', new Date()))
+      const c = await collection.history(dayEnd)
+      logger.info(`Reconstructing historical JIRA db state at ${dayEnd}`)
+      return c
     })
-  )
+  })
+
+  return Promise.all(requests)
 }
 
 export const isSchemaTyped = (fieldSchema: FieldJson, logger?: Logger): boolean => {

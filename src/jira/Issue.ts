@@ -1,5 +1,4 @@
 import { formatISO, compareAsc } from 'date-fns'
-import { compact, flow, join, map, uniq } from 'lodash/fp'
 import { striptags } from 'striptags'
 import { isSchemaTyped, parseTimeValue } from '../utils'
 
@@ -73,7 +72,7 @@ export class Issue {
 }
 
 export const historyExtractor = (fieldDefinition: FieldJson, fieldChanges: any[], mapper: (value: any) => any): any => {
-  return extractValueFromString(fieldDefinition, flow(map(mapper), compact, uniq, join(','))(fieldChanges))
+  return extractValueFromString(fieldDefinition, [...new Set(fieldChanges.map(mapper).filter(Boolean))].join(','))
 }
 
 export const historySerie = (issue: IssueJson, field: FieldJson): [string, any[]] => {

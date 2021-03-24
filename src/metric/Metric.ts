@@ -1,9 +1,8 @@
 import { AssertionError } from 'assert'
 import { HistoryCollection } from '../db/LocalJiraDB'
 import { Issue } from '../jira/Issue'
-import { intersects, lastDays, historySeries, asKey } from '../utils'
+import { isEmpty, roundToTwo, intersects, groupBy, countBy, lastDays, historySeries, asKey } from '../utils'
 import { format } from 'date-fns'
-import _ from 'lodash'
 import { URL } from 'url'
 import { JiraSchema } from '../jira/JiraSchema'
 
@@ -142,11 +141,11 @@ export const stringJQLRemap = (array: string[]): string => {
 }
 
 export const link = (issues: any[]): Metadata[] => {
-  if (_.isEmpty(issues)) {
+  if (isEmpty(issues)) {
     return []
   }
   const keys = issues.map((issue) => issue.key)
-  const origin = new URL(_.first(issues).self).origin
+  const origin = new URL(issues[0]?.self)?.origin
   return [
     {
       id: 'link',
@@ -155,8 +154,8 @@ export const link = (issues: any[]): Metadata[] => {
   ]
 }
 
-export const countBy = (data: any[], iteratee: _.ValueIteratee<any>, idPrefix?: string): Value[] => {
-  return _.toPairs(_.countBy(data, iteratee)).map(([id, value]) => {
+export const countByIntoValues = <T>(data: T[], pickBy: string | ((value: T) => string), idPrefix?: string): Value[] => {
+  return Object.entries(countBy(data, pickBy)).map(([id, value]) => {
     return {
       id: idPrefix ? `${idPrefix}${id}` : id,
       value,
@@ -174,11 +173,12 @@ export const flattenMapper = <T = string>(property: string, emptyElement: T): Me
   return (date: string, issues: Issue[]): Issue[] => {
     return issues.reduce((acc: Issue[], issue: Issue) => {
       let spreadValues = issue[property]
-      if (_.isEmpty(spreadValues)) {
+      if (isEmpty(spreadValues)) {
         spreadValues = [emptyElement]
       }
       spreadValues.forEach((v: T) => {
-        const copy = _.cloneDeep(issue)
+        // a shallow copy should be sufficient here
+        const copy = { ...issue }
         copy[property] = v
         acc.push(copy)
       })
@@ -193,8 +193,8 @@ export const statusPriorityReducer = (): MetricReduce => {
       date,
       metadata: [...link(mapResult)],
       values: [
-        ...countBy(mapResult, 'Status'),
-        ...countBy(mapResult, (i) => i['Priority'] ?? i['Severity']),
+        ...countByIntoValues(mapResult, 'Status'),
+        ...countByIntoValues(mapResult, (i) => i['Priority'] ?? i['Severity']),
         {
           id: 'total',
           value: mapResult.length,
@@ -210,8 +210,8 @@ export const trendReducer = (trend: string): MetricReduce => {
       date,
       metadata: [...link(mapResult)],
       values: [
-        ...countBy(mapResult, 'Status'),
-        ...countBy(mapResult, (i) => i['Priority'] ?? i['Severity']),
+        ...countByIntoValues(mapResult, 'Status'),
+        ...countByIntoValues(mapResult, (i) => i['Priority'] ?? i['Severity']),
         {
           id: trend,
           value: mapResult.length,
@@ -223,7 +223,7 @@ export const trendReducer = (trend: string): MetricReduce => {
 
 export const fixVersionReducer = (): MetricReduce => {
   return (date: string, mapResult: any[], filterResult?: Issue[]): MetricResults => {
-    const byVersion = _.toPairs(_.groupBy(mapResult, 'Fix Version/s')).map(
+    const byVersion = Object.entries(groupBy(mapResult, 'Fix Version/s')).map(
       ([fixVersion, collection]): Slice => {
         return {
           name: fixVersion,
@@ -267,13 +267,13 @@ export const fixVersionReducer = (): MetricReduce => {
 export const fixVersionCompletedReducer = (schemas: JiraSchema[]): MetricReduce => {
   return (date: string, mapResult: any[], filterResult?: Issue[]): MetricResults => {
     const isCompleted = (issue: Partial<Issue>): boolean => {
-      return _.some(schemas, (s) => {
+      return schemas.some((s) => {
         return intersects(issue['Project'], s.project) && intersects(issue['Status'], s.completeStates)
       })
     }
 
     const completedAll = filterResult?.filter(isCompleted) ?? []
-    const byVersion = _.toPairs(_.groupBy(mapResult, 'Fix Version/s')).map(
+    const byVersion = Object.entries(groupBy(mapResult, 'Fix Version/s')).map(
       ([version, collection]): Slice => {
         const total = collection.length
         const completed = collection.filter(isCompleted).length
@@ -284,7 +284,7 @@ export const fixVersionCompletedReducer = (schemas: JiraSchema[]): MetricReduce 
           values: [
             { id: 'total', value: total },
             { id: 'Completed', value: completed },
-            { id: 'ratio', value: _.round((completed / total) * 100.0, 2) },
+            { id: 'ratio', value: roundToTwo((completed / total) * 100) },
           ],
         }
       }
@@ -299,7 +299,7 @@ export const fixVersionCompletedReducer = (schemas: JiraSchema[]): MetricReduce 
       values: [
         { id: 'total', value: total },
         { id: 'Completed', value: completed },
-        { id: 'ratio', value: _.round((completed / total) * 100.0, 2) },
+        { id: 'ratio', value: roundToTwo((completed / total) * 100) },
       ],
       slices: [
         {
@@ -308,7 +308,7 @@ export const fixVersionCompletedReducer = (schemas: JiraSchema[]): MetricReduce 
           values: [
             { id: 'total', value: total },
             { id: 'Completed', value: completed },
-            { id: 'ratio', value: _.round((completed / total) * 100.0, 2) },
+            { id: 'ratio', value: roundToTwo((completed / total) * 100) },
           ],
         },
         ...byVersion,

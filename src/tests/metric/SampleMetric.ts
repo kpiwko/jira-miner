@@ -1,6 +1,4 @@
 import test from 'ava'
-import { some, isEmpty } from 'lodash'
-import { flow, map, flatten, compact, uniq } from 'lodash/fp'
 import { Issue } from '../../jira/Issue'
 import { ComposedJiraSchema, composeJiraSchema, JiraSchema } from '../../jira/JiraSchema'
 import {
@@ -12,7 +10,7 @@ import {
   flattenMapper,
   EMPTY_VERSION,
 } from '../../metric/Metric'
-import { intersects, lastDays } from '../../utils'
+import { intersects, intersectsIfNotEmpty, lastDays } from '../../utils'
 import { dbFixture, schemaFixture } from '../fixtures/fixtures'
 
 const AG_SCHEMA = composeJiraSchema('aerogear', schemaFixture)
@@ -24,12 +22,11 @@ class SampleMetric extends Metric {
       name: 'sample metric',
       description: 'sample metric description',
       filter: (date: string, issue: Issue) => {
-        return some(schema.schemas, (s: JiraSchema) => {
+        return schema.schemas.some((s: JiraSchema) => {
           return (
             intersects(issue['Project'], s.project) &&
             intersects(issue['Issue Type'], s.bugsTypes) &&
-            // optionally, filter by component as well
-            (isEmpty(s.components) || intersects(issue['Component/s'], s.components))
+            intersectsIfNotEmpty(issue['Component/s'], s.components)
           )
         })
       },
@@ -50,24 +47,26 @@ class ModifiedReportMetric extends Metric<ModifiedReport> {
       name: 'modified report',
       description: 'modified report description',
       filter: (date: string, issue: Issue) => {
-        return some(schema.schemas, (s: JiraSchema) => {
+        return schema.schemas.some((s: JiraSchema) => {
           return (
             intersects(issue['Project'], s.project) &&
             intersects(issue['Issue Type'], s.bugsTypes) &&
             // optionally, filter by component as well
-            (isEmpty(s.components) || intersects(issue['Component/s'], s.components))
+            intersectsIfNotEmpty(issue['Component/s'], s.components)
           )
         })
       },
       map: flattenMapper('Fix Version/s', EMPTY_VERSION),
       reduce: fixVersionReducer(),
     })
-    this.keys = flow(
-      map((s: JiraSchema) => s.priorities),
-      compact,
-      flatten,
-      uniq
-    )(schema.schemas)
+    this.keys = [
+      ...new Set(
+        schema.schemas
+          .map((s) => s.priorities)
+          .filter(Boolean)
+          .flat() as string[]
+      ),
+    ]
   }
 
   report(v: Partial<ModifiedReport>): ModifiedReport {

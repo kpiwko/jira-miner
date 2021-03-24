@@ -1,7 +1,6 @@
 'use strict'
 
 import path from 'path'
-import _ from 'lodash'
 import { stripIndent } from 'common-tags'
 import { JiraDBFactory } from '../db/LocalJiraDB'
 import Logger from '../logger'
@@ -79,7 +78,7 @@ const handler = (argv: any): any => {
     try {
       const db = await JiraDBFactory.localInstance(argv.db)
       const jiraConfig = await config.readConfiguration()
-      const jiraAuth = _.find(jiraConfig, (c) => c.target === target)
+      const jiraAuth = jiraConfig.find((c) => c.target === target)
       if (!jiraAuth) {
         throw Error(`Unable to create Jira Client with target ${target}, such configuration was not found`)
       }

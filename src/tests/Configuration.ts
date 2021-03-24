@@ -3,7 +3,6 @@
 import test from 'ava'
 import * as path from 'path'
 import * as tmp from 'tmp'
-import _ from 'lodash'
 import Configuration from '../Configuration'
 
 class MockedConfiguration extends Configuration {
@@ -73,7 +72,7 @@ test('Update configuration', async (t) => {
     ])
     t.truthy(configPath, 'Updated non-existing configuration')
     let configuration = await config.readConfiguration()
-    t.is(_.find(configuration, (c) => c.target === 'dummy')?.jira.url, 'https://bar', 'Configuration has been updated')
+    t.is(configuration.find((c) => c.target === 'dummy')?.jira.url, 'https://bar', 'Configuration has been updated')
     await config.updateConfiguration([
       {
         target: 'dummy',
@@ -83,7 +82,7 @@ test('Update configuration', async (t) => {
       },
     ])
     configuration = await config.readConfiguration()
-    t.is(_.find(configuration, (c) => c.target === 'dummy')?.jira.url, 'https://foo', 'Configuration has been updated for the second time')
+    t.is(configuration.find((c) => c.target === 'dummy')?.jira.url, 'https://foo', 'Configuration has been updated for the second time')
   } catch (err) {
     console.error(err)
     t.fail('Failed to update configuration')

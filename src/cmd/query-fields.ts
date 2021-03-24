@@ -1,6 +1,3 @@
-'use strict'
-
-import _ from 'lodash'
 import Table from 'cli-table'
 import { stripIndent } from 'common-tags'
 import Configuration from '../Configuration'
@@ -34,7 +31,7 @@ const handler = (argv: any): any => {
   async function wrap(): Promise<void> {
     try {
       const jiraConfig = await config.readConfiguration()
-      const jiraAuth = _.find(jiraConfig, (c) => c.target === target)
+      const jiraAuth = jiraConfig.find((c) => c.target === target)
       if (!jiraAuth) {
         throw Error(`Unable to create Jira Client with target ${target}, such configuration was not found`)
       }

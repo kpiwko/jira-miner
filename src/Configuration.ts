@@ -1,8 +1,5 @@
-'use strict'
-
 import * as fs from 'fs'
 import * as path from 'path'
-import * as _ from 'lodash'
 import { promisify } from 'util'
 import Logger from './logger'
 import { JiraAuth } from './jira/JiraClient'
@@ -82,13 +79,13 @@ export default class Configuration {
       const config = await this.readConfiguration()
 
       config.forEach((subConfig: JiraConfig) => {
-        const newSubConfig = _.find(newConfig, (c) => c.target === subConfig.target)
+        const newSubConfig = newConfig.find((c) => c.target === subConfig.target)
         if (newSubConfig) {
           Object.assign(subConfig, newSubConfig)
         }
       })
       newConfig.forEach((subConfig: JiraConfig) => {
-        const oldConfig = _.find(config, (c) => c.target === subConfig.target)
+        const oldConfig = config.find((c) => c.target === subConfig.target)
         if (!oldConfig) {
           config.push(subConfig)
         }

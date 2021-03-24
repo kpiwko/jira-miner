@@ -5,6 +5,9 @@
     "sourceMap": true,
     "noImplicitAny": false,
     "preserveSymlinks": true,
-    "outDir": "lib"
+    "outDir": "lib",
+    "lib": [
+      "es2019"
+    ],
   }
 }

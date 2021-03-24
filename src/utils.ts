@@ -1,22 +1,59 @@
 import { subDays, addDays, format, parseISO, parse as dateFnsParse, isValid, formatISO, parse } from 'date-fns'
-import { flow, compact, map } from 'lodash/fp'
 import pLimit from 'p-limit'
 import { HistoryCollection } from './db/LocalJiraDB'
 import { FieldJson } from './jira/Issue'
 import Logger from './logger'
 
-export const intersects = (arr1: string | string[], arr2?: string | string[]): boolean => {
-  const toArray = (a?: string | string[]): string[] => {
-    return flow(
-      compact,
-      map((v: string) => v.toLowerCase())
-    )(Array.isArray(a) ? a : [a])
-  }
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const isEmpty = (object: any): boolean => {
+  // https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_isempty
+  return [Object, Array].includes((object ?? {}).constructor) && !Object.entries(object ?? {}).length
+}
 
-  const array1 = toArray(arr1)
-  const array2 = toArray(arr2)
+export const roundToTwo = (num: number): number => {
+  return Math.round(num * 100 + Number.EPSILON) / 100
+}
 
-  return array1.filter((item) => array2.includes(item)).length > 0
+/**
+ * Checks whether there is any intersection in between two array of strings
+ * @param array1 The first array of strings or a string
+ * @param array2 The second array of strings or a string
+ * @returns `true` if there is at least a on string in both arrays that, comparing coverted to lower case and
+ * and converting falsey values to ''
+ */
+export const intersects = (array1: string | string[], array2?: string | string[]): boolean => {
+  const arr1 = ((Array.isArray(array1) ? array1 : [array1]) ?? []).filter(Boolean).map((v) => v.toLowerCase())
+  const arr2 = (((Array.isArray(array2) ? array2 : [array2]) ?? []).filter(Boolean) as string[]).map((v) => v.toLowerCase())
+
+  return arr1.filter((item) => arr2.includes(item)).length > 0
+}
+
+/**
+ * Checks whether there is any intersection in between two array of strings.
+ * In case the second array is empty/null/undefined, returns true
+ * @param array1 The first array of strings or a string
+ * @param array2 The second array of strings or a string
+ * @returns `true` if there is at least a on string in both arrays that, comparing coverted to lower case and
+ * and converting falsey values to '' or if the second array is falsey
+ */
+export const intersectsIfNotEmpty = (array1: string | string[], array2?: string | string[]): boolean => {
+  return isEmpty(array2) || intersects(array1, array2)
+}
+
+export const groupBy = <T>(array: T[], pickBy: string | ((value: T) => string)): Record<string, T[]> => {
+  return array.reduce((acc: any, value: T) => {
+    const key = typeof pickBy === 'string' ? value?.[pickBy] : pickBy(value)
+    ;(acc[key] || (acc[key] = [])).push(value)
+    return acc
+  }, {})
+}
+
+export const countBy = <T>(array: T[], pickBy: string | ((value: T) => string)): Record<string, number> => {
+  return array.reduce((acc: any, value: T) => {
+    const key = typeof pickBy === 'string' ? value?.[pickBy] : pickBy(value)
+    acc[key] = (acc[key] || 0) + 1
+    return acc
+  }, {})
 }
 
 export const sumByKeys = (object: Record<string, number | string>, keys?: string[]): number => {
@@ -70,7 +107,7 @@ export const historySeries = async ({
     return await limit(async () => {
       const dayEnd = formatISO(parse(`${m} 23:59:59+00:00`, 'yyyy-LL-dd HH:mm:ssXXXXX', new Date()))
       const c = await collection.history(dayEnd)
-      logger.info(`Reconstructing historical JIRA db state at ${dayEnd}`)
+      logger.info(`Reconstructed historical JIRA db state at ${dayEnd}`)
       return c
     })
   })

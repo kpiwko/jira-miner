@@ -51,6 +51,8 @@ export const issuesFixture = ({ malformation = (data) => data }: { malformation?
       History: [],
       Priority: 'Major',
       Status: 'Resolved',
+      Version: ['V1', 'V2'],
+      SingleVersion: 'V2',
     },
     {
       id: 'issue-2',
@@ -59,6 +61,8 @@ export const issuesFixture = ({ malformation = (data) => data }: { malformation?
       History: [],
       Priority: 'Major',
       Status: 'Unresolved',
+      Version: ['V1'],
+      SingleVersion: 'V2',
     },
     {
       id: 'issue-3',
@@ -67,6 +71,8 @@ export const issuesFixture = ({ malformation = (data) => data }: { malformation?
       History: [],
       Priority: 'Minor',
       Status: 'Done',
+      Version: [],
+      SingleVersion: null,
     },
     {
       id: 'issuesev-4',
@@ -75,6 +81,7 @@ export const issuesFixture = ({ malformation = (data) => data }: { malformation?
       History: [],
       Severity: 'Minor',
       Status: 'Done',
+      Version: ['V3'],
     },
     {
       id: 'issuesev-5',
@@ -83,6 +90,8 @@ export const issuesFixture = ({ malformation = (data) => data }: { malformation?
       History: [],
       Severity: 'Urgent',
       Status: 'Resolved',
+      Version: ['V3'],
+      SingleVersion: 'V1',
     },
     {
       id: 'issueprisev-5',
@@ -92,6 +101,8 @@ export const issuesFixture = ({ malformation = (data) => data }: { malformation?
       Priority: 'Blocker',
       Severity: 'Urgent',
       Status: 'Obsolete',
+      Version: ['V3'],
+      SingleVersion: 'V3',
     },
   ]
 

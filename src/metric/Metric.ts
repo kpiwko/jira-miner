@@ -149,7 +149,7 @@ export const link = (issues: any[]): Metadata[] => {
   return [
     {
       id: 'link',
-      value: `${origin}/issues/?jql=key IN (${keys.join(',')})`,
+      value: `${origin}/issues/?jql=key%20IN%20%28${keys.join(',')}%29`,
     },
   ]
 }
@@ -164,8 +164,8 @@ export const countByIntoValues = <T>(data: T[], pickBy: string | ((value: T) => 
 }
 
 /**
- * Constructs a MetricMap function that picks up a property on Issue that is assumed to be a type of array.
- * Duplicates Issue for each value find in the property. If value of property is empty, replaces it with emptyElement value
+ * Constructs a MetricMap function that picks up a property on an Issue and
+ * duplicates the Issue for each value found in the property. If value of property is empty, replaces it with emptyElement value
  * @param property Property to be be used for Issue duplication
  * @param emptyElement Default value if no value is present
  */
@@ -175,6 +175,8 @@ export const flattenMapper = <T = string>(property: string, emptyElement: T): Me
       let spreadValues = issue[property]
       if (isEmpty(spreadValues)) {
         spreadValues = [emptyElement]
+      } else if (!Array.isArray(spreadValues)) {
+        spreadValues = [spreadValues]
       }
       spreadValues.forEach((v: T) => {
         // a shallow copy should be sufficient here

@@ -1,5 +1,5 @@
 import test from 'ava'
-import { MetricResults, statusPriorityReducer, trendReducer } from '../../metric/Metric'
+import { flattenMapper, MetricResults, statusPriorityReducer, trendReducer } from '../../metric/Metric'
 import { issuesFixture } from '../fixtures/fixtures'
 
 const getValue = (results: MetricResults, key: string): number | undefined => {
@@ -25,4 +25,14 @@ test('Trend Reducer', (t) => {
   t.is(getValue(results, 'Resolved'), 2)
   t.is(getValue(results, 'Obsolete'), 1)
   t.is(getValue(results, 'Arrival Trend'), 6)
+})
+
+test('Flatten Mapper', (t) => {
+  const results = flattenMapper('Version', 'No Version')('2021-03-26', issuesFixture({}))
+  t.is(results.length, 7)
+  t.is(results.filter((i) => i['Version'] === 'V1').length, 2)
+  t.is(results.filter((i) => i['Version'] === 'No Version').length, 1)
+
+  const results2 = flattenMapper('SingleVersion', 'No Version')('2021-03-26', issuesFixture({}))
+  t.is(results2.filter((i) => i['SingleVersion'] === 'No Version').length, 2)
 })

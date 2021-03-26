@@ -212,7 +212,7 @@ export class JiraClient {
     return await this.jira.listFields()
   }
 
-  async describeFields(): Promise<Array<[string, string, string]>> {
+  async describeFields(): Promise<Array<[string, string, string, string]>> {
     const fieldDefinitions = await this.listFields()
 
     const describeField = (fieldSchema: FieldJson) => {
@@ -256,10 +256,9 @@ export class JiraClient {
       }
     }
 
-    return fieldDefinitions.reduce((acc: any, field: FieldJson) => {
-      acc.push([field.name].concat(describeField(field)))
-      return acc
-    }, [])
+    return fieldDefinitions.map((field: FieldJson) => {
+      return [field.name, field.id, ...describeField(field)]
+    })
   }
 }
 

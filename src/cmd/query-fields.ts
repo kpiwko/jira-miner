@@ -23,8 +23,8 @@ const handler = (argv: any): any => {
   const target = argv.target
 
   const table = new Table({
-    head: ['Name', 'Type', 'Description'],
-    colWidths: [30, 30, 65],
+    head: ['Name', 'id', 'Type', 'Description'],
+    colWidths: [30, 30, 20, 50],
   })
 
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await

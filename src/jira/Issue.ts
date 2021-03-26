@@ -272,6 +272,12 @@ export const extractValueFromString = (fieldSchema: FieldJson, value: string): u
       }
     case 'option':
       return value ? striptags(value).trim() : null
+    case 'any':
+      if (fieldSchema.name === 'Parent Link') {
+        const parsed = /^([A-Z0-9]+-[0-9]+)(.*?)$/.exec(value ?? '')
+        return parsed ? parsed[1] : value
+      }
+      return value ?? null
     default:
       return value ?? null
   }

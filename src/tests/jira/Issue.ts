@@ -134,6 +134,29 @@ test('Normalize Severity Option from field', (t) => {
   t.is(severity, 'Medium')
 })
 
+test('Normalize Parent Link from history', (t) => {
+  const extract = (value: string, fieldName = 'Parent Link') => {
+    return <string>extractValueFromString(
+      {
+        id: '1234567',
+        name: fieldName,
+        clauseNames: ['cf[1234567]'],
+        schema: {
+          type: 'any',
+          items: 'string',
+        },
+      },
+      value
+    )
+  }
+
+  t.is(extract('AEROGEAR-123'), 'AEROGEAR-123')
+  t.is(extract('AEROGEAR-123 My Parent'), 'AEROGEAR-123')
+  t.is(extract(' AEROGEAR-123 My Parent'), ' AEROGEAR-123 My Parent')
+
+  t.is(extract('AEROGEAR-123 My Parent', 'Different Field'), 'AEROGEAR-123 My Parent')
+})
+
 const dummyFieldSchema: FieldJson = {
   id: 'dummy',
   name: 'dummy',

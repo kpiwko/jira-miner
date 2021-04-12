@@ -1,7 +1,7 @@
 'use strict'
 
 import JiraApi from 'jira-client'
-import * as urlParser from 'url'
+import { URL } from 'url'
 import promiseRetry from 'promise-request-retry'
 import Logger from '../logger'
 import rp from 'request-promise'
@@ -27,7 +27,7 @@ export type JiraAuth = {
 
 export type JiraClientOptions = {
   apiVersion?: string
-  debug?: boolean
+  verbose?: boolean
   strictSSL?: boolean
   request?: (options: Record<string, unknown>) => Promise<any>
   maxConcurrentRequests?: number
@@ -49,18 +49,19 @@ export class JiraClient {
   private password: string
   private maxConcurrentRequests: number
   private rp: (options: Record<string, unknown>) => Promise<any>
+  private verbose: boolean
 
   constructor(
     { url: urlToParse, user = '', password = '' }: JiraAuth,
     clientOptions = {
       apiVersion: '2',
-      debug: process.env.NODE_DEBUG?.includes('request') || process.env.DEBUG?.includes('request'),
+      verbose: process.env.NODE_DEBUG?.includes('request') || process.env.DEBUG?.includes('request'),
       request: rpr_retry,
       strictSSL: true,
       maxConcurrentRequests: MAX_CONCURRENT_REQUESTS,
     } as JiraClientOptions
   ) {
-    if (clientOptions.debug) {
+    if (clientOptions.verbose) {
       logger.debug('Setting up JIRA request debugging on for JiraClient')
       // TS claims that debug property is readonly, need to override that
       ;(<any>rp)['debug' as any] = true
@@ -70,7 +71,7 @@ export class JiraClient {
     }
 
     // parse url to find values for jira API
-    const url = urlParser.parse(urlToParse)
+    const url = new URL(urlToParse)
 
     this.jira = new JiraApi({
       // connection details
@@ -91,6 +92,7 @@ export class JiraClient {
     this.user = user
     this.password = password
     this.rp = clientOptions.request ?? rpr_retry
+    this.verbose = clientOptions.verbose ?? false
   }
 
   async fetch({
@@ -158,9 +160,16 @@ export class JiraClient {
     logger.debug('Querying jira for custom fields in order to remap them in issues and populate issue history')
     const jiraFields = await this.listFields()
 
+    if (this.verbose) {
+      logger.debug(`JIRA fields raw data: ${JSON.stringify(jiraFields, null, 2)}`)
+    }
+
     return issueData.map((issue, index) => {
       if ((index + 1) % maxRes === 0) {
         logger.debug(`Remapped fields and added history of the first ${index + 1} issues`)
+      }
+      if (this.verbose) {
+        logger.debug(`JIRA Issue ${index} raw data: ${JSON.stringify(issue, null, 2)}`)
       }
       return new Issue(issue, jiraFields)
     })

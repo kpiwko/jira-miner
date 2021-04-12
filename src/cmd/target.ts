@@ -35,7 +35,7 @@ const builder = function (yargs: any) {
 }
 
 const handler = function (argv: any) {
-  const debug = argv.verbose >= 2 ? true : false
+  const verbose = argv.verbose >= 2 ? true : false
   const target = argv.target
   const config = new Configuration()
   const jiraClient = new JiraClient(
@@ -44,7 +44,7 @@ const handler = function (argv: any) {
       user: argv.user,
       password: argv.password,
     },
-    { debug }
+    { verbose: verbose }
   )
 
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await

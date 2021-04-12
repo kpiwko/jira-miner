@@ -85,7 +85,7 @@ test('Check additional JiraClient options', async (t) => {
   const debugJira = new JiraClient(
     { url: 'https://issues.apache.org:445/jira/' },
     {
-      debug: true,
+      verbose: true,
     }
   )
   await t.throwsAsync(debugJira.fetch({ query: 'project = AMQ AND key < AMQ-2', fields: ['summary'] }), {

@@ -140,16 +140,20 @@ export const stringJQLRemap = (array: string[]): string => {
   return array.map((a) => '"' + a + '"').join(',')
 }
 
-export const link = (issues: any[]): Metadata[] => {
+export const link = (issues: any[], idPrefix?: string): Metadata[] => {
   if (isEmpty(issues)) {
     return []
   }
   const keys = issues.map((issue) => issue.key)
-  const origin = new URL(issues[0]?.self)?.origin
+  const origin = new URL(issues[0]?.self)?.origin ?? ''
   return [
     {
-      id: 'link',
-      value: `${origin}/issues/?jql=key%20IN%20%28${keys.join(',')}%29`,
+      id: idPrefix ? `${idPrefix}origin` : 'origin',
+      value: origin,
+    },
+    {
+      id: idPrefix ? `${idPrefix}keys` : 'keys',
+      value: keys.join(','),
     },
   ]
 }

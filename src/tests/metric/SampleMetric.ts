@@ -117,8 +117,8 @@ test('Trigger alternative report reducers', async (t) => {
   const lastDayReport = report.data.find((d) => d.date === dates[1])
   const slice1 = lastDayReport?.slices?.find((s) => s.name === '1.0.0.M2c')
   const slice2 = lastDayReport?.slices?.find((s) => s.name === '1.0.0.M1')
-  t.assert(slice1?.metadata[0].value?.includes('AEROGEAR-104'), 'First slice includes AEROGEAR-104')
-  t.assert(slice2?.metadata[0].value?.includes('AEROGEAR-104'), 'Second slice also includes AEROGEAR-104')
+  t.assert(slice1?.metadata.find((m) => m.id === 'keys')?.value?.includes('AEROGEAR-104'), 'First slice includes AEROGEAR-104')
+  t.assert(slice2?.metadata.find((m) => m.id === 'keys')?.value?.includes('AEROGEAR-104'), 'Second slice also includes AEROGEAR-104')
   t.is(
     firstDayReport?.values.find((v) => v.id === 'Completed'),
     undefined,

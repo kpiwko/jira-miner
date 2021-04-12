@@ -83,7 +83,7 @@ const handler = (argv: any): any => {
         throw Error(`Unable to create Jira Client with target ${target}, such configuration was not found`)
       }
       const jira = new JiraClient(jiraAuth.jira, {
-        debug: debugRequestModule,
+        verbose: debugRequestModule,
         maxConcurrentRequests: throttle,
       })
       logger.info(`Fetched query from JIRA and will store in ${argv.db}`, {

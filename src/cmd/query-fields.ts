@@ -19,7 +19,7 @@ const builder = (yargs: any): any => {
 
 const handler = (argv: any): any => {
   const config = new Configuration()
-  const debug = argv.verbose >= 2 ? true : false
+  const verbose = argv.verbose >= 2 ? true : false
   const target = argv.target
 
   const table = new Table({
@@ -35,7 +35,7 @@ const handler = (argv: any): any => {
       if (!jiraAuth) {
         throw Error(`Unable to create Jira Client with target ${target}, such configuration was not found`)
       }
-      const jira = new JiraClient(jiraAuth.jira, { debug })
+      const jira = new JiraClient(jiraAuth.jira, { verbose: verbose })
       let description = await jira.describeFields()
 
       description = description.sort((a: any[], b: any[]) => {

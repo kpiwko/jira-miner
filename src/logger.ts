@@ -9,14 +9,17 @@ export default class Logger {
       return Logger.instance
     } else {
       const level = process.env.DEBUG && process.env.DEBUG.includes('jira-miner') ? 'debug' : 'info'
+      const simpleFormat = process.env.NODE_ENV === 'development'
       this.logger = winston.createLogger({
         transports: [new winston.transports.Console({ level })],
-        format: format.combine(
-          format.errors({ stack: true }),
-          format.timestamp(),
-          format.label({ label: 'jira-miner', message: true }),
-          format.json()
-        ),
+        format: simpleFormat
+          ? format.combine(format.simple())
+          : format.combine(
+              format.errors({ stack: true }),
+              format.timestamp(),
+              format.label({ label: 'jira-miner', message: true }),
+              format.json()
+            ),
       })
       Logger.instance = this
     }

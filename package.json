@@ -1,6 +1,6 @@
 {
   "name": "jira-miner",
-  "version": "3.3.1",
+  "version": "3.4.0",
   "description": "An utility for advanced queryies on top of JIRA",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -79,14 +79,14 @@
   },
   "scripts": {
     "clean": "rm -rf lib coverage",
-    "build": "tsc --declaration && cp src/tests/fixtures/* lib/tests/fixtures/",
+    "build": "npx tsc --declaration && cp src/tests/fixtures/* lib/tests/fixtures/",
     "lint": "npx eslint '*/**/*.{js,ts}' --fix",
     "test": "ava -v src/tests/**/*.ts src/tests/*.ts",
     "prepublishOnly": "npm run build",
     "coverage": "nyc npm run test"
   },
   "engines": {
-    "node": ">=10.8.0"
+    "node": "12.x"
   },
   "ava": {
     "typescript": {

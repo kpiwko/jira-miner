@@ -1,4 +1,5 @@
 import test from 'ava'
+import { Issue } from '../../jira/Issue'
 import { flattenMapper, MetricResults, statusPriorityReducer, trendReducer } from '../../metric/Metric'
 import { issuesFixture } from '../fixtures/fixtures'
 
@@ -35,4 +36,12 @@ test('Flatten Mapper', (t) => {
 
   const results2 = flattenMapper('SingleVersion', 'No Version')('2021-03-26', issuesFixture({}))
   t.is(results2.filter((i) => i['SingleVersion'] === 'No Version').length, 2)
+
+  const results3 = flattenMapper('Whatever', 'Emptish', (i: Issue) => {
+    return i['Severity'] ? ['Non-empty', `Len-${i['Severity'].length}`] : []
+  })('2021-04-23', issuesFixture({}))
+
+  t.is(results3.filter((i) => i['Whatever'] === 'Len-6').length, 2)
+  t.is(results3.filter((i) => i['Whatever'] === 'Emptish').length, 3)
+  t.is(results3.filter((i) => i['Whatever'] === 'Non-empty').length, 3)
 })

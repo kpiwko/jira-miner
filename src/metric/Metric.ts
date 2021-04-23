@@ -172,11 +172,14 @@ export const countByIntoValues = <T>(data: T[], pickBy: string | ((value: T) => 
  * duplicates the Issue for each value found in the property. If value of property is empty, replaces it with emptyElement value
  * @param property Property to be be used for Issue duplication
  * @param emptyElement Default value if no value is present
+ * @param pickyBy Optional function to find spread values in the issue. If not provided, uses `property`.
+ *
  */
-export const flattenMapper = <T = string>(property: string, emptyElement: T): MetricMap => {
+
+export const flattenMapper = <T = string>(property: string, emptyElement: T, pickBy?: (value: Issue) => T | T[]): MetricMap => {
   return (date: string, issues: Issue[]): Issue[] => {
     return issues.reduce((acc: Issue[], issue: Issue) => {
-      let spreadValues = issue[property]
+      let spreadValues = pickBy ? pickBy(issue) : issue[property]
       if (isEmpty(spreadValues)) {
         spreadValues = [emptyElement]
       } else if (!Array.isArray(spreadValues)) {

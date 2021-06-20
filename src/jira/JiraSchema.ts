@@ -1,5 +1,7 @@
 export type JiraSchema = {
   project: string
+  key?: string
+  workflows?: string[]
   components?: string[]
   states: string[]
   completeStates: string[]

@@ -4,7 +4,6 @@ import { HistoryCollection } from './db/LocalJiraDB'
 import { FieldJson } from './jira/Issue'
 import Logger from './logger'
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const isEmpty = (object: any): boolean => {
   // https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_isempty
   return [Object, Array].includes((object ?? {}).constructor) && !Object.entries(object ?? {}).length

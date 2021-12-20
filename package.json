@@ -1,6 +1,6 @@
 {
   "name": "jira-miner",
-  "version": "3.5.0",
+  "version": "4.0.0",
   "description": "An utility for advanced queryies on top of JIRA",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,67 +26,67 @@
     "@types/blue-tape": "^0.1.32",
     "@types/cli-table": "^0.3.0",
     "@types/common-tags": "^1.8.0",
-    "@types/jira-client": "^6.21.0",
+    "@types/jira-client": "^7.1.1",
     "@types/jsonfile": "^6.0.0",
     "@types/lokijs": "^1.5.2",
-    "@types/node": "^11.15.47",
-    "@types/prettyjson": "0.0.29",
+    "@types/node": "^16.11.14",
+    "@types/prettyjson": "^0.0.30",
     "@types/request-promise": "^4.1.47",
     "@types/request-promise-native": "^1.0.16",
     "@types/string-natural-compare": "^3.0.0",
-    "@types/tmp": "^0.1.0",
-    "@types/yargs": "^15.0.13",
+    "@types/tmp": "^0.2.3",
+    "@types/yargs": "^17.0.7",
     "cli-table": "^0.3.5",
     "common-tags": "^1.4.0",
     "date-fns": "^2.19.0",
-    "jira-client": "^6.21.1",
-    "json2csv": "^3.7.3",
-    "jsonfile": "^2.4.0",
+    "jira-client": "^8.0.0",
+    "json2csv": "^5.0.6",
+    "jsonfile": "^6.1.0",
     "lokijs": "^1.5.11",
     "p-limit": "^3.1.0",
     "prettyjson": "^1.2.1",
     "promise-request-retry": "^1.0.1",
-    "promise-retry": "^1.1.1",
+    "promise-retry": "^2.0.1",
     "request": "^2.78.0",
     "request-promise": "^4.2.6",
-    "striptags": "^4.0.0-alpha.2",
-    "tmp": "0.1.0",
+    "striptags": "^3.2.0",
+    "tmp": "^0.2.1",
     "winston": "^3.3.3",
-    "yargs": "^16.2.0",
-    "yargs-parser": "^15.0.1"
+    "yargs": "^17.3.0",
+    "yargs-parser": "^21.0.0"
   },
   "devDependencies": {
-    "@ava/typescript": "^1.1.1",
+    "@ava/typescript": "^2.0.0",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@tsconfig/node12": "^1.0.7",
+    "@tsconfig/node16": "^1.0.2",
     "@types/proxyquire": "^1.3.28",
-    "@types/sinon": "^7.0.11",
-    "@typescript-eslint/eslint-plugin": "^4.16.1",
-    "@typescript-eslint/parser": "^4.16.1",
+    "@types/sinon": "^10.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
     "ava": "^3.15.0",
     "blue-tape": "^1.0.0",
-    "eslint": "^7.21.0",
-    "eslint-config-prettier": "^7.2.0",
-    "eslint-plugin-prettier": "^3.3.1",
+    "eslint": "^8.5.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
-    "proxyquire": "^1.7.10",
-    "sinon": "^7.3.2",
+    "proxyquire": "^2.1.3",
+    "sinon": "^12.0.1",
     "source-map-support": "^0.5.19",
     "string-natural-compare": "^3.0.1",
-    "ts-node": "^9.1.1",
-    "typescript": "^4.2.3"
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.4"
   },
   "scripts": {
     "clean": "rm -rf lib coverage",
-    "build": "npx tsc --declaration && cp src/tests/fixtures/* lib/tests/fixtures/",
-    "lint": "npx eslint '*/**/*.{js,ts}' --fix",
-    "test": "ava -v src/tests/**/*.ts src/tests/*.ts",
+    "build": "npm exec -- tsc --declaration && cp src/tests/fixtures/* lib/tests/fixtures/",
+    "lint": "npm exec -- eslint '*/**/*.{js,ts}' --fix",
+    "test": "npm exec -- ava -v src/tests/**/*.ts src/tests/*.ts",
     "prepublishOnly": "npm run build",
-    "coverage": "nyc npm run test"
+    "coverage": "npm exec -- nyc npm run test"
   },
   "engines": {
-    "node": "12.x"
+    "node": ">= 16.0.0"
   },
   "ava": {
     "typescript": {
@@ -96,7 +96,8 @@
       ],
       "rewritePaths": {
         "src/": "lib/"
-      }
+      },
+      "compile": false
     }
   }
 }

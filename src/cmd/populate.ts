@@ -12,7 +12,6 @@ const logger = new Logger()
 const command = 'populate <query>'
 const describe = 'Populate local database with data based on query'
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const builder = (yargs: any): any => {
   const HOME = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE || process.cwd()
 
@@ -61,7 +60,6 @@ const builder = (yargs: any): any => {
     .wrap(null)
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const handler = (argv: any): any => {
   const query: JiraQuery = {
     query: `${argv.query}${argv.since ? ` AND updated>=${argv.since}` : ''}`,

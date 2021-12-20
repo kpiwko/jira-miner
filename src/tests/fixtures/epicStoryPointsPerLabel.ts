@@ -2,7 +2,6 @@ import { HistoryCollection } from '../../db/LocalJiraDB'
 import Logger from '../../logger'
 
 // usage jira-miner query <path-to-this-file> --fixVersion=<fixVersion> --label=<label>
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function query(collection: HistoryCollection, logger: Logger, args?: any): any {
   const testPlans = collection
     .chain()

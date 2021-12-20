@@ -173,7 +173,7 @@ export class LocalJiraDBInstance implements JiraDBInstance {
 
     return new HistoryCollectionImpl(collection, this)
   }
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+
   async populate(
     ...args: [jira: JiraClient, query: JiraQuery, collectionName?: string] | [collectionName: string, data: Issue[]]
   ): Promise<HistoryCollection> {

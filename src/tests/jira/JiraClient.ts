@@ -2,56 +2,39 @@ import test from 'ava'
 import sinon from 'sinon'
 import { JiraClient } from '../../jira/JiraClient'
 
-test('Log to JIRA without user', async (t) => {
+test('Log to JIRA without token', async (t) => {
   const jira = new JiraClient({ url: 'https://issues.redhat.com' })
-  await t.throwsAsync(jira.checkCredentials(), { message: /Either wrong user/ })
+  await t.throwsAsync(jira.checkCredentials(), { message: /Unable to authorize with the token/ })
 })
 
-test('Exercise JIRA check credentials logic', async (t) => {
+test('Exercise JIRA check token handling logic', async (t) => {
   const request = sinon.stub()
   request.onCall(0).resolves({
     statusCode: 401,
-    body: {},
+    body: {
+      message: 'Client must be authenticated to access this resource.',
+    },
   })
   request.onCall(1).resolves({
     statusCode: 200,
-    body: {
-      session: {
-        name: 'JSESSIONID',
-        value: '12345',
-      },
-      loginInfo: {
-        failedLoginCount: 300,
-        loginCount: 600,
-        lastFailedLoginTime: '2019-05-15T08:05:56.488-0400',
-        previousLoginTime: '2019-05-14T03:14:44.896-0400',
-      },
+    headers: {
+      'x-seraph-loginreason': 'OK',
+      'x-ausername': 'dummy',
     },
   })
   request.onCall(2).resolves({
-    statusCode: 403,
-    body: {
-      errorMessages: ['Login denied'],
-      errors: {},
-    },
-    headers: {
-      'x-authentication-denied-reason': 'CAPTCHA_CHALLENGE mocked URL',
-    },
-  })
-  request.onCall(3).resolves({
-    statusCode: 403,
+    statusCode: 429,
     body: {},
     headers: {},
   })
-  request.onCall(4).resolves({
+  request.onCall(3).resolves({
     statusCode: 500,
   })
 
   const mockedJira = new JiraClient(
     {
       url: 'https://issues.redhat.org',
-      user: 'dummy',
-      password: 'user',
+      token: 'invalid',
     },
     {
       // introduce mocked request
@@ -59,20 +42,17 @@ test('Exercise JIRA check credentials logic', async (t) => {
     }
   )
 
-  t.plan(6)
+  t.plan(5)
   await t.throwsAsync(mockedJira.checkCredentials(), {
-    message: /Either wrong user dummy or wrong password provided/,
+    message: /Unable to authorize with the token/,
   })
 
   const credentials = await mockedJira.checkCredentials()
   t.truthy(credentials, 'Returned mocked configuration of jira instance')
-  t.is(credentials.user, 'dummy', 'Logged in as dummy user')
+  t.is(credentials.token, 'invalid', 'Logged in as dummy user')
 
   await t.throwsAsync(mockedJira.checkCredentials(), {
-    message: /Captcha challenge please login via browser/,
-  })
-  await t.throwsAsync(mockedJira.checkCredentials(), {
-    message: /Failed to login to JIRA instance/,
+    message: /API rate limit/,
   })
   await t.throwsAsync(mockedJira.checkCredentials(), {
     message: /unhandled control flow/,

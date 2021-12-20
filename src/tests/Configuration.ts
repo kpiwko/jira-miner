@@ -1,5 +1,3 @@
-'use strict'
-
 import test from 'ava'
 import * as path from 'path'
 import * as tmp from 'tmp'
@@ -93,8 +91,6 @@ const dummyConfiguration = [
   {
     target: 'dummy',
     jira: {
-      user: 'dummy',
-      password: 'user',
       url: 'https://example.com',
     },
   },

@@ -1,5 +1,5 @@
 import { formatISO, compareAsc } from 'date-fns'
-import { striptags } from 'striptags'
+import striptags from 'striptags'
 import { isSchemaTyped, parseTimeValue } from '../utils'
 
 export type IssueJson = {

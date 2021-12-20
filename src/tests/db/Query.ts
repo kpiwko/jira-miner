@@ -34,7 +34,7 @@ test('Query with syntax issue shows broken error', async (t) => {
         .join(' ')
     })
   } catch (err) {
-    t.assert(err.message && err.message.includes('localCompare'), 'localCompare typo is in exception message')
+    t.assert((err as Error).message && (err as Error).message.includes('localCompare'), 'localCompare typo is in exception message')
   }
 })
 

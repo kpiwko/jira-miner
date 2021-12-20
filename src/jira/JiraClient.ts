@@ -20,9 +20,7 @@ const logger = new Logger()
 
 export type JiraAuth = {
   url: string
-  user?: string
-  password?: string
-  oauth?: JiraApi.OAuth
+  token?: string
 }
 
 export type JiraClientOptions = {
@@ -45,14 +43,14 @@ export type JiraQuery = {
 export class JiraClient {
   public jira: JiraApi
   private url: string
-  private user: string
-  private password: string
+  private token?: string
   private maxConcurrentRequests: number
   private rp: (options: Record<string, unknown>) => Promise<any>
+  private clientOptions: JiraClientOptions
   private verbose: boolean
 
   constructor(
-    { url: urlToParse, user = '', password = '' }: JiraAuth,
+    { url: urlToParse, token }: JiraAuth,
     clientOptions = {
       apiVersion: '2',
       verbose: process.env.NODE_DEBUG?.includes('request') || process.env.DEBUG?.includes('request'),
@@ -84,13 +82,12 @@ export class JiraClient {
       strictSSL: clientOptions.strictSSL ?? true,
       request: clientOptions.request ?? rpr_retry,
       // credentials
-      username: user,
-      password: password,
+      bearer: token,
     })
     this.maxConcurrentRequests = clientOptions.maxConcurrentRequests ?? MAX_CONCURRENT_REQUESTS
     this.url = urlToParse
-    this.user = user
-    this.password = password
+    this.token = token
+    this.clientOptions = clientOptions
     this.rp = clientOptions.request ?? rpr_retry
     this.verbose = clientOptions.verbose ?? false
   }
@@ -177,41 +174,38 @@ export class JiraClient {
 
   async checkCredentials(): Promise<JiraAuth> {
     const options = {
-      method: 'POST',
-      url: `${this.url}/rest/auth/1/session`,
+      method: 'GET',
+      url: `${this.url}/rest/${this.clientOptions.apiVersion}/myself`,
       resolveWithFullResponse: true,
       headers: {
         'content-type': 'application/json',
+        Authorization: `Bearer ${this.token}`,
       },
       json: true,
-      body: {
-        username: this.user,
-        password: this.password,
-      },
       simple: false,
     }
 
     const response = await this.rp(options)
     // login was succesfull
     if (response.statusCode === 200) {
-      return {
-        url: this.url,
-        user: this.user,
-        password: this.password,
+      const loggedIn = response.headers?.['x-seraph-loginreason'] as string | undefined
+      const username = response.headers?.['x-ausername'] as string | undefined
+      if('OK' === loggedIn) {
+        logger.debug(`Logged in as ${username}`)
+        return {
+          url: this.url,
+          token: this.token,
+        }
       }
+      throw Error(`Unable to authorize with the token`)
     }
     // login was not successful
     else if (response.statusCode === 401) {
-      throw Error(`Either wrong user ${this.user} or wrong password provided`)
+      throw Error(`Unable to authorize with the token`)
     }
     // captcha triggered
-    else if (response.statusCode == 403) {
-      Object.keys(response.headers).forEach((header) => {
-        if (header === 'x-authentication-denied-reason' && response.headers[header].includes('CAPTCHA_CHALLENGE')) {
-          throw Error(`Captcha challenge please login via browser at ${response.headers[header]} first`)
-        }
-      })
-      throw Error(`Failed to login to JIRA instance ${this.url} `)
+    else if (response.statusCode == 429) {
+      throw Error(`Failed to login to JIRA instance ${this.url}, API rate limit hit`)
     } else {
       throw Error(`Failed to login to JIRA instance ${this.url}, unhandled control flow`)
     }

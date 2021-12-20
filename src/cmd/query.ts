@@ -9,7 +9,6 @@ import Logger from '../logger'
 const logger = new Logger()
 const command = 'query <file>'
 const describe = 'Query local database using query(ies) stored in file'
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const builder = (yargs: any): any => {
   const HOME = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE || process.cwd()
   return yargs
@@ -72,7 +71,6 @@ const builder = (yargs: any): any => {
     .wrap(null)
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const handler = (argv: any): any => {
   if ([argv.csv, argv.tsv, argv.json].filter((val) => val).length > 1) {
     process.exit(1)

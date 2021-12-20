@@ -232,20 +232,18 @@ export const trendReducer = (trend: string): MetricReduce => {
 
 export const fixVersionReducer = (): MetricReduce => {
   return (date: string, mapResult: any[], filterResult?: Issue[]): MetricResults => {
-    const byVersion = Object.entries(groupBy(mapResult, 'Fix Version/s')).map(
-      ([fixVersion, collection]): Slice => {
-        return {
-          name: fixVersion,
-          metadata: [...link(collection)],
-          values: [
-            {
-              id: 'total',
-              value: collection.length,
-            },
-          ],
-        }
+    const byVersion = Object.entries(groupBy(mapResult, 'Fix Version/s')).map(([fixVersion, collection]): Slice => {
+      return {
+        name: fixVersion,
+        metadata: [...link(collection)],
+        values: [
+          {
+            id: 'total',
+            value: collection.length,
+          },
+        ],
       }
-    )
+    })
 
     return {
       date,
@@ -282,22 +280,20 @@ export const fixVersionCompletedReducer = (schemas: JiraSchema[]): MetricReduce 
     }
 
     const completedAll = filterResult?.filter(isCompleted) ?? []
-    const byVersion = Object.entries(groupBy(mapResult, 'Fix Version/s')).map(
-      ([version, collection]): Slice => {
-        const total = collection.length
-        const completed = collection.filter(isCompleted).length
+    const byVersion = Object.entries(groupBy(mapResult, 'Fix Version/s')).map(([version, collection]): Slice => {
+      const total = collection.length
+      const completed = collection.filter(isCompleted).length
 
-        return {
-          name: version,
-          metadata: [...link(collection)],
-          values: [
-            { id: 'total', value: total },
-            { id: 'Completed', value: completed },
-            { id: 'ratio', value: roundToTwo((completed / total) * 100) },
-          ],
-        }
+      return {
+        name: version,
+        metadata: [...link(collection)],
+        values: [
+          { id: 'total', value: total },
+          { id: 'Completed', value: completed },
+          { id: 'ratio', value: roundToTwo((completed / total) * 100) },
+        ],
       }
-    )
+    })
 
     const total = filterResult?.length ?? 0
     const completed = completedAll.length

@@ -1,5 +1,3 @@
-'use strict'
-
 import { stripIndent } from 'common-tags'
 import { JiraClient } from '../jira/JiraClient'
 import Configuration from '../Configuration'
@@ -14,21 +12,16 @@ const builder = function (yargs: any) {
       stripIndent`
       usage: $0 target <url> [options]
 
-      Connects to JIRA <url> that will used as data source.
+      Connects to JIRA <url> that will used as the data source.
     `
     )
-    .option('user', {
-      alias: 'u',
-      describe: 'User name',
-      type: 'string',
-    })
-    .option('password', {
+    .option('token', {
       alias: 'p',
-      describe: 'Password',
+      describe: 'Personal access token',
       type: 'string',
     })
     .positional('url', {
-      describe: 'JIRA instance url, example https://issues.jboss.org',
+      describe: 'JIRA instance url, example https://issues.redhat.com',
     })
     .help('help')
     .wrap(null)
@@ -41,8 +34,7 @@ const handler = function (argv: any) {
   const jiraClient = new JiraClient(
     {
       url: argv.url,
-      user: argv.user,
-      password: argv.password,
+      token: argv.token,
     },
     { verbose: verbose }
   )
@@ -53,7 +45,7 @@ const handler = function (argv: any) {
       const jira = await jiraClient.checkCredentials()
       logger.info('Successfully targeted JIRA', {
         url: jira.url,
-        user: jira.user,
+        token: jira.token,
       })
       await config.updateConfiguration([
         {

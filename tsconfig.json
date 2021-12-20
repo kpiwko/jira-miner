@@ -1,13 +1,14 @@
 {
-  "extends": "@tsconfig/node12/tsconfig.json",
+  "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2019",
+    "target": "es6",
+    "moduleResolution": "node",
     "sourceMap": true,
     "noImplicitAny": false,
     "preserveSymlinks": true,
     "outDir": "lib",
     "lib": [
-      "es2019"
+      "es6"
     ],
   }
 }

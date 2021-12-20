@@ -37,7 +37,7 @@ const cli = function () {
     .version()
     .wrap(null).argv
 
-  if (argv.verbose) {
+  if (argv['verbose']) {
     logger.setDebug()
     logger.debug('Enabled debug logs')
   }

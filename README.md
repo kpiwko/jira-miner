@@ -1,6 +1,6 @@
 # JIRA Miner ![CI](https://github.com/kpiwko/jira-miner/workflows/CI/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/kpiwko/jira-miner/badge.svg?branch=main)](https://coveralls.io/github/kpiwko/jira-miner?branch=main)
 
-A tool to gather data from JIRA and query them locally for better speed and more flexible query language than jql. The tool stores entries available in JIRA locally in [Loki.js](http://lokijs.org) database in a file. This means the tool has no dependency but Node.js.
+A tool to gather data from JIRA and query them locally for better speed and more flexible query language than JQL. The tool stores entries available in JIRA locally in [Loki.js](http://lokijs.org) database in a file. This means the tool has no dependency but Node.js.
 
 ## Usage
 
@@ -75,10 +75,10 @@ You can also setup environment variable `DEBUG` to include `jira-miner` value to
 Prerequisites:
 
 ```
-npm install -g ava typescript nyc coveralls
+npm run build
 ```
 
-Afterwards, you can run tests via following commands:
+After translating TypeScript into JavaScript, you can run tests via following commands:
 
 ```
 npm run test

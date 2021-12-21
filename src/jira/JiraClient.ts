@@ -190,7 +190,7 @@ export class JiraClient {
     if (response.statusCode === 200) {
       const loggedIn = response.headers?.['x-seraph-loginreason'] as string | undefined
       const username = response.headers?.['x-ausername'] as string | undefined
-      if('OK' === loggedIn) {
+      if ('OK' === loggedIn) {
         logger.debug(`Logged in as ${username}`)
         return {
           url: this.url,

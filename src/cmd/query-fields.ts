@@ -1,6 +1,5 @@
 import Table from 'cli-table'
 import { stripIndent } from 'common-tags'
-import Configuration from '../Configuration'
 import { JiraClient } from '../jira/JiraClient'
 
 const command = 'query-fields'
@@ -9,18 +8,31 @@ const builder = (yargs: any): any => {
   return yargs
     .usage(
       stripIndent`
-      usage: $0 query-fields [options]
+      usage: $0 query-fields --url <url> --token <token> [options]
 
       List fields that can be used in query for currently targeted JIRA instance`
     )
+    .option('url', {
+      alias: 'u',
+      describe: 'URL of JIRA instance to connect to',
+      type: 'string',
+      default: process.env.JIRA_URL,
+      defaultDescription: 'JIRA URL from JIRA_URL environment variable',
+    })
+    .option('token', {
+      alias: 't',
+      describe: 'JIRA Personal Access Token',
+      default: process.env.JIRA_TOKEN,
+      defaultDescription: 'JIRA Personal Access Token from JIRA_TOKEN environment variable',
+      type: 'string',
+    })
     .help('help')
     .wrap(null)
 }
 
 const handler = (argv: any): any => {
-  const config = new Configuration()
   const verbose = argv.verbose >= 2 ? true : false
-  const target = argv.target
+  const { url, token } = argv
 
   const table = new Table({
     head: ['Name', 'id', 'Type', 'Description'],
@@ -30,12 +42,7 @@ const handler = (argv: any): any => {
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await
   async function wrap(): Promise<void> {
     try {
-      const jiraConfig = await config.readConfiguration()
-      const jiraAuth = jiraConfig.find((c) => c.target === target)
-      if (!jiraAuth) {
-        throw Error(`Unable to create Jira Client with target ${target}, such configuration was not found`)
-      }
-      const jira = new JiraClient(jiraAuth.jira, { verbose: verbose })
+      const jira = new JiraClient({ url, token }, { verbose: verbose })
       let description = await jira.describeFields()
 
       description = description.sort((a: any[], b: any[]) => {

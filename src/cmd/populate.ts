@@ -4,7 +4,6 @@ import path from 'path'
 import { stripIndent } from 'common-tags'
 import { JiraDBFactory } from '../db/LocalJiraDB'
 import Logger from '../logger'
-import Configuration from '../Configuration'
 import { JiraClient, JiraQuery, MAX_CONCURRENT_REQUESTS } from '../jira/JiraClient'
 
 const logger = new Logger()
@@ -18,11 +17,25 @@ const builder = (yargs: any): any => {
   return yargs
     .usage(
       stripIndent`
-      usage: $0 populate <query> [options]
+      usage: $0 populate --url <url> --token <token> [options] <query> 
 
       Downloads data from targeted JIRA instead based on <query> and stores them in local database.
       <query> is JQL query string`
     )
+    .option('url', {
+      alias: 'u',
+      describe: 'URL of JIRA instance to connect to',
+      type: 'string',
+      default: process.env.JIRA_URL,
+      defaultDescription: 'JIRA URL from JIRA_URL environment variable',
+    })
+    .option('token', {
+      alias: 't',
+      describe: 'JIRA Personal Access Token',
+      default: process.env.JIRA_TOKEN,
+      defaultDescription: 'JIRA Personal Access Token from JIRA_TOKEN environment variable',
+      type: 'string',
+    })
     .option('db', {
       alias: 'd',
       describe: 'Database location',
@@ -66,29 +79,25 @@ const handler = (argv: any): any => {
     fields: argv.fields?.split(','),
     expand: !argv.ignoreHistory ? ['changelog', 'names'] : ['names'],
   }
-  const config = new Configuration()
-  const target = argv.target
   const debugRequestModule = argv.verbose >= 2 ? true : false
-  const throttle = argv.throttle
+  const { url, token, throttle, db } = argv
 
   // this function is the only function that will be executed in the CLI scope, so we are ignoring that yargs is not able to handle async/await
   async function wrap(): Promise<void> {
     try {
-      const db = await JiraDBFactory.localInstance(argv.db)
-      const jiraConfig = await config.readConfiguration()
-      const jiraAuth = jiraConfig.find((c) => c.target === target)
-      if (!jiraAuth) {
-        throw Error(`Unable to create Jira Client with target ${target}, such configuration was not found`)
-      }
-      const jira = new JiraClient(jiraAuth.jira, {
-        verbose: debugRequestModule,
-        maxConcurrentRequests: throttle,
-      })
-      logger.info(`Fetched query from JIRA and will store in ${argv.db}`, {
+      const database = await JiraDBFactory.localInstance(db)
+      const jira = new JiraClient(
+        { url, token },
+        {
+          verbose: debugRequestModule,
+          maxConcurrentRequests: throttle,
+        }
+      )
+      logger.info(`Fetched query from JIRA and will store in ${db}`, {
         query,
       })
-      await db.populate(jira, query)
-      await db.saveDatabase()
+      await database.populate(jira, query)
+      await database.saveDatabase()
     } catch (err) {
       console.error(err)
       process.exit(1)

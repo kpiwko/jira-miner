@@ -15,22 +15,15 @@ npm install -g jira-miner
 Command line usage follows next, make sure you consult `jira-miner help` if you need further information. You can also run the tool setting `DEBUG=1`
 environment variable, which will provide bunyan log traces useful for debugging.
 
-### Connecting to JIRA instance
-
-You need to point jira-miner to a JIRA instance you want to use as data source. You might need to provide your credentials as well in order to access restricted data.
-WARNING: Note that credentials are stored as plain text in your `$HOME` folder.
-
-```
-jira-miner target [-t <id>] <jiraUri> [--user <user>] [--password [password]]
-```
-
 ### Populate & update local database
 
-Once, you have targeted a jira, you can populate local database
+You can populate local database by executing following command
 
 ```
-jira-miner populate [-t <id>] <jqlQuery>
+jira-miner populate -u <jira-url> -t <jira-personal-access-token> <jqlQuery>
 ```
+
+Alternatively, you can source JIRA URL and JIRA PAT from `JIRA_URL` and `JIRA_TOKEN` environment variables.
 
 **EXAMPLE**: `jira-miner populate "project in (AEROGEAR, ARQ)"` downloads all issues (including their history) for projects AEROGEAR and ARQ)
 
@@ -39,7 +32,7 @@ the amount of fetched data. You can do that via `--since` argument that accepts 
 
 TIP: For very large queries, you might run out of memory. You can increase memory of node process and reduce GC calls via following:
 ```
-npx -n "--max-old-space-size=4096" jira-miner populate
+npm exec -n "--max-old-space-size=4096" -- jira-miner populate
 ```
 
 ### Query the database
@@ -69,7 +62,7 @@ Supposing that this file, called _my-example-query.ts_ is in current directory, 
 jira-miner query dist/my-example-query.js [--args]
 ```
 
-All arguments passed on command line will be available in args object. Example query files is available in [src/tests/fixtures](src/tests/fixtures)
+All arguments passed on command line will be available in args object. Example query files are available in [src/tests/fixtures](src/tests/fixtures)
 
 ### Debug output
 

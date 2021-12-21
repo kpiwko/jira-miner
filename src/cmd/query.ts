@@ -14,7 +14,7 @@ const builder = (yargs: any): any => {
   return yargs
     .usage(
       stripIndent`
-      usage: $0 query <file> [options]
+      usage: $0 query [options] <file>
 
       Queries locally populated database using query(ies) located in <file>.
 
@@ -43,6 +43,20 @@ const builder = (yargs: any): any => {
       In case that "transform(result: QueryResult)" is provided and none of --json, --csv or --tsv flags are provided, it is responsible for handling output itself.
     `
     )
+    .option('url', {
+      alias: 'u',
+      describe: 'URL of JIRA instance to connect to',
+      type: 'string',
+      default: process.env.JIRA_URL,
+      defaultDescription: 'JIRA URL from JIRA_URL environment variable',
+    })
+    .option('token', {
+      alias: 't',
+      describe: 'JIRA Personal Access Token',
+      default: process.env.JIRA_TOKEN,
+      defaultDescription: 'JIRA Personal Access Token from JIRA_TOKEN environment variable',
+      type: 'string',
+    })
     .option('db', {
       alias: 'd',
       describe: 'Database location',

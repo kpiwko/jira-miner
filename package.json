@@ -16,7 +16,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "jira-miner": "./lib/index.js"
+    "jira-miner": "./dist/index.js"
   },
   "repository": {
     "type": "git",

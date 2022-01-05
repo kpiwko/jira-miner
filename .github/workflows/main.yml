@@ -4,9 +4,9 @@ name: CI
 # events but only for the main branch
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -28,11 +28,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install -g ava typescript nyc coveralls
+      - run: npm install -g typescript ts-node
       - run: npm install
-      - run: npm run build 
+      - run: npm run build
       - run: npm run coverage
-        
+
       - name: Coveralls
         uses: coverallsapp/github-action@v1.1.2
         with:

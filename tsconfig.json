@@ -1,14 +1,16 @@
 {
   "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
-    "target": "es6",
+    "target": "ES2021",
+    "module": "es2020",
     "moduleResolution": "node",
     "sourceMap": true,
     "noImplicitAny": false,
     "preserveSymlinks": true,
-    "outDir": "lib",
+    "declaration": true,
+    "outDir": "dist",
     "lib": [
-      "es6"
+      "es2021"
     ],
   }
 }

@@ -2,6 +2,7 @@
 
 import { promisify } from 'util'
 import Loki from 'lokijs'
+import LokiStructuredFsAdapter from 'lokijs/src/loki-fs-structured-adapter.js'
 import { parseISO, formatISO, isAfter, isBefore, compareAsc } from 'date-fns'
 import Logger from '../logger'
 import { JiraClient, JiraQuery } from '../jira/JiraClient'
@@ -140,15 +141,19 @@ class HistoryCollectionImpl implements HistoryCollection {
 export class JiraDBFactory {
   static async localInstance(path: string): Promise<LocalJiraDBInstance> {
     const db = new Loki(path, {
-      adapter: new Loki.LokiFsAdapter(),
+      adapter: new LokiStructuredFsAdapter(),
+      autoload: false,
     })
+
     const loadDB = promisify<any>(db.loadDatabase).bind(db, {})
     try {
       await loadDB()
       logger.debug(`Local JIRA database loaded from ${path}`)
     } catch (err) {
       logger.warn('Unable to load database, ignoring', path, err)
+      console.error(err)
     }
+
     return new LocalJiraDBInstance(db, path)
   }
 }

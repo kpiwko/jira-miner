@@ -1,6 +1,7 @@
 import test from 'ava'
 import sinon from 'sinon'
 import { JiraClient } from '../../jira/JiraClient'
+import rp from 'request-promise'
 
 test('Log to JIRA without token', async (t) => {
   const jira = new JiraClient({ url: 'https://issues.redhat.com' })
@@ -59,19 +60,7 @@ test('Exercise JIRA check token handling logic', async (t) => {
   })
 })
 
-const jira = new JiraClient({ url: 'https://issues.apache.org/jira/' })
-
-test('Check additional JiraClient options', async (t) => {
-  const debugJira = new JiraClient(
-    { url: 'https://issues.apache.org:445/jira/' },
-    {
-      verbose: true,
-    }
-  )
-  await t.throwsAsync(debugJira.fetch({ query: 'project = AMQ AND key < AMQ-2', fields: ['summary'] }), {
-    message: /connect ECONNREFUSED/,
-  })
-})
+const jira = new JiraClient({ url: 'https://issues.apache.org/jira/' }, { verbose: false })
 
 test('Fetch issues with summary field', async (t) => {
   const issues = await jira.fetch({ query: 'project = AMQ AND key < AMQ-2', fields: ['summary'] })
@@ -112,4 +101,18 @@ test('Fetch issue with changelog', async (t) => {
   t.truthy(issues, 'AMQ-71 issue has been fetched')
   t.is(issues.length, 1, 'There is just one jira fetched')
   t.truthy(issues[0].History, 'Changelog is attached and transformed to History field')
+})
+
+test('Check additional JiraClient options', async (t) => {
+  const debugJira = new JiraClient(
+    { url: 'https://issues.apache.org:445/jira/' },
+    {
+      verbose: true,
+    }
+  )
+  await t.throwsAsync(debugJira.fetch({ query: 'project = AMQ AND key < AMQ-2', fields: ['summary'] }), {
+    message: /connect ECONNREFUSED/,
+  })
+  // remove debugging for request
+  ;(<any>rp)['debug' as any] = false
 })

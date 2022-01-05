@@ -75,7 +75,7 @@ You can also setup environment variable `DEBUG` to include `jira-miner` value to
 Prerequisites:
 
 ```
-npm run build
+npm install -g typescript ts-node
 ```
 
 After translating TypeScript into JavaScript, you can run tests via following commands:
@@ -85,7 +85,7 @@ npm run test
 ```
 
 
-Code coverage (via `nyc` tool):
+Code coverage (via `c8` tool):
 ```
 npm run coverage
 ```

@@ -5,6 +5,12 @@ import { HistoryCollection, JiraDBFactory } from '../../db/LocalJiraDB'
 import { Issue, IssueJson } from '../../jira/Issue'
 import { JiraSchema } from '../../jira/JiraSchema'
 
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
 export const schemaFixture: JiraSchema = {
   project: 'AeroGear',
   states: ['Open', 'Resolved', 'Closed'],
@@ -26,8 +32,8 @@ export const dbFixture = async ({
   malformation?: Malformation<IssueJson>
   source?: string
 }): Promise<HistoryCollection> => {
-  const dbpath = tmp.fileSync()
-  const testDB = await JiraDBFactory.localInstance(dbpath.name)
+  const dbpath = tmp.tmpNameSync()
+  const testDB = await JiraDBFactory.localInstance(dbpath)
 
   let jiraData = jsonfile.readFileSync(path.join(__dirname, source)) as IssueJson[]
   if (malformation) {

@@ -1,9 +1,18 @@
 import test from 'ava'
-import { readFileSync } from 'jsonfile'
+import jsonfile from 'jsonfile'
 import * as path from 'path'
 import { JiraClient } from '../../jira/JiraClient'
 import { extractValueFromField, extractValueFromString, changeFieldSchemaType, FieldJson } from '../../jira/Issue'
 import { parseISO, format } from 'date-fns'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+
+// FIXME jsonfile is a CommonJS module and there are issues with executing Ava tests with it
+// https://stackoverflow.com/questions/47277887/node-experimental-modules-requested-module-does-not-provide-an-export-named
+const { readFileSync } = jsonfile
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
 
 class MockedJiraClient extends JiraClient {
   transformation?: any

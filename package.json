@@ -1,9 +1,20 @@
 {
   "name": "jira-miner",
-  "version": "4.1.0",
+  "version": "5.0.0-beta.0",
   "description": "An utility for advanced queryies on top of JIRA",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "type": "module",
+  "exports": {
+    "./*": "./dist/*.js"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "jira-miner": "./lib/index.js"
   },
@@ -57,18 +68,14 @@
   },
   "devDependencies": {
     "@ava/typescript": "^2.0.0",
-    "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@tsconfig/node16": "^1.0.2",
     "@types/proxyquire": "^1.3.28",
     "@types/sinon": "^10.0.6",
-    "@typescript-eslint/eslint-plugin": "^5.7.0",
-    "@typescript-eslint/parser": "^5.7.0",
     "ava": "^3.15.0",
     "blue-tape": "^1.0.0",
+    "c8": "^7.11.0",
     "eslint": "^8.5.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "proxyquire": "^2.1.3",
     "sinon": "^12.0.1",
@@ -78,26 +85,41 @@
     "typescript": "^4.5.4"
   },
   "scripts": {
-    "clean": "rm -rf lib coverage",
-    "build": "npm exec -- tsc --declaration && cp src/tests/fixtures/* lib/tests/fixtures/",
+    "clean": "rm -rf dist coverage",
+    "build": "npm exec -- tsc",
     "lint": "npm exec -- eslint '*/**/*.{js,ts}' --fix",
     "test": "npm exec -- ava -v src/tests/**/*.ts src/tests/*.ts",
     "prepublishOnly": "npm run build",
-    "coverage": "npm exec -- nyc npm run test"
+    "coverage": "npm exec -- c8 npm run test"
   },
   "engines": {
     "node": ">= 16.0.0"
   },
   "ava": {
-    "typescript": {
-      "extensions": [
-        "ts",
-        "json"
-      ],
-      "rewritePaths": {
-        "src/": "lib/"
-      },
-      "compile": false
-    }
+    "extensions": {
+      "ts": "module"
+    },
+    "nonSemVerExperiments": {
+      "configurableModuleFormat": true
+    },
+    "nodeArguments": [
+      "--loader=ts-node/esm",
+      "--experimental-specifier-resolution=node"
+    ]
+  },
+  "c8": {
+    "include": [
+      "src/**/*.ts",
+      "src/*.ts"
+    ],
+    "exclude": [
+      "src/tests/**/*.ts",
+      "src/tests/*.ts"
+    ],
+    "reporter": [
+      "lcov",
+      "html",
+      "text"
+    ]
   }
 }

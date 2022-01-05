@@ -5,11 +5,12 @@ import { IssueJson } from '../../jira/Issue'
 import { format, parseISO } from 'date-fns'
 import { JiraClient } from '../../jira/JiraClient'
 import { dbFixture } from '../fixtures/fixtures'
+import { unlinkSync } from 'fs'
 
 test('Create collection from a JiraClient', async (t) => {
-  const dbpath = tmp.fileSync()
+  const dbpath = tmp.tmpNameSync()
   const jiraClient = new JiraClient({ url: 'https://issues.apache.org/jira/' })
-  const testDB = await JiraDBFactory.localInstance(dbpath.name)
+  const testDB = await JiraDBFactory.localInstance(dbpath)
   let collection = await testDB.populate(jiraClient, {
     query: 'key = AMQ-71',
   })
@@ -31,10 +32,12 @@ test('Create collection from a JiraClient', async (t) => {
 })
 
 test('Initialize empty db with collection', async (t) => {
-  const dbpath = tmp.fileSync()
-  const collection = (await JiraDBFactory.localInstance(dbpath.name)).getHistoryCollection('default')
+  const dbpath = tmp.tmpNameSync()
+  const db = await JiraDBFactory.localInstance(dbpath)
+  const collection = db.getHistoryCollection('default')
 
   t.assert(collection, 'Test database with collection "default" has been created')
+  await db.saveDatabase()
 })
 
 test('Query all agpush issues that contain Android in summary', async (t) => {

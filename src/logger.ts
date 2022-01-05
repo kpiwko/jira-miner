@@ -1,4 +1,8 @@
-import winston, { format } from 'winston'
+import winston from 'winston'
+
+// FIXME winston is a CommonJS module and there are issues with executing Ava tests with it
+// https://stackoverflow.com/questions/47277887/node-experimental-modules-requested-module-does-not-provide-an-export-named
+const { format } = winston
 
 export default class Logger {
   private static instance: Logger
@@ -15,11 +19,11 @@ export default class Logger {
         format: simpleFormat
           ? format.combine(format.simple())
           : format.combine(
-              format.errors({ stack: true }),
-              format.timestamp(),
-              format.label({ label: 'jira-miner', message: true }),
-              format.json()
-            ),
+            format.errors({ stack: true }),
+            format.timestamp(),
+            format.label({ label: 'jira-miner', message: true }),
+            format.json()
+          ),
       })
       Logger.instance = this
     }

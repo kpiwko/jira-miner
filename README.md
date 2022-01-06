@@ -2,18 +2,25 @@
 
 A tool to gather data from JIRA and query them locally for better speed and more flexible query language than JQL. The tool stores entries available in JIRA locally in [Loki.js](http://lokijs.org) database in a file. This means the tool has no dependency but Node.js.
 
+## Requirements
+
+Tool requires Node.js >=16 and uses experimenal `ts-node/esm` loader to be able to work directly with TypeScript.
+
+`jira-miner` binary is wrapping that in execution file, however it requires `coreutils >= 8.30` that supports providing multiple arguments to `env` [CoreUtils](https://lists.gnu.org/archive/html/info-gnu/2018-07/msg00001.html). 
+This version of coreutils was released in July 2018 so assuming a large overlap with systems where Node.js 16 is used.
+
 ## Usage
 
 The tool is intended to act both as command line tool or a library in other projects. In order to be able to effectively query something,
 you need to populate the database first. Afterwards, you can query content of the database pretty easily.
 
 You can install the tool by running
+
 ```
 npm install -g jira-miner
 ```
 
-Command line usage follows next, make sure you consult `jira-miner help` if you need further information. You can also run the tool setting `DEBUG=1`
-environment variable, which will provide bunyan log traces useful for debugging.
+Command line usage follows next, make sure you consult `jira-miner help` if you need further information. 
 
 ### Populate & update local database
 
@@ -56,17 +63,17 @@ export async function transform(result: QueryResult<T>) {
 
 ```
 
-Supposing that this file, called _my-example-query.ts_ is in current directory, and your TypeScript compiler compiles to _dist_ directory, you call your query via following
+Supposing that this file, called _my-example-query.ts_ is in current directory, because of `ts-node` loader, you call your query via following
 
 ```
-jira-miner query dist/my-example-query.js [--args]
+jira-miner query my-example-query.ts [--args]
 ```
 
 All arguments passed on command line will be available in args object. Example query files are available in [src/tests/fixtures](src/tests/fixtures)
 
 ### Debug output
 
-Simply run any command with `--verbose` parameter. You can provide it twice (e.g. `-vv`) to have further level of debug output.
+Simply run any command with `--verbose` parameter. You can provide it twice (e.g. `-vv`) to have additional level of debug output.
 
 You can also setup environment variable `DEBUG` to include `jira-miner` value to get the equivalent of verbose logging.
 
@@ -78,14 +85,14 @@ Prerequisites:
 npm install -g typescript ts-node
 ```
 
-After translating TypeScript into JavaScript, you can run tests via following commands:
+Running tests (via `ava` tool):
 
 ```
 npm run test
 ```
 
+Running code coverage (via `c8` tool):
 
-Code coverage (via `c8` tool):
 ```
 npm run coverage
 ```

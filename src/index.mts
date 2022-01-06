@@ -53,7 +53,7 @@ const query = async (argv: any) => {
   setDebug(argv)
 
   if ([argv.csv, argv.tsv, argv.json].filter((val) => val).length > 1) {
-    process.exit(1)
+    throw Error(`Multiple output arguments provided`)
   }
 
   const queryFilePath = path.resolve(process.cwd(), argv.file)
@@ -90,13 +90,13 @@ const query = async (argv: any) => {
     await Promise.resolve(queryFile.transform(result))
   } else {
     if (argv.json) {
-      console.log(JSON.stringify(result.result, null, 2))
+      console.info(JSON.stringify(result.result, null, 2))
     } else if (argv.csv) {
-      console.log(new Parser({ header: false }).parse(result.result))
+      console.info(new Parser({ header: false }).parse(result.result))
     } else if (argv.tsv) {
-      console.log(new Parser({ header: false, delimiter: '\t' }).parse(result.result))
+      console.info(new Parser({ header: false, delimiter: '\t' }).parse(result.result))
     } else {
-      console.log(prettyjson.render(result.result))
+      console.info(prettyjson.render(result.result))
     }
   }
 
@@ -155,14 +155,12 @@ const parser = yargs(hideBin(process.argv))
         alias: 'u',
         describe: 'URL of JIRA instance to connect to',
         type: 'string',
-        demandOption: true,
         defaultDescription: 'JIRA URL from JIRA_URL environment variable',
       })
       .option('token', {
         alias: 't',
         describe: 'JIRA Personal Access Token',
         type: 'string',
-        demandOption: true,
         defaultDescription: 'JIRA Personal Access Token from JIRA_TOKEN environment variable',
       })
       .option('db', {
@@ -230,20 +228,6 @@ const parser = yargs(hideBin(process.argv))
       ---`
       )
       .env('JIRA')
-      .option('url', {
-        alias: 'u',
-        describe: 'URL of JIRA instance to connect to',
-        type: 'string',
-        demandOption: true,
-        defaultDescription: 'JIRA URL from JIRA_URL environment variable',
-      })
-      .option('token', {
-        alias: 't',
-        describe: 'JIRA Personal Access Token',
-        type: 'string',
-        demandOption: true,
-        defaultDescription: 'JIRA Personal Access Token from JIRA_TOKEN environment variable',
-      })
       .option('db', {
         alias: 'd',
         describe: 'Database location',
@@ -297,16 +281,20 @@ const parser = yargs(hideBin(process.argv))
       }),
     handler: queryFields,
   })
-  .demandCommand()
+  .option('verbose', {
+    alias: 'v',
+    describe: 'Be more verbose. You can provide this option twice',
+    global: true,
+    type: 'count',
+  })
   .help()
   .version()
   .wrap(null)
-  .fail(false)
 
 try {
   await parser.parse()
 } catch (err) {
-  console.warn(err instanceof Error ? `${err.message}${err.stack}` : `${err}`)
+  console.error(err instanceof Error ? `${err.message}${err.stack}` : `${err}`)
   console.info(await parser.getHelp())
-  yargs.exit(2, err instanceof Error ? err : Error(`${err}`))
+  process.exit(2)
 }

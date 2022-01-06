@@ -1,6 +1,6 @@
 {
   "name": "jira-miner",
-  "version": "5.0.0-beta.2",
+  "version": "5.0.0-beta.3",
   "description": "An utility for advanced queryies on top of JIRA",
   "type": "module",
   "exports": {
@@ -10,6 +10,7 @@
     },
     "./*": "./dist/*.js"
   },
+  "main": "./dist/index.mjs",
   "typesVersions": {
     "*": {
       "*": [

@@ -1,5 +1,3 @@
-'use strict'
-
 import { HistoryCollection } from './LocalJiraDB'
 import Logger from '../logger'
 

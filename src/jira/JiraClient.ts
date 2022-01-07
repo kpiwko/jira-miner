@@ -1,5 +1,3 @@
-'use strict'
-
 import JiraApi from 'jira-client'
 import { URL } from 'url'
 import promiseRetry from 'promise-request-retry'
@@ -61,11 +59,11 @@ export class JiraClient {
   ) {
     if (clientOptions.verbose) {
       logger.debug('Setting up JIRA request debugging on for JiraClient')
-      // TS claims that debug property is readonly, need to override that
-      ;(<any>rp)['debug' as any] = true
+        // TS claims that debug property is readonly, need to override that
+        ; (<any>rp)['debug' as any] = true
     } else {
       // since we are changing global state of request, make sure that we change the configuration back to default state
-      ;(<any>rp)['debug' as any] = false
+      ; (<any>rp)['debug' as any] = false
     }
 
     // parse url to find values for jira API

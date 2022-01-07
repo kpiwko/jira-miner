@@ -1,5 +1,3 @@
-'use strict'
-
 import { promisify } from 'util'
 import Loki from 'lokijs'
 import LokiStructuredFsAdapter from 'lokijs/src/loki-fs-structured-adapter.js'
@@ -210,8 +208,7 @@ export class LocalJiraDBInstance implements JiraDBInstance {
 
     // insert data into database
     logger.debug(
-      `Populating collection ${collectionName} with ${data.length} entries. ${deleted} entries will be updated, ${
-        data.length - deleted
+      `Populating collection ${collectionName} with ${data.length} entries. ${deleted} entries will be updated, ${data.length - deleted
       } are net new.`
     )
     collection.insert(data)

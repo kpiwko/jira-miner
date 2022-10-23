@@ -1,4 +1,4 @@
-#!/usr/bin/env -S node --experimental-specifier-resolution=node --loader=ts-node/esm --max-old-space-size=8196 --no-warnings
+#!/usr/bin/env -S node --experimental-specifier-resolution=node --loader=ts-node/esm --no-warnings
 
 import path from 'path'
 import yargs from 'yargs'

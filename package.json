@@ -75,7 +75,7 @@
     "@types/proxyquire": "^1.3.28",
     "@types/sinon": "^10.0.6",
     "@typescript-eslint/parser": "^5.40.1",
-    "ava": "^3.15.0",
+    "ava": "^5.2.0",
     "blue-tape": "^1.0.0",
     "c8": "^7.11.0",
     "eslint": "^8.5.0",
